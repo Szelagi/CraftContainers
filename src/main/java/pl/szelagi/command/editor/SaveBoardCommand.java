@@ -41,6 +41,12 @@ public class SaveBoardCommand implements CommandExecutor {
             return false;
         }
 
+        if (creator.isRecording()) {
+            player.sendMessage(PREFIX + "§cYou can't start another record while the map is being saved.");
+            return false;
+        }
+
+        creator.setRecording(true);
         player.sendMessage(PREFIX + "§7§oSaving...");
         long millis = System.currentTimeMillis();
 
@@ -56,6 +62,7 @@ public class SaveBoardCommand implements CommandExecutor {
                         long deltaTotalMillis = System.currentTimeMillis() - millis;
                         player.sendMessage(PREFIX + "§7Board size: §f" + optimized.size() + "§7, size-x: §f" + optimized.sizeX() + "§7, size-y: §f" + optimized.sizeY() + "§7, size-z: §f" + optimized.sizeZ() + "§7!");
                         player.sendMessage(PREFIX + "§aBoard saved successfully! §f(" + deltaTotalMillis + "ms)");
+                        creator.setRecording(false);
                     });
                 });
 

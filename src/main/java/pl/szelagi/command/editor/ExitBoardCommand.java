@@ -32,6 +32,10 @@ public class ExitBoardCommand implements CommandExecutor {
             player.sendMessage(PREFIX + "§cYou are not in the editor.");
             return false;
         }
+        if (creator.isRecording()) {
+            player.sendMessage(PREFIX + "§cYou cannot exit while the map is being saved.");
+            return false;
+        }
         creator.stop(new NeutralCause("FORCE_STOP"));
         player.sendMessage(PREFIX + "§aYou have successfully exited the board editor.");
         return true;

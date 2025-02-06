@@ -14,6 +14,7 @@ import pl.szelagi.component.session.Session;
 
 public class Creator extends Session {
 	private final String mainDirectory;
+	private boolean isRecording = false;
 
 	public Creator(JavaPlugin plugin, String mainDirectory) {
 		super(plugin);
@@ -30,5 +31,13 @@ public class Creator extends Session {
 	@Override
 	public String getName() {
 		return "creatorSession";
+	}
+
+	public boolean isRecording() {
+		return isRecording;
+	}
+
+	public void setRecording(boolean recording) {
+		isRecording = recording;
 	}
 }
