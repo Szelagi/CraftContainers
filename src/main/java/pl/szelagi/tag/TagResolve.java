@@ -38,11 +38,11 @@ public class TagResolve implements Serializable {
 	public void add(Tag element) {
 		List<Tag> sameTypeElements;
 
-		if (!map.containsKey(element.getName())) {
+		if (!map.containsKey(element.name())) {
 			sameTypeElements = new ArrayList<>();
-			map.put(element.getName(), sameTypeElements);
+			map.put(element.name(), sameTypeElements);
 		} else {
-			sameTypeElements = map.get(element.getName());
+			sameTypeElements = map.get(element.name());
 		}
 
 		sameTypeElements.add(element);
@@ -65,7 +65,7 @@ public class TagResolve implements Serializable {
 		var locations = new ArrayList<Location>();
 		for (var list : map.values()) {
 			for (var element : list) {
-				locations.add(element.getLocation());
+				locations.add(element.location());
 			}
 		}
 		return locations;

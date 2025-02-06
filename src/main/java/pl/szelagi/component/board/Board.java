@@ -216,8 +216,13 @@ public abstract class Board extends BaseComponent {
 		return tagResolve;
 	}
 
+	@Deprecated
 	public final @NotNull TagQuery tagQuery(@NotNull String tagName) {
 		return tagResolve.query(tagName);
+	}
+
+	public final @NotNull TagQuery tags(@NotNull String name) {
+		return tagResolve.query(name);
 	}
 
 	public final RemoteProcess getProcess() {

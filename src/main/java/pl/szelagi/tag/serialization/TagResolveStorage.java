@@ -19,9 +19,9 @@ public class TagResolveStorage implements Serializable {
 	private final List<TagStorage> tagStorages = new ArrayList<>();
 
 	public void add(Tag tag) {
-		var tagStorage = new TagStorage(tag.getName(), tag
-				.getRelativeLocation()
-				.toRelativePoint(), tag.getBlockFace(), tag.getArgs());
+		var tagStorage = new TagStorage(tag.name(), tag
+				.relativeLocation()
+				.toRelativePoint(), tag.blockFace(), tag.args());
 		tagStorages.add(tagStorage);
 	}
 

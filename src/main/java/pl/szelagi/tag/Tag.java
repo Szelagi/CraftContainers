@@ -9,6 +9,7 @@ package pl.szelagi.tag;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.relative.RelativeLocation;
 
@@ -29,23 +30,58 @@ public class Tag implements Serializable {
 		this.args = args;
 	}
 
+	@Deprecated
 	public @NotNull String getName() {
 		return name;
 	}
 
+	@Deprecated
 	public @NotNull Location getLocation() {
 		return relativeLocation;
 	}
 
+	@Deprecated
 	public @NotNull RelativeLocation getRelativeLocation() {
 		return relativeLocation;
 	}
 
+	@Deprecated
 	public @NotNull BlockFace getBlockFace() {
 		return blockFace;
 	}
 
+	@Deprecated
 	public @NotNull List<String> getArgs() {
 		return args;
+	}
+
+	public @NotNull Location location() {
+		return relativeLocation;
+	}
+
+	public @NotNull RelativeLocation relativeLocation() {
+		return relativeLocation;
+	}
+
+	public @NotNull String name() {
+		return name;
+	}
+
+	public BlockFace blockFace() {
+		return blockFace;
+	}
+
+	public @NotNull List<String> args() {
+		return args;
+	}
+
+	public @NotNull Location centeredXZ() {
+		var location = location().clone();
+		return location.add(new Vector(0.5, 0, 0.5));
+	}
+
+	public @NotNull Location centeredXYZ() {
+		var location = location().clone();
+		return location.add(new Vector(0.5, 0.5, 0.5));
 	}
 }
