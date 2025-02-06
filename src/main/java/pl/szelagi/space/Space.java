@@ -10,12 +10,12 @@ package pl.szelagi.space;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+import pl.szelagi.SessionAPI;
 import pl.szelagi.spatial.ISpatial;
 
 public class Space implements ISpatial {
-	public static final int SPACE_SIZE = 500; //
-	// recommended 300x300
-	public static final int AREA_SIZE = 1;
+	public static final int SPACE_SIZE = SessionAPI.getInstance().config().getInt("max-board-size");
+	public static final int AREA_SIZE = SessionAPI.getInstance().config().getInt("distance-between-maps");
 	public static final int TOTAL_SIZE = 2 * AREA_SIZE + SPACE_SIZE;
 	private final Location startPoint;
 	private final Location endPoint;

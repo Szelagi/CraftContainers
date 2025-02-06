@@ -8,6 +8,7 @@
 package pl.szelagi;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.ServerOperator;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.szelagi.command.Command;
@@ -20,6 +21,7 @@ import pl.szelagi.world.SessionWorldManager;
 import java.io.File;
 
 public final class SessionAPI extends JavaPlugin {
+	FileConfiguration config = getConfig();
 	public static final File SESSION_API_DIRECTORY = new File(Bukkit
 			                                                          .getServer()
 			                                                          .getPluginsFolder()
@@ -43,6 +45,8 @@ public final class SessionAPI extends JavaPlugin {
 		if (!BOARD_DIRECTORY.exists())
 			BOARD_DIRECTORY.mkdir();
 
+		createConfig();
+
 		SessionManager.initialize(this);
 		BoardManager.initialize(this);
 		ControllerManager.initialize(this);
@@ -51,6 +55,13 @@ public final class SessionAPI extends JavaPlugin {
 
 		SessionWorldManager.initialize(this);
 		Command.registerCommands();
+	}
+
+	private void createConfig() {
+		config.addDefault("max-board-size", 300);
+		config.addDefault("distance-between-maps", 500);
+		config.options().copyDefaults(true);
+		saveConfig();
 	}
 
 	@Override
@@ -62,5 +73,9 @@ public final class SessionAPI extends JavaPlugin {
 		Bukkit.getOnlinePlayers().stream()
 		      .filter(ServerOperator::isOp)
 		      .forEach(player -> player.sendMessage(message));
+	}
+
+	public FileConfiguration config() {
+		return config;
 	}
 }
