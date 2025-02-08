@@ -15,6 +15,7 @@ import pl.szelagi.command.Command;
 import pl.szelagi.manager.BoardManager;
 import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.VersionManager;
 import pl.szelagi.recovery.Recovery;
 import pl.szelagi.world.SessionWorldManager;
 
@@ -30,7 +31,12 @@ public final class SessionAPI extends JavaPlugin {
 	public static final File BOARD_DIRECTORY = new File(SESSION_API_DIRECTORY.getPath() + "/board");
 	private static SessionAPI instance;
 
+	@Deprecated
 	public static SessionAPI getInstance() {
+		return instance;
+	}
+
+	public static SessionAPI instance() {
 		return instance;
 	}
 
@@ -47,6 +53,7 @@ public final class SessionAPI extends JavaPlugin {
 
 		createConfig();
 
+		VersionManager.initialize();
 		SessionManager.initialize(this);
 		BoardManager.initialize(this);
 		ControllerManager.initialize(this);
@@ -55,11 +62,13 @@ public final class SessionAPI extends JavaPlugin {
 
 		SessionWorldManager.initialize(this);
 		Command.registerCommands();
+
 	}
 
 	private void createConfig() {
 		config.addDefault("max-board-size", 300);
 		config.addDefault("distance-between-maps", 500);
+		config.addDefault("minecraft_version", "auto");
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
