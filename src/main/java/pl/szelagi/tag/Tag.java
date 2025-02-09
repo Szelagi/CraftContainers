@@ -25,9 +25,11 @@ public class Tag implements Serializable {
 
 	public Tag(@NotNull String name, @NotNull RelativeLocation relativeLocation, @NotNull BlockFace blockFace, @NotNull List<String> args) {
 		this.name = name;
-		this.relativeLocation = relativeLocation;
 		this.blockFace = blockFace;
 		this.args = args;
+
+		BlockFaceMapper.updateYaw(relativeLocation, blockFace);
+		this.relativeLocation = relativeLocation;
 	}
 
 	@Deprecated
