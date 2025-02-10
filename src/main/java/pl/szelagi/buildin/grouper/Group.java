@@ -15,62 +15,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Group implements Comparable<Group> {
-	private final long id;
-	private final Grouper grouper;
-	private final ArrayList<Player> players = new ArrayList<>();
+public class Group {
+	private final List<Player> players = new ArrayList<>();
 
-	public Group(Grouper grouper) {
-		this.grouper = grouper;
-		this.id = grouper.nextGroupId();
+	public Group(List<Player> players) {
+		this.players.addAll(players);
 	}
 
-	public @NotNull List<Player> getPlayers() {
+	public @NotNull List<Player> players() {
 		return players;
 	}
 
-	public @NotNull List<Player> getInSessionPlayers() {
+	public @NotNull List<Player> inSessionPlayers(Session session) {
 		return players.stream()
-		              .filter(player -> getSession()
+		              .filter(player -> session
 				              .getPlayers()
 				              .contains(player))
 		              .collect(Collectors.toList());
-	}
-
-	private @NotNull Session getSession() {
-		return grouper.getSession();
-	}
-
-	public boolean add(Player player) {
-		return players.add(player);
-	}
-
-	public boolean remove(Player player) {
-		return players.add(player);
 	}
 
 	public boolean hasPlayer(Player player) {
 		return players.contains(player);
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public int getPlayerCount() {
+	public int size() {
 		return players.size();
 	}
 
-	public int getInSessionPlayerCount() {
+	public int inSessionSize(Session session) {
 		return (int) players.stream()
-		                    .filter(player -> getSession()
+		                    .filter(player -> session
 				                    .getPlayers()
 				                    .contains(player))
 		                    .count();
 	}
 
-	@Override
-	public int compareTo(@NotNull Group o) {
-		return getPlayerCount() - o.getPlayerCount();
-	}
+
 }

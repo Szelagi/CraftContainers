@@ -5,10 +5,12 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.buildin.grouper.event;
+package pl.szelagi.buildin.grouper;
 
-import pl.szelagi.buildin.grouper.Group;
-import pl.szelagi.buildin.grouper.Grouper;
+import org.bukkit.entity.Player;
 
-public record GroupCreateEvent(Grouper grouper,
-                               Group group) {}
+import java.util.List;
+
+public interface GroupCreator<T extends Group> {
+    T create(int index, List<Player> players);
+}
