@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.ServerOperator;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.szelagi.command.Command;
+import pl.szelagi.component.session.cause.NeutralCause;
 import pl.szelagi.manager.BoardManager;
 import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
@@ -76,6 +77,10 @@ public final class SessionAPI extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Plugin shutdown logic
+		var sessions = SessionManager.getSessions();
+		for (var session : sessions) {
+			session.stop(new NeutralCause("Disabling session " + session.getName()));
+		}
 	}
 
 	public static void debug(String message) {
