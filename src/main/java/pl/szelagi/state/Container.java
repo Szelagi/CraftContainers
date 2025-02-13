@@ -26,10 +26,14 @@ public class Container<I, S> implements Serializable, Iterable<S> {
 		this.creator = creator;
 	}
 
-	public @NotNull S get(I input) throws ManualContainerException {
+	public @NotNull S getOrCreate(I input) throws ManualContainerException {
 		if (manualContainer.isExists(input))
 			return manualContainer.get(input);
 		return manualContainer.create(input, creator);
+	}
+
+	public @NotNull S get(I input) throws ManualContainerException {
+		return manualContainer.get(input);
 	}
 
 	public void clearState(I input) throws ManualContainerException {
@@ -46,6 +50,10 @@ public class Container<I, S> implements Serializable, Iterable<S> {
 	}
 
 	public @NotNull S create(@NotNull I input, @NotNull Function<I, S> creator) throws ManualContainerException {
+		return manualContainer.create(input, creator);
+	}
+
+	public @NotNull S create(@NotNull I input) throws ManualContainerException {
 		return manualContainer.create(input, creator);
 	}
 

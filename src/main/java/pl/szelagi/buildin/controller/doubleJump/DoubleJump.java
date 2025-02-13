@@ -42,7 +42,7 @@ public class DoubleJump extends Controller {
 	public void playerConstructor(PlayerConstructorEvent event) {
 		super.playerConstructor(event);
 		var player = event.getPlayer();
-		playerContainer.get(player);
+		playerContainer.getOrCreate(player);
 		player.setAllowFlight(true);
 	}
 
@@ -50,7 +50,7 @@ public class DoubleJump extends Controller {
 	public void playerDestructor(PlayerDestructorEvent event) {
 		super.playerDestructor(event);
 		var player = event.getPlayer();
-		var playerState = playerContainer.get(player);
+		var playerState = playerContainer.getOrCreate(player);
 		player.setAllowFlight(playerState.oldFlyState());
 	}
 
@@ -59,7 +59,7 @@ public class DoubleJump extends Controller {
 		super.playerDestructorRecovery(event);
 		var forPlayer = event.getForPlayer();
 		var oldFlyState = playerContainer
-				.get(forPlayer).oldFlyState();
+				.getOrCreate(forPlayer).oldFlyState();
 		event.getLambdas().add(player -> {
 			player.setAllowFlight(oldFlyState);
 		});
@@ -88,7 +88,7 @@ public class DoubleJump extends Controller {
 
 			event.setCancelled(true);
 
-			var state = controller.playerContainer.get(player);
+			var state = controller.playerContainer.getOrCreate(player);
 			if (state.canJump(controller.cooldown)) {
 				state.jump();
 				var jumpBoost = player

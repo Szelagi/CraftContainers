@@ -51,7 +51,7 @@ public class LifeListener implements Listener {
 			return;
 		var state = controller
 				.getPlayerStateContainer()
-				.get(player);
+				.getOrCreate(player);
 		if (state.isAlive())
 			return;
 		event.setCancelled(true);
@@ -70,7 +70,7 @@ public class LifeListener implements Listener {
 			return;
 		var state = controller
 				.getPlayerStateContainer()
-				.get(player);
+				.getOrCreate(player);
 		if (state.isStopOneSpectateEvent()) {
 			state.setStopOneSpectateEvent(false);
 			return;

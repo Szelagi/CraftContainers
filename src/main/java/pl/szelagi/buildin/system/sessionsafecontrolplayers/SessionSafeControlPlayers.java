@@ -30,7 +30,7 @@ public class SessionSafeControlPlayers extends Controller {
 	@Override
 	public void playerConstructor(PlayerConstructorEvent event) {
 		super.playerConstructor(event);
-		stateContainer.get(event.getPlayer())
+		stateContainer.getOrCreate(event.getPlayer())
 		              .save();
 	}
 
@@ -38,7 +38,7 @@ public class SessionSafeControlPlayers extends Controller {
 	public void playerDestructor(PlayerDestructorEvent event) {
 		super.playerDestructor(event);
 		var player = event.getPlayer();
-		var state = stateContainer.get(player);
+		var state = stateContainer.getOrCreate(player);
 		player.setFallDistance(0);
 		player.setFireTicks(0);
 		for (var potionType : NEGATIVE_POTION_TYPES)
@@ -49,7 +49,7 @@ public class SessionSafeControlPlayers extends Controller {
 	@Override
 	public void playerDestructorRecovery(PlayerRecoveryEvent event) {
 		super.playerDestructorRecovery(event);
-		var state = stateContainer.get(event.getForPlayer());
+		var state = stateContainer.getOrCreate(event.getForPlayer());
 		event.getLambdas().add(player -> {
 			player.setFallDistance(0);
 			player.setFireTicks(0);

@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Group {
+	private final int id;
 	private final List<Player> players = new ArrayList<>();
 
-	public Group(List<Player> players) {
+	public Group(int id, List<Player> players) {
+		this.id = id;
 		this.players.addAll(players);
 	}
 
@@ -50,5 +52,7 @@ public class Group {
 		                    .count();
 	}
 
-
+	public int id() {
+		return id;
+	}
 }

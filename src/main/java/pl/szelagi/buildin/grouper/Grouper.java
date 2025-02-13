@@ -7,6 +7,9 @@
 
 package pl.szelagi.buildin.grouper;
 
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,14 @@ public class Grouper<T extends Group> {
 
     public int size() {
         return groups.size();
+    }
+
+    public boolean hasPlayer(Player player) {
+        return groups.stream().anyMatch(group -> group.hasPlayer(player));
+    }
+
+    public @Nullable T findPlayer(Player player) {
+        return groups.stream().filter(group -> group.hasPlayer(player)).findFirst().orElse(null);
     }
 
 }

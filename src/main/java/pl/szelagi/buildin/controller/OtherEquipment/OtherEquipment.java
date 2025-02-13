@@ -34,7 +34,7 @@ public class OtherEquipment extends Controller {
 	public void playerConstructor(PlayerConstructorEvent event) {
 		super.playerConstructor(event);
 		var player = event.getPlayer();
-		eqStatePlayerContainer.get(player).save();
+		eqStatePlayerContainer.getOrCreate(player).save();
 		if (isClearEquipment) {
 			player.getInventory().clear();
 			player.clearActivePotionEffects();
@@ -49,7 +49,7 @@ public class OtherEquipment extends Controller {
 	}
 
 	private PlayerDestructorLambda getPlayerDestructor(Player forPlayer) {
-		var state = eqStatePlayerContainer.get(forPlayer);
+		var state = eqStatePlayerContainer.getOrCreate(forPlayer);
 		return state::load;
 	}
 

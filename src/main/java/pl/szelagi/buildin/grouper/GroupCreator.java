@@ -12,5 +12,5 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public interface GroupCreator<T extends Group> {
-    T create(int index, List<Player> players);
+    T create(int id, List<Player> players);
 }

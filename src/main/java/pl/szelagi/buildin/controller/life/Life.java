@@ -45,7 +45,7 @@ public class Life extends Controller {
 	public int getAlivePlayerCount() {
 		int count = 0;
 		for (var p : getSession().getPlayers()) {
-			var state = playerStateContainer.get(p);
+			var state = playerStateContainer.getOrCreate(p);
 			if (state.isAlive())
 				count++;
 		}
@@ -55,7 +55,7 @@ public class Life extends Controller {
 	@Nullable
 	public Player getFirstAlivePlayer() {
 		for (var p : getSession().getPlayers()) {
-			var state = playerStateContainer.get(p);
+			var state = playerStateContainer.getOrCreate(p);
 			if (state.isAlive())
 				return p;
 		}
@@ -63,7 +63,7 @@ public class Life extends Controller {
 	}
 
 	public void killPlayer(Player player) {
-		var state = playerStateContainer.get(player);
+		var state = playerStateContainer.getOrCreate(player);
 		state.setAlive(false);
 
 		lives--;
@@ -103,7 +103,7 @@ public class Life extends Controller {
 
 	public void respawnAll() {
 		for (var player : getSession().getPlayers()) {
-			var state = playerStateContainer.get(player);
+			var state = playerStateContainer.getOrCreate(player);
 			if (!state.isAlive())
 				respawnPlayer(player);
 		}
@@ -154,7 +154,7 @@ public class Life extends Controller {
 		for (var pp : getSession().getPlayers()) {
 			if (pp.equals(p))
 				continue;
-			var ss = playerStateContainer.get(pp);
+			var ss = playerStateContainer.getOrCreate(pp);
 			if (ss.isAlive())
 				continue; // I added
 			ss.setStopOneSpectateEvent(true);
@@ -164,7 +164,7 @@ public class Life extends Controller {
 	}
 
 	public void respawnPlayer(Player player) {
-		var s = playerStateContainer.get(player);
+		var s = playerStateContainer.getOrCreate(player);
 		if (s.isAlive())
 			return;
 

@@ -34,7 +34,7 @@ public class OtherGameMode extends Controller {
 	@Override
 	public void playerConstructor(PlayerConstructorEvent event) {
 		super.playerConstructor(event);
-		states.get(event.getPlayer());
+		states.getOrCreate(event.getPlayer());
 		event.getPlayer().setGameMode(gameMode);
 	}
 
@@ -42,7 +42,7 @@ public class OtherGameMode extends Controller {
 	public void playerDestructor(PlayerDestructorEvent event) {
 		super.playerDestructor(event);
 		var player = event.getPlayer();
-		var state = states.get(player);
+		var state = states.getOrCreate(player);
 		player.setGameMode(state.getGameMode());
 		states.clearState(player);
 	}
@@ -50,7 +50,7 @@ public class OtherGameMode extends Controller {
 	@Override
 	public void playerDestructorRecovery(PlayerRecoveryEvent event) {
 		super.playerDestructorRecovery(event);
-		var state = states.get(event.getForPlayer());
+		var state = states.getOrCreate(event.getForPlayer());
 		final var gameMode = state.getGameMode();
 		event.getLambdas().add(player -> {
 			player.setGameMode(gameMode);
