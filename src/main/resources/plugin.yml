@@ -59,6 +59,10 @@ commands:
     description: "Toggles debugging messages on or off."
     permission: "sessionapi.debug"
 
+  session-selftest:
+    description: "Checks if SessionAPI is working correctly."
+    permission: "sessionapi.debug"
+
 
 permissions:
   # Board editor permissions

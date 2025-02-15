@@ -9,6 +9,7 @@ package pl.szelagi.command;
 
 import pl.szelagi.SessionAPI;
 import pl.szelagi.command.debug.DebugSessionCommand;
+import pl.szelagi.command.debug.SelfTestCommand;
 import pl.szelagi.command.debug.TestSessionCommand;
 import pl.szelagi.command.editor.EditBoardCommand;
 import pl.szelagi.command.editor.ExitBoardCommand;
@@ -102,5 +103,10 @@ public class Command {
 		var sessionDebugResolver = new DebugSessionCommand();
 		sessionDebug.setExecutor(sessionDebugResolver);
 
+		// session-selftest
+		var selfTest = sapi.getCommand("session-selftest");
+		assert selfTest != null;
+		var selfTestResolver = new SelfTestCommand();
+		selfTest.setExecutor(selfTestResolver);
 	}
 }
