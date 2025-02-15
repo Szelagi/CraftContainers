@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.event.BaseEvent;
+import pl.szelagi.event.SAPIEvent;
 import pl.szelagi.process.exception.MultiDestroyException;
 import pl.szelagi.util.ReverseStream;
 
@@ -36,7 +36,7 @@ public class MainProcess extends Process {
 		remoteProcesses.forEach(RemoteProcess::destroy);
 	}
 
-	public void invokeAllListeners(BaseEvent event) {
+	public void invokeAllListeners(SAPIEvent event) {
 		var remoteProcess = new ArrayList<>(getRemoteProcesses());
 		remoteProcess.stream()
 		             .map(RemoteProcess::getListeners)
@@ -46,7 +46,7 @@ public class MainProcess extends Process {
 		             });
 	}
 
-	public void invokeReverseAllListeners(BaseEvent event) {
+	public void invokeReverseAllListeners(SAPIEvent event) {
 		var remoteProcess = new ArrayList<>(getRemoteProcesses());
 		ReverseStream
 				.reverse(remoteProcess.stream())

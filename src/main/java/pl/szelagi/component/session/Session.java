@@ -7,7 +7,6 @@
 
 package pl.szelagi.component.session;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,10 +33,10 @@ import pl.szelagi.component.session.exception.player.initialize.RejectedPlayerEx
 import pl.szelagi.component.session.exception.player.uninitialize.PlayerNoInThisSession;
 import pl.szelagi.component.session.exception.player.uninitialize.PlayerQuitException;
 import pl.szelagi.event.component.ComponentConstructorEvent;
-import pl.szelagi.event.player.canchange.PlayerCanJoinEvent;
-import pl.szelagi.event.player.canchange.PlayerCanQuitEvent;
-import pl.szelagi.event.player.canchange.type.JoinType;
-import pl.szelagi.event.player.canchange.type.QuitType;
+import pl.szelagi.event.player.requestChange.PlayerJoinRequestEvent;
+import pl.szelagi.event.player.requestChange.PlayerQuitRequestEvent;
+import pl.szelagi.event.player.requestChange.type.JoinType;
+import pl.szelagi.event.player.requestChange.type.QuitType;
 import pl.szelagi.event.player.initialize.InvokeType;
 import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
 import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
@@ -113,7 +112,7 @@ public abstract class Session extends BaseComponent {
 		PlayerIsNotAliveException.check(player);
 		PlayerInSessionException.check(player);
 		Debug.send(this, "try add player");
-		var canJoinEvent = new PlayerCanJoinEvent(player, getPlayers(), JoinType.PLUGIN);
+		var canJoinEvent = new PlayerJoinRequestEvent(player, getPlayers(), JoinType.PLUGIN);
 		getProcess().invokeAllListeners(canJoinEvent);
 		if (canJoinEvent.isCanceled()) {
 			assert canJoinEvent.getCancelCause() != null;
@@ -133,7 +132,7 @@ public abstract class Session extends BaseComponent {
 	public final void removePlayer(Player player) throws PlayerQuitException {
 		PlayerNoInThisSession.check(this, player);
 		Debug.send(this, "try remove player");
-		var canPlayerQuit = new PlayerCanQuitEvent(player, getPlayers(), QuitType.PLUGIN_FORCE);
+		var canPlayerQuit = new PlayerQuitRequestEvent(player, getPlayers(), QuitType.PLUGIN_FORCE);
 		getProcess().invokeAllListeners(canPlayerQuit);
 		if (canPlayerQuit.isCanceled()) {
 			assert canPlayerQuit.getCancelCause() != null;

@@ -63,7 +63,6 @@ public final class SessionAPI extends JavaPlugin {
 
 		SessionWorldManager.initialize(this);
 		Command.registerCommands();
-
 	}
 
 	private void createConfig() {

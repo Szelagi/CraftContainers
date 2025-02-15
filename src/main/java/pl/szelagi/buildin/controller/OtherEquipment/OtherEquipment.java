@@ -13,7 +13,7 @@ import pl.szelagi.component.constructor.PlayerDestructorLambda;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
 import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
-import pl.szelagi.event.player.recovery.PlayerRecoveryEvent;
+import pl.szelagi.event.player.recovery.PlayerStateRecoveryEvent;
 import pl.szelagi.state.PlayerContainer;
 
 public class OtherEquipment extends Controller {
@@ -61,7 +61,7 @@ public class OtherEquipment extends Controller {
 	}
 
 	@Override
-	public void playerDestructorRecovery(PlayerRecoveryEvent event) {
+	public void playerDestructorRecovery(PlayerStateRecoveryEvent event) {
 		super.playerDestructorRecovery(event);
 		var lambda = getPlayerDestructor(event.getForPlayer());
 		event.getLambdas().add(lambda);

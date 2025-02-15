@@ -11,12 +11,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.BaseComponent;
-import pl.szelagi.event.BaseEvent;
+import pl.szelagi.event.SAPIEvent;
 
 import java.util.Collection;
 import java.util.List;
 
-public abstract class ComponentChangeEvent extends BaseEvent {
+public abstract class ComponentChangeEvent extends SAPIEvent {
 	private final @NotNull BaseComponent component;
 	private final @Nullable BaseComponent parentComponent;
 	private final @NotNull List<Player> currentPlayers;

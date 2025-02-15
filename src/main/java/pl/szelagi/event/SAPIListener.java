@@ -5,11 +5,8 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.event.player.canchange.listener;
+package pl.szelagi.event;
 
-import pl.szelagi.event.EventListener;
-import pl.szelagi.event.player.canchange.PlayerCanQuitEvent;
+import pl.szelagi.component.ISessionComponent;
 
-public interface PlayerCanQuitListener extends EventListener {
-	void run(PlayerCanQuitEvent event);
-}
+public interface SAPIListener extends ISessionComponent {}

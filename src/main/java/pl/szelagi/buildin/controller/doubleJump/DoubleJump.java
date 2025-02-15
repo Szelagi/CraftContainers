@@ -17,7 +17,7 @@ import pl.szelagi.component.controller.Controller;
 import pl.szelagi.event.component.ComponentConstructorEvent;
 import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
 import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
-import pl.szelagi.event.player.recovery.PlayerRecoveryEvent;
+import pl.szelagi.event.player.recovery.PlayerStateRecoveryEvent;
 import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.state.PlayerContainer;
@@ -55,7 +55,7 @@ public class DoubleJump extends Controller {
 	}
 
 	@Override
-	public void playerDestructorRecovery(PlayerRecoveryEvent event) {
+	public void playerDestructorRecovery(PlayerStateRecoveryEvent event) {
 		super.playerDestructorRecovery(event);
 		var forPlayer = event.getForPlayer();
 		var oldFlyState = playerContainer

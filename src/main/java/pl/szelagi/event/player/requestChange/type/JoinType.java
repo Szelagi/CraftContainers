@@ -5,15 +5,15 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.event.player.canchange.type;
+package pl.szelagi.event.player.requestChange.type;
 
 import pl.szelagi.cancelable.CanCancelable;
 
-public enum QuitType implements CanCancelable {
-	PLUGIN(true), PLUGIN_FORCE(false), DISCONNECT(false), SESSION_STOP(false);
+public enum JoinType implements CanCancelable {
+	PLUGIN(true), PLUGIN_FORCE(false);
 	private final boolean isCancelable;
 
-	QuitType(boolean isCancelable) {
+	JoinType(boolean isCancelable) {
 		this.isCancelable = isCancelable;
 	}
 

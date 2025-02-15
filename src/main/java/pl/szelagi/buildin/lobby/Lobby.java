@@ -17,7 +17,7 @@ import pl.szelagi.cancelable.CancelCause;
 import pl.szelagi.component.ISessionComponent;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.event.component.ComponentConstructorEvent;
-import pl.szelagi.event.player.canchange.PlayerCanJoinEvent;
+import pl.szelagi.event.player.requestChange.PlayerJoinRequestEvent;
 import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
 import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
 import pl.szelagi.util.event.Event;
@@ -66,7 +66,7 @@ public class Lobby extends Controller {
 	}
 
 	@Override
-	public void playerCanJoin(PlayerCanJoinEvent event) {
+	public void playerCanJoin(PlayerJoinRequestEvent event) {
 		super.playerCanJoin(event);
 		if (maxSlots > event.getCurrentPlayers()
 		                    .size())

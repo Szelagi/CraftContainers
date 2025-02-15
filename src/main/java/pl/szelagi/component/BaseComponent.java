@@ -20,14 +20,14 @@ import pl.szelagi.component.baseexception.multi.MultiStopException;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.event.EventListener;
+import pl.szelagi.event.SAPIListener;
 import pl.szelagi.event.component.ComponentConstructorEvent;
 import pl.szelagi.event.component.ComponentDestructorEvent;
-import pl.szelagi.event.player.canchange.PlayerCanJoinEvent;
+import pl.szelagi.event.player.requestChange.PlayerJoinRequestEvent;
 import pl.szelagi.event.player.initialize.InvokeType;
 import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
 import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
-import pl.szelagi.event.player.recovery.PlayerRecoveryEvent;
+import pl.szelagi.event.player.recovery.PlayerStateRecoveryEvent;
 import pl.szelagi.process.RemoteProcess;
 import pl.szelagi.util.Debug;
 import pl.szelagi.util.IncrementalGenerator;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 //    private void systemPlayerConstructor(Player player, InitializeType type)
 //    private void systemPlayerDestructor(Player player, UninitializedType type)
 
-public abstract class BaseComponent implements ISessionComponent, EventListener {
+public abstract class BaseComponent implements ISessionComponent, SAPIListener {
 	private static final IncrementalGenerator incrementalGenerator = new IncrementalGenerator();
 	private final UUID uuid = UUID.randomUUID();
 	private final long id = incrementalGenerator.next();
@@ -181,13 +181,13 @@ public abstract class BaseComponent implements ISessionComponent, EventListener 
 	}
 
 	@MustBeInvokedByOverriders
-	public void playerCanJoin(PlayerCanJoinEvent event) {}
+	public void playerCanJoin(PlayerJoinRequestEvent event) {}
 
 	@MustBeInvokedByOverriders
 	public void playerCanQuit(PlayerQuitEvent event) {}
 
 	@MustBeInvokedByOverriders
-	public void playerDestructorRecovery(PlayerRecoveryEvent event) {}
+	public void playerDestructorRecovery(PlayerStateRecoveryEvent event) {}
 
 	public abstract @Nullable RemoteProcess getParentProcess();
 

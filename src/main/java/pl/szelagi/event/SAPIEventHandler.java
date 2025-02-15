@@ -7,6 +7,12 @@
 
 package pl.szelagi.event;
 
-import pl.szelagi.component.ISessionComponent;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface EventListener extends ISessionComponent {}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SAPIEventHandler {
+}

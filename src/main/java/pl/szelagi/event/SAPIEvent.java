@@ -13,14 +13,14 @@ import pl.szelagi.util.ReflectionRecursive;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-public abstract class BaseEvent {
+public abstract class SAPIEvent {
 	private final UUID uuid = UUID.randomUUID();
 
 	public UUID getUuid() {
 		return uuid;
 	}
 
-	public boolean call(EventListener listener) {
+	public boolean call(SAPIListener listener) {
 		if (listener.status() != ComponentStatus.RUNNING)
 			return false;
 		try {

@@ -16,8 +16,8 @@ import pl.szelagi.component.board.Board;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.component.session.cause.ExceptionCause;
-import pl.szelagi.event.BaseEvent;
-import pl.szelagi.event.EventListener;
+import pl.szelagi.event.SAPIEvent;
+import pl.szelagi.event.SAPIListener;
 import pl.szelagi.process.exception.MultiDestroyException;
 import pl.szelagi.process.exception.MultiRegisterException;
 import pl.szelagi.process.exception.NotFoundUnregisterException;
@@ -31,7 +31,7 @@ public class RemoteProcess extends Process implements IControlProcess {
 	private final @NotNull MainProcess parentMainProcess;
 	private final @Nullable RemoteProcess parentRemoteProcess;
 	private final ArrayList<ProcessTask> tasks = new ArrayList<>();
-	private final ArrayList<EventListener> listeners = new ArrayList<>();
+	private final ArrayList<SAPIListener> listeners = new ArrayList<>();
 	private final @Nullable BaseComponent component;
 	private final @Nullable ComponentType type;
 	private final boolean hasComponent;
@@ -156,7 +156,7 @@ public class RemoteProcess extends Process implements IControlProcess {
 	}
 
 	@Override
-	public List<EventListener> getListeners() {
+	public List<SAPIListener> getListeners() {
 		return listeners;
 	}
 
@@ -186,31 +186,31 @@ public class RemoteProcess extends Process implements IControlProcess {
 	}
 
 	@Override
-	public void registerListener(EventListener listener) throws MultiRegisterException {
+	public void registerListener(SAPIListener listener) throws MultiRegisterException {
 		if (listeners.contains(listener))
 			throw new MultiRegisterException("");
 		listeners.add(listener);
 	}
 
 	@Override
-	public void unregisterListener(EventListener listener) throws NotFoundUnregisterException {
+	public void unregisterListener(SAPIListener listener) throws NotFoundUnregisterException {
 		var status = listeners.remove(listener);
 		if (!status)
 			throw new NotFoundUnregisterException("");
 	}
 
-	public void invokeSelfListeners(BaseEvent event) {
+	public void invokeSelfListeners(SAPIEvent event) {
 		getListeners().forEach(event::call);
 	}
 
-	public void invokeReverseSelfListeners(BaseEvent event) {
+	public void invokeReverseSelfListeners(SAPIEvent event) {
 		ReverseStream
 				.reverse(getListeners().stream())
 				.forEach(event::call);
 	}
 
 	@Override
-	public void invokeAllListeners(BaseEvent event) {
+	public void invokeAllListeners(SAPIEvent event) {
 		// main process
 		getParentMainProcess().invokeAllListeners(event);
 	}

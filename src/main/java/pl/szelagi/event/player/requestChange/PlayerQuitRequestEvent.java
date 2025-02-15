@@ -5,18 +5,18 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.event.player.canchange;
+package pl.szelagi.event.player.requestChange;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.event.player.canchange.type.QuitType;
+import pl.szelagi.event.player.requestChange.type.QuitType;
 
 import java.util.List;
 
-public class PlayerCanQuitEvent extends PlayerCanChangeEvent {
+public class PlayerQuitRequestEvent extends PlayerChangeRequestEvent {
 	private final QuitType type;
 
-	public PlayerCanQuitEvent(@NotNull Player player, @NotNull List<Player> currentPlayers, QuitType type) {
+	public PlayerQuitRequestEvent(@NotNull Player player, @NotNull List<Player> currentPlayers, QuitType type) {
 		super(player, currentPlayers, type);
 		this.type = type;
 	}

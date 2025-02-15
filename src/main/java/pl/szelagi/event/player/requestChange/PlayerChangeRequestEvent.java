@@ -5,7 +5,7 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.event.player.canchange;
+package pl.szelagi.event.player.requestChange;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -14,18 +14,18 @@ import pl.szelagi.cancelable.CanCancelable;
 import pl.szelagi.cancelable.CancelCause;
 import pl.szelagi.cancelable.CancelNotCancelableException;
 import pl.szelagi.cancelable.Cancelable;
-import pl.szelagi.event.BaseEvent;
+import pl.szelagi.event.SAPIEvent;
 
 import java.util.List;
 
-public abstract class PlayerCanChangeEvent extends BaseEvent implements Cancelable {
+public abstract class PlayerChangeRequestEvent extends SAPIEvent implements Cancelable {
 	private final @NotNull Player player;
 	private final @NotNull List<Player> currentPlayers;
 	private final @NotNull CanCancelable cancelable;
 	private @Nullable CancelCause cancelCause;
 	private boolean isCanceled;
 
-	public PlayerCanChangeEvent(@NotNull Player player, @NotNull List<Player> currentPlayers, @NotNull CanCancelable cancelable) {
+	public PlayerChangeRequestEvent(@NotNull Player player, @NotNull List<Player> currentPlayers, @NotNull CanCancelable cancelable) {
 		this.player = player;
 		this.currentPlayers = currentPlayers;
 		this.cancelable = cancelable;

@@ -8,8 +8,8 @@
 package pl.szelagi.process;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.event.BaseEvent;
-import pl.szelagi.event.EventListener;
+import pl.szelagi.event.SAPIEvent;
+import pl.szelagi.event.SAPIListener;
 import pl.szelagi.process.exception.MultiRegisterException;
 import pl.szelagi.process.exception.NotFoundUnregisterException;
 import pl.szelagi.util.timespigot.Time;
@@ -17,16 +17,16 @@ import pl.szelagi.util.timespigot.Time;
 import java.util.List;
 
 public interface IControlProcess {
-	void registerListener(EventListener listener) throws MultiRegisterException;
+	void registerListener(SAPIListener listener) throws MultiRegisterException;
 
-	void unregisterListener(EventListener listener) throws NotFoundUnregisterException;
+	void unregisterListener(SAPIListener listener) throws NotFoundUnregisterException;
 
 	/**
 	 * invoke listeners only in process
 	 */
-	void invokeSelfListeners(BaseEvent event);
+	void invokeSelfListeners(SAPIEvent event);
 
-	void invokeAllListeners(BaseEvent event);
+	void invokeAllListeners(SAPIEvent event);
 
 	@NotNull ProcessTask runControlledTask(@NotNull Runnable runnable);
 
@@ -44,5 +44,5 @@ public interface IControlProcess {
 
 	List<ProcessTask> getTasks();
 
-	List<EventListener> getListeners();
+	List<SAPIListener> getListeners();
 }

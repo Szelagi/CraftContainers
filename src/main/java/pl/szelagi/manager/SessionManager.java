@@ -34,7 +34,7 @@ public class SessionManager {
 		PLAYER_SESSION_HASH_MAP.remove(p);
 	}
 
-	public static boolean isDuringDungeon(Player p) {
+	public static boolean isInSession(Player p) {
 		return PLAYER_SESSION_HASH_MAP.containsKey(p);
 	}
 
@@ -48,9 +48,7 @@ public class SessionManager {
 		var res = PLAYER_SESSION_HASH_MAP.get(p);
 		if (res == null)
 			return null;
-		if (!c.compare(res))
-			return null;
-		return res;
+		return c.compare(res) ? res : null;
 	}
 
 	@Nullable

@@ -9,7 +9,7 @@ package pl.szelagi.recovery;
 
 import org.bukkit.entity.Player;
 import pl.szelagi.component.constructor.PlayerDestructorLambda;
-import pl.szelagi.event.player.recovery.PlayerRecoveryEvent;
+import pl.szelagi.event.player.recovery.PlayerStateRecoveryEvent;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.recovery.exception.RecoveryException;
 
@@ -26,7 +26,7 @@ public final class PlayerRecovery implements Serializable {
 		if (session == null)
 			throw new RecoveryException("player is not in session");
 
-		var event = new PlayerRecoveryEvent(player);
+		var event = new PlayerStateRecoveryEvent(player);
 		session.getMainProcess()
 		       .invokeReverseAllListeners(event);
 
