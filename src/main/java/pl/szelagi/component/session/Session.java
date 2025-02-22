@@ -7,206 +7,170 @@
 
 package pl.szelagi.component.session;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import pl.szelagi.buildin.controller.HideOtherPlayers;
-import pl.szelagi.buildin.system.loading.LoadingBoard;
-import pl.szelagi.buildin.system.recovery.RecoveryPlayerController;
-import pl.szelagi.buildin.system.sessionsafecontrolplayers.SessionSafeControlPlayers;
-import pl.szelagi.buildin.system.sessionwatchdog.SessionWatchDogController;
-import pl.szelagi.component.BaseComponent;
-import pl.szelagi.component.ComponentStatus;
+import pl.szelagi.buildin.system.LoadingBoard;
+import pl.szelagi.buildin.system.SessionWatchDog;
+import pl.szelagi.buildin.system.sessionSavePlayers.SessionSavePlayers;
+import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.baseComponent.StartException;
+import pl.szelagi.component.baseComponent.StopException;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.InvokeType;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
+import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
 import pl.szelagi.component.board.Board;
-import pl.szelagi.component.session.cause.StopCause;
-import pl.szelagi.component.session.event.SessionStartEvent;
-import pl.szelagi.component.session.event.SessionStopEvent;
-import pl.szelagi.component.session.exception.SessionStartException;
-import pl.szelagi.component.session.exception.SessionStopException;
-import pl.szelagi.component.session.exception.player.initialize.PlayerInSessionException;
-import pl.szelagi.component.session.exception.player.initialize.PlayerIsNotAliveException;
-import pl.szelagi.component.session.exception.player.initialize.PlayerJoinException;
-import pl.szelagi.component.session.exception.player.initialize.RejectedPlayerException;
-import pl.szelagi.component.session.exception.player.uninitialize.PlayerNoInThisSession;
-import pl.szelagi.component.session.exception.player.uninitialize.PlayerQuitException;
-import pl.szelagi.event.component.ComponentConstructorEvent;
-import pl.szelagi.event.player.requestChange.PlayerJoinRequestEvent;
-import pl.szelagi.event.player.requestChange.PlayerQuitRequestEvent;
-import pl.szelagi.event.player.requestChange.type.JoinType;
-import pl.szelagi.event.player.requestChange.type.QuitType;
-import pl.szelagi.event.player.initialize.InvokeType;
-import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
-import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
+import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
+import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
 import pl.szelagi.manager.SessionManager;
-import pl.szelagi.process.MainProcess;
-import pl.szelagi.process.RemoteProcess;
-import pl.szelagi.util.Debug;
-import pl.szelagi.util.timespigot.Time;
+import pl.szelagi.recovery.Recovery;
+import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Session extends BaseComponent {
-	protected final ArrayList<Player> players = new ArrayList<>();
-	private final MainProcess mainProcess;
-	private RemoteProcess remoteProcess;
-	private final JavaPlugin plugin;
-	private Board currentBoard;
-	private RecoveryPlayerController recoveryPlayerController;
+    private final Recovery recovery;
+    private final ArrayList<Player> players = new ArrayList<>();
+    private Board currentBoard;
 
-	public Session(JavaPlugin plugin) {
-		this.plugin = plugin;
-		this.mainProcess = new MainProcess(this);
-	}
+    public Session(JavaPlugin plugin) {
+        super(plugin);
+        this.recovery = new Recovery(this);
+    }
 
-	@MustBeInvokedByOverriders
-	public void start() throws SessionStartException, PlayerJoinException {
-		validateStartable();
-		validateNotStartedBefore();
-		setStatus(ComponentStatus.RUNNING);
+    @Override
+    public final void start() throws StartException {
+        super.start();
 
-		Debug.send(this, "start");
+        currentBoard = new LoadingBoard(this);
+        currentBoard.start(false, null);
 
-		remoteProcess = new RemoteProcess(mainProcess);
-		remoteProcess.registerListener(this);
+        setBoard(defaultBoard());
 
-		invokeSelf();
+        var event = new SessionStartEvent(this);
+        callBukkit(event);
+    }
 
-		var event = new SessionStartEvent(this);
-		callBukkitEvent(event);
+    @Override
+    public final void stop() throws StopException {
+        // Usuwanie wszystkich graczy przed rozpoczęciem wyłączanie sesji.
+        // Inaczej metoda super.stop(), wywoła destruktory graczy InvokeType SELF.
+        var playersCopy = new ArrayList<>(players);
+        for (var player : playersCopy) {
+            removePlayer(player);
+        }
 
-		currentBoard = new LoadingBoard(this);
-		currentBoard.syncStart();
+        // mapa jest rodzicem sesji, więc zostanie też wyłączona
+        super.stop();
 
-		setBoard(getDefaultStartBoard());
-	}
+        var event = new SessionStopEvent(this);
+        callBukkit(event);
+    }
 
-	@MustBeInvokedByOverriders
-	public void stop(StopCause cause) throws SessionStopException {
-		validateDisableable();
-		setStatus(ComponentStatus.SHUTDOWN);
-		Debug.send(this, "stop");
 
-		var playersArrayCopy = new ArrayList<>(players);
-		playersArrayCopy.forEach(this::removePlayer);
+    @MustBeInvokedByOverriders
+    public final void addPlayer(Player player) throws PlayerJoinException {
+        // Sprawdzanie, czy gracz jest żywy
+        if (player.getHealth() <= 0) {
+            throw new PlayerJoinException("Player " + player.getName() + " is not alive");
+        }
+        // Sprawdzenie, czy gracz nie znajduje się w innej sesji
+        if (SessionManager.inSession(player)) {
+            throw new PlayerJoinException("Player " + player.getName() + " is already in session");
+        }
 
-		getCurrentBoard().stop();
+        var joinRequestEvent = new PlayerJoinRequest(player, players);
+        callOldToYoung(joinRequestEvent);
 
-		invokeSelfPlayerDestructors();
-		invokeSelfComponentDestructor();
+        if (joinRequestEvent.isCanceled()) {
+            var cancelCause = joinRequestEvent.getCancelCause();
+            // Jeżeli isCanceled to cancelCause musi być zdefiniowane
+            assert cancelCause != null;
+            throw new PlayerJoinException("Player " + player.getName() + " join canceled! Reason: " + cancelCause.message());
+        }
 
-		//stop and destroy all tasks
-		remoteProcess.destroy();
-		mainProcess.destroy();
+        // Dodaj relację gracza z sesją
+        SessionManager.addRelation(player, this);
+        // Dodaj gracza do listy graczy sesji
+        players.add(player);
 
-		var event = new SessionStopEvent(this);
-		Bukkit.getPluginManager()
-		      .callEvent(event);
-	}
+        // wywołaj event o dołączeniu gracza
+        var otherPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
+        var playerConstructorEvent = new PlayerConstructor(player, otherPlayers, players, InvokeType.PLAYER_CHANGE);
+        callOldToYoung(playerConstructorEvent);
 
-	@MustBeInvokedByOverriders
-	public final void addPlayer(Player player) throws PlayerJoinException {
-		PlayerIsNotAliveException.check(player);
-		PlayerInSessionException.check(player);
-		Debug.send(this, "try add player");
-		var canJoinEvent = new PlayerJoinRequestEvent(player, getPlayers(), JoinType.PLUGIN);
-		getProcess().invokeAllListeners(canJoinEvent);
-		if (canJoinEvent.isCanceled()) {
-			assert canJoinEvent.getCancelCause() != null;
-			throw new RejectedPlayerException(canJoinEvent.getCancelCause());
-		}
-		var otherPlayers = new ArrayList<>(getPlayers());
+        // zarejestruj gracza w recovery (dla każdego komponentu)
+        var recovery = session().recovery();
+        var recoveryEvent = new PlayerRecovery(player);
+        callOldToYoung(recoveryEvent);
+        recovery.updatePlayer(recoveryEvent);
+    }
 
-		SessionManager.addRelation(player, this.getSession());
-		players.add(player);
+    @MustBeInvokedByOverriders
+    public final void removePlayer(Player player) throws PlayerQuitException {
+        // Sprawdzenie, czy gracz jest w sesji, z której jest usuwany.
+        if (!players.contains(player)) {
+            throw new PlayerQuitException("Player " + player.getName() + " is not in this session");
+        }
 
-		Debug.send(this, "add player");
-		var joinEvent = new PlayerConstructorEvent(player, otherPlayers, getPlayers(), InvokeType.CHANGE);
-		getProcess().invokeAllListeners(joinEvent);
-	}
+        // wyrejestruj gracza z recovery
+        recovery().destryPlayer(player);
 
-	@MustBeInvokedByOverriders
-	public final void removePlayer(Player player) throws PlayerQuitException {
-		PlayerNoInThisSession.check(this, player);
-		Debug.send(this, "try remove player");
-		var canPlayerQuit = new PlayerQuitRequestEvent(player, getPlayers(), QuitType.PLUGIN_FORCE);
-		getProcess().invokeAllListeners(canPlayerQuit);
-		if (canPlayerQuit.isCanceled()) {
-			assert canPlayerQuit.getCancelCause() != null;
-			throw new PlayerQuitException(canPlayerQuit
-					                              .getCancelCause()
-					                              .message());
-		}
-		var otherPlayers = new ArrayList<>(getPlayers());
+        // wykonaj event o opuszczeniu gracza
+        var otherPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
+        var event = new PlayerDestructor(player, otherPlayers, players, InvokeType.PLAYER_CHANGE);
+        callYoungToOld(event);
 
-		SessionManager.removeRelation(player);
-		players.remove(player);
+        // usuń relację o graczu w managerze
+        SessionManager.removeRelation(player);
+        // usuń gracza z listy graczy w sesji
+        players.remove(player);
+    }
 
-		Debug.send(this, "remove player");
-		var quitEvent = new PlayerDestructorEvent(player, otherPlayers, getPlayers(), InvokeType.CHANGE);
-		getProcess().invokeAllListeners(quitEvent);
-	}
+    @MustBeInvokedByOverriders
+    public final void setBoard(Board board) {
+        board.start(true, () -> {
+            currentBoard.stop();
+            currentBoard = board;
+        });
+    }
 
-	@MustBeInvokedByOverriders
-	public final void setBoard(Board board) {
-		//if (board.isUsed()) throw new BoardIsUsedException(); add to #Board.start()
-		board.start(true, () -> {
-			currentBoard.stop();
-			currentBoard = board;
-		});
-	}
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        new SessionWatchDog(this).start();
+        new SessionSavePlayers(this).start();
+        new HideOtherPlayers(this).start();
+    }
 
-	public final @NotNull List<Player> getPlayers() {
-		return players;
-	}
+    protected abstract @NotNull Board defaultBoard();
 
-	public final int getPlayerCount() {
-		return players.size();
-	}
+    @Override
+    public final @NotNull List<Player> players() {
+        return players;
+    }
 
-	public final RemoteProcess getProcess() {
-		return remoteProcess;
-	}
+    @Override
+    public final @NotNull Session session() {
+        return this;
+    }
 
-	public final @NotNull MainProcess getMainProcess() {
-		return mainProcess;
-	}
+    @Override
+    public final @NotNull Board board() {
+        return currentBoard;
+    }
 
-	public final Board getCurrentBoard() {
-		return currentBoard;
-	}
+    @Override
+    public String rootDirectoryName() {
+        return "session/" + name();
+    }
 
-	@Override
-	public final @NotNull JavaPlugin getPlugin() {
-		return plugin;
-	}
-
-	@Override
-	public @Nullable RemoteProcess getParentProcess() {
-		return null;
-	}
-
-	@Override
-	public final @NotNull Session getSession() {
-		return this;
-	}
-
-	public final void saveRecovery() {
-		recoveryPlayerController.save();
-	}
-
-	private void startSessionSystemControllers(ComponentConstructorEvent event) {
-		new SessionWatchDogController(this).start();
-		new SessionSafeControlPlayers(this).start();
-		new HideOtherPlayers(this).start();
-		recoveryPlayerController = new RecoveryPlayerController(this);
-		recoveryPlayerController.start();
-		// run system tasks
-		getProcess().runControlledTaskTimer(mainProcess::optimiseTasks, Time.Seconds(60), Time.Seconds((60)));
-	}
-
-	protected abstract @NotNull Board getDefaultStartBoard();
+    public final Recovery recovery() {
+        return recovery;
+    }
 }

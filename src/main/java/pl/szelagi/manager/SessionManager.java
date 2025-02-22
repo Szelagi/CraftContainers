@@ -10,70 +10,81 @@ package pl.szelagi.manager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.szelagi.SessionAPI;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.component.session.event.SessionStartEvent;
-import pl.szelagi.component.session.event.SessionStopEvent;
-import pl.szelagi.manager.compare.CompareSession;
+import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
+import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class SessionManager {
-	public static final ArrayList<Session> SESSIONS = new ArrayList<>();
-	private static final HashMap<Player, Session> PLAYER_SESSION_HASH_MAP = new HashMap<>();
+    public static final ArrayList<Session> SESSIONS = new ArrayList<>();
+    private static final HashMap<Player, Session> PLAYER_SESSION_HASH_MAP = new HashMap<>();
 
-	public static void addRelation(Player p, Session d) {
-		PLAYER_SESSION_HASH_MAP.put(p, d);
-	}
+    public static void addRelation(Player p, Session d) {
+        PLAYER_SESSION_HASH_MAP.put(p, d);
+    }
 
-	public static void removeRelation(Player p) {
-		PLAYER_SESSION_HASH_MAP.remove(p);
-	}
+    public static void removeRelation(Player p) {
+        PLAYER_SESSION_HASH_MAP.remove(p);
+    }
 
-	public static boolean isInSession(Player p) {
-		return PLAYER_SESSION_HASH_MAP.containsKey(p);
-	}
+    public static boolean inSession(Player p) {
+        return PLAYER_SESSION_HASH_MAP.containsKey(p);
+    }
 
-	@Nullable
-	public static Session getSession(Player p) {
-		return PLAYER_SESSION_HASH_MAP.get(p);
-	}
+    @Nullable
+    public static Session session(Player p) {
+        return PLAYER_SESSION_HASH_MAP.get(p);
+    }
 
-	@Nullable
-	public static Session getSession(Player p, CompareSession c) {
-		var res = PLAYER_SESSION_HASH_MAP.get(p);
-		if (res == null)
-			return null;
-		return c.compare(res) ? res : null;
-	}
+    @Nullable
+    public static <T extends Session> Session session(Player p, Class<T> classType) {
+        var session = session(p);
+        return classType.isInstance(session) ? classType.cast(session) : null;
+    }
 
-	@Nullable
-	public static Session getSession(Player p, Class<?> classType) {
-		return getSession(p, classType::isInstance);
-	}
+    @NotNull
+    public static List<Session> sessions() {
+        return SESSIONS;
+    }
 
-	@NotNull
-	public static List<Session> getSessions() {
-		return SESSIONS;
-	}
+    public static void initialize(JavaPlugin p) {
+        class ManagerListener implements Listener {
+            @EventHandler(ignoreCancelled = true)
+            public void onSessionStartEvent(SessionStartEvent event) {
+                SESSIONS.add(event.getSession());
+            }
 
-	public static void initialize(JavaPlugin p) {
-		class ManagerListener implements Listener {
-			@EventHandler(ignoreCancelled = true)
-			public void onSessionStartEvent(SessionStartEvent event) {
-				SESSIONS.add(event.getSession());
-			}
+            @EventHandler(ignoreCancelled = true)
+            public void onSessionStopEvent(SessionStopEvent event) {
+                SESSIONS.remove(event.getSession());
+            }
 
-			@EventHandler(ignoreCancelled = true)
-			public void onSessionStopEvent(SessionStopEvent event) {
-				SESSIONS.remove(event.getSession());
-			}
-		}
-		p.getServer().getPluginManager()
-		 .registerEvents(new ManagerListener(), p);
-	}
+            @EventHandler(ignoreCancelled = true)
+            public void onPlayerQuit(PlayerQuitEvent event) {
+                var player = event.getPlayer();
+                var session = session(player);
+                if (session == null) return;
+                session.removePlayer(player);
+            }
+
+            @EventHandler(ignoreCancelled = true)
+            public void onPluginDisable(PluginDisableEvent event) {
+                if(!SessionAPI.instance().equals(event.getPlugin())) return;
+                for (var session : sessions()) {
+                    session.stop();
+                }
+            }
+        }
+        p.getServer().getPluginManager()
+                .registerEvents(new ManagerListener(), p);
+    }
 }

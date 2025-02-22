@@ -11,6 +11,8 @@ import org.bukkit.Material;
 import pl.szelagi.Scheduler;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
+import pl.szelagi.spatial.ISpatial;
+import pl.szelagi.spatial.Spatial;
 
 public class STBoard extends Board {
     public STBoard(Session session) {
@@ -20,16 +22,20 @@ public class STBoard extends Board {
     @Override
     protected void generate() {
         Scheduler.runAndWait(() -> {
-            getBase().getBlock()
+            center().getBlock()
                     .setType(Material.BEDROCK);
         });
-        setSecureZone(getSpace());
+    }
+
+    @Override
+    public ISpatial defineSecureZone() {
+        return new Spatial(center(), center());
     }
 
     @Override
     protected void degenerate() {
         Scheduler.runAndWait(() -> {
-            getBase().getBlock()
+            center().getBlock()
                     .setType(Material.AIR);
         });
     }

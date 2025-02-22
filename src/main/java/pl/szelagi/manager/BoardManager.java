@@ -15,58 +15,56 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.board.Board;
-import pl.szelagi.component.board.event.BoardStartEvent;
-import pl.szelagi.component.board.event.BoardStopEvent;
+import pl.szelagi.component.board.bukkitEvent.BoardStartEvent;
+import pl.szelagi.component.board.bukkitEvent.BoardStopEvent;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.space.Space;
 
 import java.util.ArrayList;
 
 public class BoardManager {
-	private static final ArrayList<Board> runningBoards = new ArrayList<>();
-	private static JavaPlugin plugin;
+    private static final ArrayList<Board> runningBoards = new ArrayList<>();
+    private static JavaPlugin plugin;
 
-	public static void initialize(JavaPlugin p) {
-		plugin = p;
+    public static void initialize(JavaPlugin p) {
+        plugin = p;
 
-		class MyListener implements Listener {
-			@EventHandler(ignoreCancelled = true)
-			public void onBoardStart(BoardStartEvent event) {
-				if (!runningBoards.contains(event.getBoard())) {
-					runningBoards.add(event.getBoard());
-				}
-			}
+        class MyListener implements Listener {
+            @EventHandler(ignoreCancelled = true)
+            public void onBoardStart(BoardStartEvent event) {
+                if (!runningBoards.contains(event.getBoard())) {
+                    runningBoards.add(event.getBoard());
+                }
+            }
 
-			@EventHandler(ignoreCancelled = true)
-			public void onBoardStop(BoardStopEvent event) {
-				runningBoards.remove(event.getBoard());
-			}
-		}
+            @EventHandler(ignoreCancelled = true)
+            public void onBoardStop(BoardStopEvent event) {
+                runningBoards.remove(event.getBoard());
+            }
+        }
 
-		plugin.getServer().getPluginManager()
-		      .registerEvents(new MyListener(), plugin);
-	}
+        plugin.getServer().getPluginManager()
+                .registerEvents(new MyListener(), plugin);
+    }
 
-	@Nullable
-	public static Session getSession(Location location) {
-		Space space;
-		for (var board : runningBoards) {
-			space = board.getSpace();
-			if (space.isLocationIn(location))
-				return board.getSession();
-		}
-		return null;
-	}
+    public static @Nullable Session session(@Nullable Location location) {
+        if (location == null) {
+            return null;
+        }
+        for (var board : runningBoards) {
+            var space = board.space();
+            if (space.isLocationIn(location))
+                return board.session();
+        }
+        return null;
+    }
 
-	@Nullable
-	public static Session getSession(LivingEntity entity) {
-		return getSession(entity.getLocation());
-	}
+    public static @Nullable Session session(LivingEntity entity) {
+        return session(entity.getLocation());
+    }
 
-	@Nullable
-	public static Session getSession(@Nullable Block block) {
-		if (block == null)
-			return null;
-		return getSession(block.getLocation());
-	}
+    public static @Nullable Session session(@Nullable Block block) {
+        if (block == null)
+            return null;
+        return session(block.getLocation());
+    }
 }

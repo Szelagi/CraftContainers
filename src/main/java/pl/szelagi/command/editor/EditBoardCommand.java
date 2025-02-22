@@ -16,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.buildin.creator.Creator;
-import pl.szelagi.component.session.exception.SessionStartException;
+import pl.szelagi.component.baseComponent.StartException;
+import pl.szelagi.component.session.PlayerJoinException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class EditBoardCommand implements CommandExecutor, TabCompleter {
             creator.addPlayer(player);
             player.sendMessage(PREFIX + "§aBoard editor started successfully.");
         } catch (
-                SessionStartException e) {
+                StartException | PlayerJoinException e) {
             player.sendMessage(PREFIX + "§cError starting editor: §f" + e.getMessage());
         }
 

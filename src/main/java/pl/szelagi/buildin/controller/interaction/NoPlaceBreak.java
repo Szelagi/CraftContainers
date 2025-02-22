@@ -11,43 +11,37 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.manager.BoardManager;
-import pl.szelagi.manager.ControllerManager;
+import pl.szelagi.manager.listener.ListenerManager;
+import pl.szelagi.manager.listener.Listeners;
 
 public class NoPlaceBreak extends Controller {
-	public NoPlaceBreak(ISessionComponent sessionComponent) {
-		super(sessionComponent);
+	public NoPlaceBreak(BaseComponent baseComponent) {
+		super(baseComponent);
 	}
 
 	@Override
-	public @Nullable Listener getListener() {
-		return new MyListener();
+	public Listeners defineListeners() {
+		return super.defineListeners().add(MyListener.class);
 	}
 
 	private static class MyListener implements Listener {
 		@EventHandler(ignoreCancelled = true)
 		public void onBlockPlace(BlockPlaceEvent event) {
-			var session = BoardManager.getSession(event.getBlock());
-			if (session == null)
-				return;
-			var controller = ControllerManager.getFirstController(session, NoPlaceBreak.class);
-			if (controller == null)
-				return;
-			event.setCancelled(true);
+			var session = BoardManager.session(event.getBlock());
+			ListenerManager.first(session, getClass(), NoPlaceBreak.class, noPlaceBreak -> {
+				event.setCancelled(true);
+			});
 		}
 
 		@EventHandler(ignoreCancelled = true)
 		public void onBlockBreak(BlockBreakEvent event) {
-			var session = BoardManager.getSession(event.getBlock());
-			if (session == null)
-				return;
-			var controller = ControllerManager.getFirstController(session, NoPlaceBreak.class);
-			if (controller == null)
-				return;
-			event.setCancelled(true);
+			var session = BoardManager.session(event.getBlock());
+			ListenerManager.first(session, getClass(), NoPlaceBreak.class, noPlaceBreak -> {
+				event.setCancelled(true);
+			});
 		}
 	}
 }

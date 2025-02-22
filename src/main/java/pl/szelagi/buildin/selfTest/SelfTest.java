@@ -11,129 +11,107 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.event.SAPIEventHandler;
-import pl.szelagi.event.component.ComponentConstructorEvent;
-
-// Drzewo
-// tworzy drzewo zagnieżdzone na 2 poziomy
-// sprawdza poprawną kolejność wielo warstwowe
-// * czy kontollery w poprawnej kolejności się uruchomiły
-// * czy rzucenie eventem z rodzica spowoduje popraną kolejność
-// * czy rzuceniem eventem na sessje spowoduje poprawną kolejność
-// * czy rzeceniem eventem na dzieci rodzica spowoduje poprawną kolejność
-
-// sprawdza działanie playerConstructor
-// sprawdza działanie playerDestructor
-// sprawdza poprawną kolejność destruktorów drzewa
-// sprawdza czy drzewo się wyłączyło
-
-// sprawdza czy taski zostały zatrzymane
-// sprawdza czy taski zostały przerwane
-
-// Listener
-// Działanie listenera
-// Wiele klas z tym samym listenerem sprawdza czy nie ma duplikacji eventów
-// Wyłącza jedną klasę i sprawdza czy listner dzialą
-// wyłącza wszystkie klasy i sprawdza czy listener się wyłączył
 
 public class SelfTest extends Session {
     private final Player player;
+
     public SelfTest(JavaPlugin plugin, Player player) {
         super(plugin);
         this.player = player;
     }
 
     @Override
-    protected @NotNull Board getDefaultStartBoard() {
+    protected @NotNull Board defaultBoard() {
         return new STBoard(this);
     }
 
-    @SAPIEventHandler
-    public void init(ComponentConstructorEvent event) {
-        var exceptedConstructorMessage = String.join(" ", TreeRoot.CONS_EXPECTED_RESULT);
-        var exceptedDestructorMessage = String.join(" ", TreeRoot.DEST_EXPECTED_RESULT);
+    public void testInternalEvents() {
+        var exceptedConstructorRecursiveMessage = String.join(" ", TreeRoot.CONS_EXPECTED_RECURSIVE_RESULT);
+        var exceptedConstructorLayerMessage = String.join(" ", TreeRoot.CONS_EXCEPTED_LAYER_RESULT);
+        var exceptedDestructorLayerMessage = String.join(" ", TreeRoot.DEST_EXPECTED_LAYER_RESULT);
 
-        {
-            var treeResult1 = new TreeResult();
-            var treeRoot1 = new TreeRoot(this, treeResult1);
+        var result = new TreeResult();
+        var root = new TreeRoot(this, result);
 
-            getSession().addPlayer(player);
-            treeRoot1.start();
-            treeRoot1.stop();
+        addPlayer(player);
+        root.start();
+        root.stop();
+        removePlayer(player);
 
-            getSession().removePlayer(player);
+        var constructorMessage = String.join(" ", result.constructorMessage);
+        var destructorMessage = String.join(" ", result.destructorMessage);
+        var playerConstructorAfterSession = String.join(" ", result.playerConstructorMessage);
+        var playerDestructorAfterSession = String.join(" ", result.playerDestructorMessage);
 
-            var constructorMessage = String.join(" ",  treeResult1.constructorMessage);
-            var destructorMessage = String.join(" ", treeResult1.destructorMessage);
-            var playerConstructorAfterSession = String.join(" ", treeResult1.playerConstructorMessage);
-            var playerDestructorAfterSession = String.join(" ", treeResult1.playerDestructorMessage);
-
-            test(constructorMessage.equals(exceptedConstructorMessage), "Component constructor");
-
-            broadcast("");
+        test(constructorMessage.equals(exceptedConstructorRecursiveMessage), "Component constructor", () -> {
             broadcast("§c" + constructorMessage);
-            broadcast("§a" + exceptedConstructorMessage);
+            broadcast("§a" + exceptedConstructorRecursiveMessage);
             broadcast("");
+        });
 
-
-            test(destructorMessage.equals(exceptedDestructorMessage), "Component destructor");
-
-            broadcast("");
+        test(destructorMessage.equals(exceptedDestructorLayerMessage), "Component destructor", () -> {
             broadcast("§c" + destructorMessage);
-            broadcast("§a" + exceptedDestructorMessage);
+            broadcast("§a" + exceptedDestructorLayerMessage);
             broadcast("");
+        });
 
-            test(playerConstructorAfterSession.equals(exceptedConstructorMessage), "Player constructor (after session)");
-            test(playerDestructorAfterSession.equals(exceptedDestructorMessage), "Player destructor (after session)");
-
-
-        }
-
-        {
-            var treeResult2 = new TreeResult();
-            var treeRoot2 = new TreeRoot(this, treeResult2);
-
-            treeRoot2.start();
-            getSession().addPlayer(player);
-            getSession().removePlayer(player);
-            treeRoot2.stop();
-
-            var playerConstructorBeforeSession = String.join(" ", treeResult2.playerConstructorMessage);
-            var playerDestructorBeforeSession = String.join(" ", treeResult2.playerDestructorMessage);
-
-            test(playerConstructorBeforeSession.equals(exceptedConstructorMessage), "Player constructor (before session)");
-
+        test(playerConstructorAfterSession.equals(exceptedConstructorRecursiveMessage), "Player constructor (after session)", () -> {
+            broadcast("§c" + playerConstructorAfterSession);
+            broadcast("§a" + exceptedDestructorLayerMessage);
             broadcast("");
+        });
+
+        test(playerDestructorAfterSession.equals(exceptedDestructorLayerMessage), "Player destructor (after session)", () -> {
+            broadcast("§c" + playerDestructorAfterSession);
+            broadcast("§a" + exceptedDestructorLayerMessage);
+            broadcast("");
+        });
+
+        var result2 = new TreeResult();
+        var root2 = new TreeRoot(this, result2);
+
+        root2.start();
+        addPlayer(player);
+        removePlayer(player);
+        root2.stop();
+
+        var playerConstructorBeforeSession = String.join(" ", result2.playerConstructorMessage);
+        var playerDestructorBeforeSession = String.join(" ", result2.playerDestructorMessage);
+
+        test(playerConstructorBeforeSession.equals(exceptedConstructorLayerMessage), "Player constructor (before session)", () -> {
             broadcast("§c" + playerConstructorBeforeSession);
-            broadcast("§a" + exceptedConstructorMessage);
+            broadcast("§a" + exceptedConstructorLayerMessage);
             broadcast("");
+        });
 
-            test(playerDestructorBeforeSession.equals(exceptedDestructorMessage), "Player destructor (before session)");
-
-            broadcast("");
+        test(playerDestructorBeforeSession.equals(exceptedDestructorLayerMessage), "Player destructor (before session)", () -> {
             broadcast("§c" + playerDestructorBeforeSession);
-            broadcast("§a" + exceptedDestructorMessage);
+            broadcast("§a" + exceptedDestructorLayerMessage);
             broadcast("");
+        });
 
-        }
     }
 
-    private void test(boolean isSuccess, String message) {
+    private void test(boolean isSuccess, String message, @Nullable Runnable failAction) {
         if (isSuccess) {
             pass(message);
         } else {
             fail(message);
+            if (failAction != null)
+              failAction.run();
         }
     }
 
     private void pass(String message) {
-        broadcast("§2[P] §a" + message);
+        broadcast("§2[passed] §a" + message);
     }
 
     private void fail(String message) {
-        broadcast("§4[F] §c" + message);
+        broadcast("§4[failed] §c" + message);
     }
 
     public void broadcast(String message) {

@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.command.CommandHelper;
-import pl.szelagi.component.session.cause.NeutralCause;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class StopSessionCommand implements CommandExecutor, TabCompleter {
         var session = CommandHelper.selectSession(commandSender, strings[0]);
         if (session == null) return false;
 
-        session.stop(new NeutralCause("FORCE STOP"));
+        session.stop();
         player.sendMessage(PREFIX + "§aSession stopped successfully: §f" + strings[0]);
         return true;
 

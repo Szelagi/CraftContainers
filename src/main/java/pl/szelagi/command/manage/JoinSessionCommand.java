@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.command.CommandHelper;
-import pl.szelagi.component.session.exception.player.initialize.RejectedPlayerException;
+import pl.szelagi.component.session.PlayerJoinException;
 import pl.szelagi.manager.SessionManager;
 
 import java.util.List;
@@ -41,8 +41,8 @@ public class JoinSessionCommand implements CommandExecutor, TabCompleter {
         try {
             session.addPlayer(player);
         } catch (
-                RejectedPlayerException rejectedPlayerException) {
-            player.sendMessage(PREFIX + "§cUnable to join session: " + rejectedPlayerException.getMessage());
+                PlayerJoinException joinException) {
+            player.sendMessage(PREFIX + "§cUnable to join session: " + joinException.getMessage());
         }
 
         player.sendMessage(PREFIX + "§aSuccessfully joined the session: §f" + strings[0]);
@@ -51,6 +51,6 @@ public class JoinSessionCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return SessionManager.getSessions().stream().map(session -> session.getName() + ":" + session.getId()).toList();
+        return SessionManager.sessions().stream().map(session -> session.name() + ":" + session.id()).toList();
     }
 }

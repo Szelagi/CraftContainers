@@ -31,7 +31,7 @@ public class Group {
 	public @NotNull List<Player> inSessionPlayers(Session session) {
 		return players.stream()
 		              .filter(player -> session
-				              .getPlayers()
+				              .players()
 				              .contains(player))
 		              .collect(Collectors.toList());
 	}
@@ -47,7 +47,7 @@ public class Group {
 	public int inSessionSize(Session session) {
 		return (int) players.stream()
 		                    .filter(player -> session
-				                    .getPlayers()
+				                    .players()
 				                    .contains(player))
 		                    .count();
 	}

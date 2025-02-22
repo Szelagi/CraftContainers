@@ -20,20 +20,22 @@ import java.util.stream.Collectors;
 
 public class CommandHelper {
     public static final String PREFIX = "§6[§eSessionAPI§6] §r";
+
     public static @Nullable Session sessionByNameId(String nameId) {
         return SessionManager
-                .getSessions().stream()
+                .sessions().stream()
                 .filter(loopSession -> {
-                    var name = loopSession.getName() + ":" + loopSession.getId();
+                    var name = loopSession.name() + ":" + loopSession.id();
                     return nameId.equals(name);
                 }).findFirst()
                 .orElse(null);
     }
+
     public static List<String> sessionsComplete(CommandSender commandSender) {
-        var sessions = SessionManager.getSessions().stream().map(session -> session.getName() + ":" + session.getId()).collect(Collectors.toCollection(ArrayList::new));
+        var sessions = SessionManager.sessions().stream().map(session -> session.name() + ":" + session.id()).collect(Collectors.toCollection(ArrayList::new));
 
         if (commandSender instanceof Player player) {
-            var session = SessionManager.getSession(player);
+            var session = SessionManager.session(player);
             if (session != null) {
                 sessions.addFirst("current");
             }
@@ -52,7 +54,7 @@ public class CommandHelper {
                 return null;
             }
 
-            session = SessionManager.getSession(player);
+            session = SessionManager.session(player);
             if (session == null) {
                 commandSender.sendMessage(PREFIX + "§cYou are not currently in any session!");
                 return null;

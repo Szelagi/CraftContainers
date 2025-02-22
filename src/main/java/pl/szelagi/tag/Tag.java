@@ -17,73 +17,76 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Tag implements Serializable {
-	@NotNull private final String name;
-	@NotNull
-	private final RelativeLocation relativeLocation;
-	@NotNull private final BlockFace blockFace;
-	@NotNull private final List<String> args;
+    @NotNull
+    private final String name;
+    @NotNull
+    private final RelativeLocation relativeLocation;
+    @NotNull
+    private final BlockFace blockFace;
+    @NotNull
+    private final List<String> args;
 
-	public Tag(@NotNull String name, @NotNull RelativeLocation relativeLocation, @NotNull BlockFace blockFace, @NotNull List<String> args) {
-		this.name = name;
-		this.blockFace = blockFace;
-		this.args = args;
+    public Tag(@NotNull String name, @NotNull RelativeLocation relativeLocation, @NotNull BlockFace blockFace, @NotNull List<String> args) {
+        this.name = name;
+        this.blockFace = blockFace;
+        this.args = args;
 
-		BlockFaceMapper.updateYaw(relativeLocation, blockFace);
-		this.relativeLocation = relativeLocation;
-	}
+        BlockFaceMapper.updateYaw(relativeLocation, blockFace);
+        this.relativeLocation = relativeLocation;
+    }
 
-	@Deprecated
-	public @NotNull String getName() {
-		return name;
-	}
+    @Deprecated
+    public @NotNull String getName() {
+        return name;
+    }
 
-	@Deprecated
-	public @NotNull Location getLocation() {
-		return relativeLocation;
-	}
+    @Deprecated
+    public @NotNull Location getLocation() {
+        return relativeLocation;
+    }
 
-	@Deprecated
-	public @NotNull RelativeLocation getRelativeLocation() {
-		return relativeLocation;
-	}
+    @Deprecated
+    public @NotNull RelativeLocation getRelativeLocation() {
+        return relativeLocation;
+    }
 
-	@Deprecated
-	public @NotNull BlockFace getBlockFace() {
-		return blockFace;
-	}
+    @Deprecated
+    public @NotNull BlockFace getBlockFace() {
+        return blockFace;
+    }
 
-	@Deprecated
-	public @NotNull List<String> getArgs() {
-		return args;
-	}
+    @Deprecated
+    public @NotNull List<String> getArgs() {
+        return args;
+    }
 
-	public @NotNull Location location() {
-		return relativeLocation;
-	}
+    public @NotNull Location location() {
+        return relativeLocation;
+    }
 
-	public @NotNull RelativeLocation relativeLocation() {
-		return relativeLocation;
-	}
+    public @NotNull RelativeLocation relativeLocation() {
+        return relativeLocation;
+    }
 
-	public @NotNull String name() {
-		return name;
-	}
+    public @NotNull String name() {
+        return name;
+    }
 
-	public BlockFace blockFace() {
-		return blockFace;
-	}
+    public BlockFace blockFace() {
+        return blockFace;
+    }
 
-	public @NotNull List<String> args() {
-		return args;
-	}
+    public @NotNull List<String> args() {
+        return args;
+    }
 
-	public @NotNull Location centeredXZ() {
-		var location = location().clone();
-		return location.add(new Vector(0.5, 0, 0.5));
-	}
+    public @NotNull Location centeredXZ() {
+        var location = location().clone();
+        return location.add(new Vector(0.5, 0, 0.5));
+    }
 
-	public @NotNull Location centeredXYZ() {
-		var location = location().clone();
-		return location.add(new Vector(0.5, 0.5, 0.5));
-	}
+    public @NotNull Location centeredXYZ() {
+        var location = location().clone();
+        return location.add(new Vector(0.5, 0.5, 0.5));
+    }
 }

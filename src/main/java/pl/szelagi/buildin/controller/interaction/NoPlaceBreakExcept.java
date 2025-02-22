@@ -12,11 +12,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.manager.BoardManager;
-import pl.szelagi.manager.ControllerManager;
+import pl.szelagi.manager.listener.ListenerManager;
+import pl.szelagi.manager.listener.Listeners;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,8 +25,8 @@ public class NoPlaceBreakExcept extends Controller {
 	Set<Material> allowBreak = new HashSet<>();
 	Set<Material> allowPlace = new HashSet<>();
 
-	public NoPlaceBreakExcept(ISessionComponent sessionComponent) {
-		super(sessionComponent);
+	public NoPlaceBreakExcept(BaseComponent baseComponent) {
+		super(baseComponent);
 	}
 
 	public NoPlaceBreakExcept setPlaceFlag(Material material, boolean allow) {
@@ -67,37 +67,37 @@ public class NoPlaceBreakExcept extends Controller {
 	}
 
 	@Override
-	public @Nullable Listener getListener() {
-		return new MyListener();
+	public Listeners defineListeners() {
+		return super.defineListeners().add(MyListener.class);
 	}
 
 	private static class MyListener implements Listener {
 		@EventHandler(ignoreCancelled = true)
 		public void onBlockPlace(BlockPlaceEvent event) {
-			var session = BoardManager.getSession(event.getBlock());
+			var session = BoardManager.session(event.getBlock());
 			if (session == null)
 				return;
 			var material = event.getBlock()
 			                    .getType();
-			var controllers = ControllerManager.getControllers(session, NoPlaceBreakExcept.class);
-			for (var controller : controllers)
-				if (controller.canPlace(material))
+			ListenerManager.each(session, getClass(), NoPlaceBreakExcept.class, noPlaceBreakExcept -> {
+				if (noPlaceBreakExcept.canPlace(material))
 					return;
-			event.setCancelled(true);
+				event.setCancelled(true);
+			});
 		}
 
 		@EventHandler(ignoreCancelled = true)
 		public void onBlockBreak(BlockBreakEvent event) {
-			var session = BoardManager.getSession(event.getBlock());
+			var session = BoardManager.session(event.getBlock());
 			if (session == null)
 				return;
 			var material = event.getBlock()
 			                    .getType();
-			var controllers = ControllerManager.getControllers(session, NoPlaceBreakExcept.class);
-			for (var controller : controllers)
-				if (controller.canBreak(material))
+			ListenerManager.each(session, getClass(), NoPlaceBreakExcept.class, noPlaceBreakExcept -> {
+				if (noPlaceBreakExcept.canBreak(material))
 					return;
-			event.setCancelled(true);
+				event.setCancelled(true);
+			});
 		}
 	}
 }

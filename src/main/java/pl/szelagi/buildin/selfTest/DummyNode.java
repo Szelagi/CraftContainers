@@ -7,11 +7,11 @@
 
 package pl.szelagi.buildin.selfTest;
 
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.controller.Controller;
 
 public class DummyNode extends Controller {
-    public DummyNode(ISessionComponent sessionComponent) {
-        super(sessionComponent);
+    public DummyNode(BaseComponent baseComponent) {
+        super(baseComponent);
     }
 }

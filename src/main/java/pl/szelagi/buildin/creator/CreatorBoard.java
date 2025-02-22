@@ -17,80 +17,78 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.jetbrains.annotations.NotNull;
 import pl.szelagi.Scheduler;
-import pl.szelagi.buildin.controller.NoCreatureDropController.NoCreatureDropController;
-import pl.szelagi.buildin.controller.OtherEquipment.OtherEquipment;
-import pl.szelagi.buildin.controller.OtherGameMode.OtherGameMode;
+import pl.szelagi.buildin.controller.environment.NoCreatureNaturalSpawn;
+import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
+import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.board.Board;
-import pl.szelagi.component.board.filemanager.BoardFileManager;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.event.component.ComponentConstructorEvent;
+import pl.szelagi.file.FileManager;
 import pl.szelagi.spatial.ISpatial;
 
 public class CreatorBoard extends Board {
-	private final String editName;
-	private BoardFileManager storage;
+    private final String editName;
+    private FileManager creatorFileManager;
 
-	public CreatorBoard(Session session, String editName) {
-		super(session);
-		this.editName = editName;
-	}
+    public CreatorBoard(Session session, String editName) {
+        super(session);
+        this.editName = editName;
+    }
 
-	public BoardFileManager getStorage() {
-		return storage;
-	}
+    public FileManager creatorFileManager() {
+        return creatorFileManager;
+    }
 
-	@Override
-	protected void generate() {
-		this.storage = new BoardFileManager(editName, getSpace());
-		Scheduler.runAndWait(() -> {
-			getBase().getBlock()
-			         .setType(Material.BEDROCK);
-		});
-		if (storage.existsSchematic(SCHEMATIC_CONSTRUCTOR_NAME))
-			storage.loadSchematic(SCHEMATIC_CONSTRUCTOR_NAME);
-		setSecureZone(ISpatial.clone(getSpace()));
-	}
+    @Override
+    protected void generate() {
+        this.creatorFileManager = new FileManager("board/" + editName);
+        Scheduler.runAndWait(() -> {
+            center().getBlock()
+                    .setType(Material.BEDROCK);
+        });
+        if (creatorFileManager.existSchematic(CONSTRUCTOR_FILE_NAME))
+            creatorFileManager.loadSchematic(CONSTRUCTOR_FILE_NAME, space(), center());
+    }
 
-	@Override
-	protected void degenerate() {
-		var space = getSpace().toOptimized();
-		var pointA = space.getFirstPoint();
-		var pointB = space.getSecondPoint();
-		BlockVector3 vecA = BlockVector3.at(pointA.getBlockX(), pointA.getBlockY(), pointA.getBlockZ());
-		BlockVector3 vecB = BlockVector3.at(pointB.getBlockX(), pointB.getBlockY(), pointB.getBlockZ());
+    @Override
+    public ISpatial defineSecureZone() {
+        return ISpatial.clone(space());
+    }
 
-		CuboidRegion region = new CuboidRegion(vecA, vecB);
+    @Override
+    protected void degenerate() {
+        var space = space().minimalizeSync();
+        var pointA = space.getFirstPoint();
+        var pointB = space.getSecondPoint();
+        BlockVector3 vecA = BlockVector3.at(pointA.getBlockX(), pointA.getBlockY(), pointA.getBlockZ());
+        BlockVector3 vecB = BlockVector3.at(pointB.getBlockX(), pointB.getBlockY(), pointB.getBlockZ());
 
-		try (EditSession editSession = WorldEdit
-				.getInstance()
-				.newEditSession(BukkitAdapter.adapt(pointA.getWorld()))) {
-			assert BlockTypes.AIR != null;
-			editSession.setBlocks((Region) region, BlockTypes.AIR.getDefaultState());
+        CuboidRegion region = new CuboidRegion(vecA, vecB);
 
-			Operations.complete(editSession.commit());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+        try (EditSession editSession = WorldEdit
+                .getInstance()
+                .newEditSession(BukkitAdapter.adapt(pointA.getWorld()))) {
+            assert BlockTypes.AIR != null;
+            editSession.setBlocks((Region) region, BlockTypes.AIR.getDefaultState());
 
-		Scheduler.runAndWait(() -> {
-			for (var entity : getSpace().getMobsIn())
-				entity.remove();
-		});
-	}
+            Operations.complete(editSession.commit());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-	@NotNull
-	@Override
-	public String getName() {
-		return "creatorBoard";
-	}
+        Scheduler.runAndWait(() -> {
+            for (var entity : space().getMobsIn())
+                entity.remove();
+        });
+    }
 
-	@Override
-	public void componentConstructor(ComponentConstructorEvent event) {
-		super.componentConstructor(event);
-		new NoCreatureDropController(this).start();
-		new OtherEquipment(this, true).start();
-		new OtherGameMode(this, GameMode.CREATIVE).start();
-	}
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        new OtherEquipment(this, true).start();
+        new OtherGameMode(this, GameMode.CREATIVE).start();
+        new NoCreatureNaturalSpawn(this).start();
+    }
+
 }

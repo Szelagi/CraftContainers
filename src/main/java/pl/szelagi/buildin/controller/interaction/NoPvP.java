@@ -11,22 +11,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.controller.Controller;
-import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.listener.ListenerManager;
+import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.util.CooldownVolatile;
 import pl.szelagi.util.timespigot.Time;
 
 public class NoPvP extends Controller {
-	public NoPvP(ISessionComponent sessionComponent) {
-		super(sessionComponent);
+	public NoPvP(BaseComponent baseComponent) {
+		super(baseComponent);
 	}
 
 	@Override
-	public @Nullable Listener getListener() {
-		return new MyListener();
+	public Listeners defineListeners() {
+		return super.defineListeners().add(MyListener.class);
 	}
 
 	private static class MyListener implements Listener {
@@ -36,15 +36,12 @@ public class NoPvP extends Controller {
 				return;
 			if (!(event.getDamager() instanceof Player attacker))
 				return;
-			var session = SessionManager.getSession(victim);
-			if (session == null)
-				return;
-			var controller = ControllerManager.getFirstController(session, NoPvP.class);
-			if (controller == null)
-				return;
-			if (CooldownVolatile.canUseAndStart(attacker, "nopvp-controller", Time.Seconds(2)))
-				attacker.sendMessage("§cYou cannot attack a player because pvp is disabled!");
-			event.setCancelled(true);
+			var session = SessionManager.session(victim);
+			ListenerManager.first(session, getClass(), NoPvP.class, noPvP -> {
+				if (CooldownVolatile.canUseAndStart(attacker, noPvP.name(), Time.seconds(2)))
+					attacker.sendMessage("§cYou cannot attack a player because pvp is disabled!");
+				event.setCancelled(true);
+			});
 		}
 	}
 }

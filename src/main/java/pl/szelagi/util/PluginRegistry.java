@@ -18,30 +18,30 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class PluginRegistry {
-	private final static HashMap<String, JavaPlugin> REGISTRY = new HashMap<>();
+    private final static HashMap<String, JavaPlugin> REGISTRY = new HashMap<>();
 
-	private static void updateRegistry() {
-		Plugin[] plugins = Bukkit.getServer().getPluginManager().getPlugins();
-		for (Plugin plugin : plugins) {
-			if (!(plugin instanceof JavaPlugin javaPlugin))
-				continue;
-			try {
-				Method getFileMethod = JavaPlugin.class.getDeclaredMethod("getFile");
-				getFileMethod.setAccessible(true);
-				File file = (File) getFileMethod.invoke(javaPlugin);
-				REGISTRY.put(file.getName(), javaPlugin);
-			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+    private static void updateRegistry() {
+        Plugin[] plugins = Bukkit.getServer().getPluginManager().getPlugins();
+        for (Plugin plugin : plugins) {
+            if (!(plugin instanceof JavaPlugin javaPlugin))
+                continue;
+            try {
+                Method getFileMethod = JavaPlugin.class.getDeclaredMethod("getFile");
+                getFileMethod.setAccessible(true);
+                File file = (File) getFileMethod.invoke(javaPlugin);
+                REGISTRY.put(file.getName(), javaPlugin);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-	public static @Nullable JavaPlugin getPlugin(String pluginFileName) {
-		var plugin = REGISTRY.get(pluginFileName);
-		if (plugin == null) {
-			updateRegistry();
-			plugin = REGISTRY.get(pluginFileName);
-		}
-		return plugin;
-	}
+    public static @Nullable JavaPlugin getPlugin(String pluginFileName) {
+        var plugin = REGISTRY.get(pluginFileName);
+        if (plugin == null) {
+            updateRegistry();
+            plugin = REGISTRY.get(pluginFileName);
+        }
+        return plugin;
+    }
 }

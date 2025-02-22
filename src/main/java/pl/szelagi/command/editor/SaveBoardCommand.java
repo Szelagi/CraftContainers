@@ -17,7 +17,6 @@ import pl.szelagi.buildin.creator.CreatorBoard;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.spatial.ISpatial;
-import pl.szelagi.spatial.SpatialMinimalize;
 import pl.szelagi.tag.TagAnalyzer;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
@@ -27,7 +26,7 @@ public class SaveBoardCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) return false;
 
-        var session = SessionManager.getSession(player);
+        var session = SessionManager.session(player);
         if (session == null) {
             player.sendMessage(PREFIX + "§cYou are not in a session.");
             return false;
@@ -36,7 +35,7 @@ public class SaveBoardCommand implements CommandExecutor {
             player.sendMessage(PREFIX + "§cYou are not in the editor.");
             return false;
         }
-        if (!(creator.getCurrentBoard() instanceof CreatorBoard creatorBoard)) {
+        if (!(creator.board() instanceof CreatorBoard creatorBoard)) {
             player.sendMessage(PREFIX + "§cYou are not in an editor board.");
             return false;
         }
@@ -51,7 +50,7 @@ public class SaveBoardCommand implements CommandExecutor {
         long millis = System.currentTimeMillis();
 
         creatorBoard
-                .getStorage()
+                .space()
                 .minimalizeAsync(optimized -> {
                     long deltaMinimalizeMillis = System.currentTimeMillis() - millis;
                     player.sendMessage(PREFIX + "§7Board minimalized! §f(" + deltaMinimalizeMillis + "ms)");
@@ -72,10 +71,10 @@ public class SaveBoardCommand implements CommandExecutor {
     private void save(CreatorBoard creator, ISpatial optimized, Player player) {
         long millis = System.currentTimeMillis();
 
-        creator.getStorage()
-                .saveSchematic(Board.SCHEMATIC_CONSTRUCTOR_NAME, optimized);
-        creator.getStorage()
-                .saveEmptySchematic(Board.SCHEMATIC_DESTRUCTOR_NAME, optimized);
+        creator.creatorFileManager()
+                .saveSchematic(Board.CONSTRUCTOR_FILE_NAME, optimized.getFirstPoint(), optimized.getSecondPoint(), optimized.getCenter());
+        creator.creatorFileManager()
+                .saveEmptySchematic(Board.DESTRUCTOR_FILE_NAME, optimized.getFirstPoint(), optimized.getSecondPoint(), optimized.getCenter());
 
         long delta = System.currentTimeMillis() - millis;
         player.sendMessage(PREFIX + "§7Schematics save! §f(" + delta + "ms)");
@@ -84,8 +83,8 @@ public class SaveBoardCommand implements CommandExecutor {
     private void tag(CreatorBoard creator, ISpatial optimized, Player player, Runnable next) {
         long millis = System.currentTimeMillis();
         TagAnalyzer.async(optimized, tagResolve -> {
-            creator.getStorage()
-                    .saveSignTagData(Board.SIGN_TAG_DATA_NAME, tagResolve);
+            creator.creatorFileManager()
+                    .saveTag(Board.TAG_FILE_NAME, tagResolve);
             long delta = System.currentTimeMillis() - millis;
             player.sendMessage(PREFIX + "§7Tag process! §f(" + delta + "ms)");
             next.run();

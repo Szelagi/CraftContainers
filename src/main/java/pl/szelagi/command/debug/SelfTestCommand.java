@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.buildin.selfTest.SelfTest;
-import pl.szelagi.buildin.system.testsession.TestSession;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
@@ -28,6 +27,8 @@ public class SelfTestCommand implements CommandExecutor {
 
         var session = new SelfTest(SessionAPI.instance(), player);
         session.start();
+        session.testInternalEvents();
+
         commandSender.sendMessage(PREFIX + "§aSelfTest has been successfully started.");
         return true;
     }

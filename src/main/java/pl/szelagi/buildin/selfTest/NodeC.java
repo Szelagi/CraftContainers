@@ -7,18 +7,20 @@
 
 package pl.szelagi.buildin.selfTest;
 
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
 import pl.szelagi.component.controller.Controller;
-import pl.szelagi.event.SAPIEventHandler;
-import pl.szelagi.event.component.ComponentConstructorEvent;
-import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
 
 class NodeC extends Controller {
     private final TreeResult treeResult;
     private final String parentMessage;
     private final int index;
-    public NodeC(ISessionComponent sessionComponent, TreeResult treeResult, String parentMessage, int index) {
-        super(sessionComponent);
+
+    public NodeC(BaseComponent baseComponent, TreeResult treeResult, String parentMessage, int index) {
+        super(baseComponent);
         this.treeResult = treeResult;
         this.parentMessage = parentMessage;
         this.index = index;
@@ -28,26 +30,28 @@ class NodeC extends Controller {
         return parentMessage + 'C' + index;
     }
 
-    @SAPIEventHandler
-    public void init(ComponentConstructorEvent event) {
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
         treeResult.constructorMessage.add(message());
     }
 
-    @SAPIEventHandler
-    public void destroy(ComponentConstructorEvent event) {
+    @Override
+    public void onComponentDestroy(ComponentDestructor event) {
+        super.onComponentDestroy(event);
         treeResult.destructorMessage.add(message());
     }
 
-    @SAPIEventHandler
-    public void playerInit(PlayerConstructorEvent event) {
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        super.onPlayerInit(event);
         treeResult.playerConstructorMessage.add(message());
     }
 
-    @SAPIEventHandler
-    public void playerDestroy(PlayerConstructorEvent event) {
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        super.onPlayerDestroy(event);
         treeResult.playerDestructorMessage.add(message());
     }
-
-
 
 }

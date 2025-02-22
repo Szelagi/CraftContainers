@@ -12,11 +12,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.manager.BoardManager;
-import pl.szelagi.manager.ControllerManager;
+import pl.szelagi.manager.listener.ListenerManager;
+import pl.szelagi.manager.listener.Listeners;
 
 public class WorldEnvironment extends Controller implements Listener {
 	private boolean explosionDestroy = true;
@@ -24,8 +24,8 @@ public class WorldEnvironment extends Controller implements Listener {
 	private boolean fireSpread = true;
 	private boolean blockBurn = true;
 
-	public WorldEnvironment(ISessionComponent sessionComponent) {
-		super(sessionComponent);
+	public WorldEnvironment(BaseComponent baseComponent) {
+		super(baseComponent);
 	}
 
 	public WorldEnvironment setExplosionDestroy(boolean state) {
@@ -49,56 +49,43 @@ public class WorldEnvironment extends Controller implements Listener {
 	}
 
 	@Override
-	public @Nullable Listener getListener() {
-		return new MyListener();
+	public Listeners defineListeners() {
+		return super.defineListeners().add(MyListener.class);
 	}
 
 	private static class MyListener implements Listener {
 		@EventHandler(ignoreCancelled = true)
 		public void onEntityExplode(EntityExplodeEvent event) {
-			var session = BoardManager.getSession(event.getLocation());
-			if (session == null)
-				return;
-			var controllers = ControllerManager.getControllers(session, WorldEnvironment.class);
-			for (var controller : controllers) {
-				if (controller.explosionDestroy)
-					continue;
+			var session = BoardManager.session(event.getLocation());
+			ListenerManager.each(session, getClass(), WorldEnvironment.class, worldEnvironment -> {
+				if (worldEnvironment.explosionDestroy) return;
 				event.blockList().clear();
-				return;
-			}
+			});
 		}
 
 		@EventHandler(ignoreCancelled = true)
 		public void onBlockIgnite(BlockIgniteEvent event) {
-			var session = BoardManager.getSession(event.getBlock());
-			if (session == null)
-				return;
-			var controllers = ControllerManager.getControllers(session, WorldEnvironment.class);
-			for (var controller : controllers) {
-				if (controller.blockIgnite) {
+			var session = BoardManager.session(event.getBlock());
+			ListenerManager.each(session, getClass(), WorldEnvironment.class, worldEnvironment -> {
+				if (worldEnvironment.blockIgnite) {
 					event.setCancelled(true);
 					return;
 				}
 				var cause = event.getCause();
-				if (cause == BlockIgniteEvent.IgniteCause.SPREAD && !controller.fireSpread) {
+				if (cause == BlockIgniteEvent.IgniteCause.SPREAD && !worldEnvironment.fireSpread) {
 					event.setCancelled(true);
-					return;
 				}
-			}
+			});
+
 		}
 
 		@EventHandler(ignoreCancelled = true)
 		public void onBlockBurn(BlockBurnEvent event) {
-			var session = BoardManager.getSession(event.getBlock());
-			if (session == null)
-				return;
-			var controllers = ControllerManager.getControllers(session, WorldEnvironment.class);
-			for (var controller : controllers) {
-				if (controller.blockBurn)
-					continue;
+			var session = BoardManager.session(event.getBlock());
+			ListenerManager.each(session, getClass(), WorldEnvironment.class, worldEnvironment -> {
+				if (worldEnvironment.blockBurn) return;
 				event.setCancelled(true);
-				return;
-			}
+			});
 		}
 	}
 }

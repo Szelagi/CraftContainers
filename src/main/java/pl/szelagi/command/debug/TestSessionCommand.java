@@ -10,10 +10,9 @@ package pl.szelagi.command.debug;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.SessionAPI;
-import pl.szelagi.buildin.system.testsession.TestSession;
+import pl.szelagi.buildin.system.testSession.TestSession;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 

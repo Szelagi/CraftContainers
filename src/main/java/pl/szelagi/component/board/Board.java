@@ -7,284 +7,287 @@
 
 package pl.szelagi.component.board;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WeatherType;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.Scheduler;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.buildin.system.BoardWatchDog;
 import pl.szelagi.buildin.system.SecureZone;
-import pl.szelagi.buildin.system.boardwatchdog.BoardWatchDogController;
-import pl.szelagi.component.BaseComponent;
-import pl.szelagi.component.ComponentStatus;
-import pl.szelagi.component.baseexception.StartException;
-import pl.szelagi.component.baseexception.StopException;
-import pl.szelagi.component.board.event.BoardStartEvent;
-import pl.szelagi.component.board.event.BoardStopEvent;
-import pl.szelagi.component.board.exception.BoardStartException;
-import pl.szelagi.component.board.filemanager.BoardFileManager;
+import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.baseComponent.StartException;
+import pl.szelagi.component.baseComponent.StopException;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
+import pl.szelagi.component.board.bukkitEvent.BoardStartEvent;
+import pl.szelagi.component.board.bukkitEvent.BoardStopEvent;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.event.component.ComponentConstructorEvent;
-import pl.szelagi.event.player.initialize.PlayerConstructorEvent;
-import pl.szelagi.event.player.initialize.PlayerDestructorEvent;
-import pl.szelagi.process.RemoteProcess;
 import pl.szelagi.space.Space;
 import pl.szelagi.space.SpaceAllocator;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.tag.TagQuery;
 import pl.szelagi.tag.TagResolve;
-import pl.szelagi.util.Debug;
 import pl.szelagi.world.SessionWorldManager;
 
+import java.util.List;
+
 public abstract class Board extends BaseComponent {
-	public final static String SCHEMATIC_CONSTRUCTOR_NAME = "constructor";
-	public final static String SCHEMATIC_DESTRUCTOR_NAME = "destructor";
-	public final static String SIGN_TAG_DATA_NAME = "tag";
-	private final Session session;
-	private RemoteProcess remoteProcess;
-	private boolean isUsed;
-	private Space space;
-	private BoardFileManager boardFileManager;
-	private TagResolve tagResolve;
-	private ISpatial secureZone;
+    public final static String CONSTRUCTOR_FILE_NAME = "constructor";
+    public final static String DESTRUCTOR_FILE_NAME = "destructor";
+    public final static String TAG_FILE_NAME = "tag";
 
-	public Board(Session session) {
-		this.session = session;
-		this.isUsed = false;
-	}
+    private final Session session;
+    private final boolean isUsed;
+    private Space space;
+    private TagResolve tagResolve;
+    private ISpatial secureZone;
 
-	@MustBeInvokedByOverriders
-	public void start() throws StartException {
-		start(true, null);
-	}
+    private BukkitTask generateTask;
 
-	@MustBeInvokedByOverriders
-	public void syncStart() throws StartException {
-		start(false, null);
-	}
+    public Board(@NotNull Session session) {
+        super(session);
+        this.session = session;
+        this.isUsed = false;
+    }
 
-	@MustBeInvokedByOverriders
-	public void start(boolean async, @Nullable Runnable thenGenerate) throws StartException {
-		validateStartable();
-		validateNotStartedBefore();
-		setStatus(ComponentStatus.INITIALIZING);
+    @Override
+    public final void start() throws StartException {
+        start(true, null);
+    }
 
-		Debug.send(this, "start");
+    public final void start(boolean isAsync, @Nullable Runnable thenGenerate) {
+        // Zasada działania: mapa musi być załadowana przed eventem ComponentConstructor oraz PlayerConstructor
 
-		remoteProcess = new RemoteProcess(this);
-		remoteProcess.registerListener(this);
+        // Sprawdzanie, czy mapa nie została wcześniej użyta
+        if (isUsed) {
+            throw new StartException("Board is already used");
+        }
 
-		space = SpaceAllocator.allocate(SessionWorldManager.getSessionWorld());
-		this.boardFileManager = new BoardFileManager(getName(), getSpace());
+        // Ten kod jest wykonywany na samym końcu po wykonaniu generowania
+        Runnable lastAction = () -> {
+            // Then generate zostaje uruchomiony przed uruchomieniem komponentu
+            if (thenGenerate != null) {
+                thenGenerate.run();
+            }
 
-		if (boardFileManager.existsSignTagData(SIGN_TAG_DATA_NAME)) {
-			this.tagResolve = boardFileManager.loadSignTagData(SIGN_TAG_DATA_NAME);
-		} else {
-			this.tagResolve = new TagResolve();
-		}
+            // Uruchamiamy komponent
+            super.start();
 
-		Debug.send(this, "generating...");
+            // Wywołaj event o uruchomieniu mapy
+            var event = new BoardStartEvent(this);
+            callBukkit(event);
+        };
 
-		Runnable lastAction = () -> {
-			if (thenGenerate != null) {
-				thenGenerate.run();
-			}
+        // Przed uruchomieniem komponentu prosimy o przydzielenie przestrzeni
+        space = SpaceAllocator.allocate(SessionWorldManager.getSessionWorld());
 
-			secureZoneValid();
+        // Ładowanie tagów musi zostać wykonane przed eventem generate, ComponentConstructor oraz PlayerConstructor, ponieważ one mogą korzystać z tagów
+        tagResolve = defineTags();
 
-			setStatus(ComponentStatus.RUNNING);
+        // Ustawiamy bezpieczną przestrzeń, gdzie można edytować teren.
+        // Teren, który obejmuje degenerate()
+        try {
+            secureZone = defineSecureZone();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to define a secure zone for board: " + name(), e);
+        }
+        if (secureZone == null) {
+            throw new IllegalStateException("Board " + name() + " does not define a secure zone.");
+        }
 
-			invokeSelf();
+        // Generujemy mapę na przestrzeni
+        if (isAsync) {
+            generateTask = Scheduler.runTaskAsync(() -> {
+                generate();
+                Scheduler.runAndWait(lastAction);
+            });
+        } else {
+            generate();
+            lastAction.run();
+        }
+    }
 
-			var event = new BoardStartEvent(this);
-			callBukkitEvent(event);
-		};
+    public TagResolve defineTags() {
+        var fileManger = fileManager();
+        if (fileManger.existTag(TAG_FILE_NAME)) {
+            return fileManger.loadTag(TAG_FILE_NAME, center());
+        }
+        return new TagResolve();
+    }
 
-		if (async) {
-			Scheduler.runTaskAsync(() -> {
-				generate();
-				Debug.send(this, "generate done");
-				Scheduler.runAndWait(lastAction);
-			});
-		} else {
-			generate();
-			Debug.send(this, "generate done");
-			lastAction.run();
-		}
-	}
+    @Override
+    public final void stop() throws StopException {
+        stop(true);
+    }
 
-	private void startBoardSystemControllers(ComponentConstructorEvent event) {
-		new BoardWatchDogController(this).start();
-		new SecureZone(this).start();
-		// TODO: It may be necessary to ensure that
+    public final void stop(boolean isAsync) {
+        // Zasada działania: ComponentDestructor oraz PlayerDestructor musi być wykonane przed zniczeniem mapy
+
+        // jeżeli istnieje generowanie mapy zakańczamy je
+        if (generateTask != null) {
+            generateTask.cancel();
+            generateTask = null;
+        }
+
+        // Wyłączamy komponent
+        super.stop();
+
+        // Wykonujemy event o zakończeniu mapy
+        var event = new BoardStopEvent(this);
+        callBukkit(event);
+
+        // Czyszczenie mapy
+
+        // Wykonywane na końcu
+        Runnable lastAction = () -> {
+            // Niszczmy pozostałości mapy
+            degenerate();
+            // Zwalniamy przydzieloną przestrzeń
+            SpaceAllocator.deallocate(space);
+        };
+
+        if (isAsync) {
+            // Nie możemy używać wewnętrzengo scheduler, ponieważ komponent jest wyłączony
+            // Rejestrowanie zdarzeń, kiedy plugin się wyłącza, powoduje błąd Paper/Spigot
+            Scheduler.runTaskAsync(lastAction);
+        } else {
+            lastAction.run();
+        }
+    }
+
+    protected void generate() {
+        Scheduler.runAndWait(() -> {
+            center().getBlock()
+                    .setType(Material.BEDROCK);
+        });
+
+        var fileManger = fileManager();
+        if (fileManger.existSchematic(CONSTRUCTOR_FILE_NAME)) {
+            fileManger.loadSchematic(CONSTRUCTOR_FILE_NAME, space(), center());
+        }
+
+        if (tagResolve != null) {
+            Scheduler.runAndWait(() -> {
+                for (var l : tagResolve.toLocations())
+                    l.getBlock()
+                            .setType(Material.AIR);
+            });
+        }
+    }
+
+    protected void degenerate() {
+        var fileManger = fileManager();
+        if (fileManger.existSchematic(DESTRUCTOR_FILE_NAME)) {
+            fileManger.loadSchematic(DESTRUCTOR_FILE_NAME, space(), center());
+        }
+
+        Scheduler.runAndWait(() -> {
+            center().getBlock()
+                    .setType(Material.AIR);
+
+            space().getMobsIn().forEach(Entity::remove);
+        });
+    }
+
+    public final Location center() {
+        var space = space();
+        return space.getCenter();
+    }
+
+    public final Space space() {
+        if (space == null) throw new IllegalStateException("Space not set");
+        return space;
+    }
+
+    public final @NotNull TagResolve tagResolve() {
+        if (tagResolve == null) throw new IllegalStateException("TagResolve not set");
+        return tagResolve;
+    }
+
+    @Deprecated
+    public final @NotNull TagQuery tagQuery(@NotNull String tagName) {
+        var tagResolve = tagResolve();
+        return tagResolve.query(tagName);
+    }
+
+    public final @NotNull TagQuery tags(@NotNull String name) {
+        var tagResolve = tagResolve();
+        return tagResolve.query(name);
+    }
+
+    protected int defaultTime() {
+        return 0;
+    }
+
+    protected @NotNull WeatherType defaultWeather() {
+        return WeatherType.CLEAR;
+    }
+
+    protected @NotNull Location spawnLocation() {
+        return space().getAbove(space().getCenter());
+    }
+
+
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        new BoardWatchDog(this).start();
+        new SecureZone(this).start();
+        //		// TODO: It may be necessary to ensure that
 		// all session maps are checked by these controllers
-	}
+    }
 
-	@MustBeInvokedByOverriders
-	public void stop() throws StopException {
-		stop(true);
-	}
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        super.onPlayerInit(event);
 
-	@MustBeInvokedByOverriders
-	public void stop(boolean async) throws StopException {
-		validateDisableable();
-		setStatus(ComponentStatus.SHUTTING_DOWN);
+        var player = event.getPlayer();
+        player.teleport(spawnLocation());
+        player.setPlayerTime(defaultTime(), false);
+        player.setPlayerWeather(defaultWeather());
+    }
 
-		Debug.send(this, "stop");
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        super.onPlayerDestroy(event);
 
-		invokeSelfPlayerDestructors();
-		invokeSelfComponentDestructor();
+        var player = event.getPlayer();
+        player.resetPlayerWeather();
+        player.resetPlayerTime();
+    }
 
-		remoteProcess.destroy();
+    //
 
-		// degenerate
-		Debug.send(this, "degenerate");
+    @Override
+    public final @NotNull List<Player> players() {
+        return session.players();
+    }
 
-		Runnable lastAction = () -> {
-			// deallocate space
-			SpaceAllocator.deallocate(space);
+    @Override
+    public final @NotNull Session session() {
+        return session;
+    }
 
-			// BoardStopEvent
-			var event = new BoardStopEvent(this);
-			Bukkit.getPluginManager()
-			      .callEvent(event);
+    @Override
+    public final @NotNull Board board() {
+        return session.board();
+    }
 
-			setStatus(ComponentStatus.SHUTDOWN);
-		};
+    @Override
+    public String rootDirectoryName() {
+        return "board/" + name();
+    }
 
-		if (async) {
-			var scheduler = Bukkit.getScheduler();
-			scheduler.runTaskAsynchronously(SessionAPI.getInstance(), () -> {
-				degenerate();
-				scheduler.runTask(SessionAPI.getInstance(), lastAction);
-			});
-		} else {
-			degenerate();
-			lastAction.run();
-		}
-	}
+    public ISpatial defineSecureZone() {
+        return fileManager().loadSchematicToSpatial(DESTRUCTOR_FILE_NAME, center());
+    }
 
-	protected void generate() {
-		Scheduler.runAndWait(() -> {
-			getSpace().getCenter().getBlock()
-			          .setType(Material.BEDROCK);
-		});
-
-		if (boardFileManager.existsSchematic(SCHEMATIC_DESTRUCTOR_NAME)) {
-			secureZone = boardFileManager.toSpatial(SCHEMATIC_DESTRUCTOR_NAME, getBase());
-		}
-		if (boardFileManager.existsSchematic(SCHEMATIC_CONSTRUCTOR_NAME)) {
-			boardFileManager.loadSchematic(SCHEMATIC_CONSTRUCTOR_NAME);
-		}
-
-		if (tagResolve != null) {
-			Scheduler.runAndWait(() -> {
-				for (var l : tagResolve.toLocations())
-					l.getBlock()
-					 .setType(Material.AIR);
-			});
-		}
-	}
-
-	protected void degenerate() {
-		if (boardFileManager.existsSchematic(SCHEMATIC_DESTRUCTOR_NAME))
-			boardFileManager.loadSchematic(SCHEMATIC_DESTRUCTOR_NAME);
-		Scheduler.runAndWait(() -> {
-			for (var entity : getSpace().getMobsIn())
-				entity.remove();
-		});
-	}
-
-	public final Location getBase() {
-		return getSpace().getCenter();
-	}
-
-	public final Space getSpace() {
-		return space;
-	}
-
-	@Override
-	public final @NotNull Session getSession() {
-		return session;
-	}
-
-	public final @NotNull TagResolve getTagResolve() {
-		return tagResolve;
-	}
-
-	@Deprecated
-	public final @NotNull TagQuery tagQuery(@NotNull String tagName) {
-		return tagResolve.query(tagName);
-	}
-
-	public final @NotNull TagQuery tags(@NotNull String name) {
-		return tagResolve.query(name);
-	}
-
-	public final RemoteProcess getProcess() {
-		return remoteProcess;
-	}
-
-	public final @NotNull JavaPlugin getPlugin() {
-		return getSession().getPlugin();
-	}
-
-	public final @NotNull BoardFileManager getSchematicStorage() {
-		return boardFileManager;
-	}
-
-	public final boolean isUsed() {
-		return isUsed;
-	}
-
-	@Override
-	public final RemoteProcess getParentProcess() {
-		return session.getProcess();
-	}
-
-	protected int getDefaultTime() {
-		return 0;
-	}
-
-	protected @NotNull WeatherType getDefaultWeather() {
-		return WeatherType.CLEAR;
-	}
-
-	protected @NotNull Location getStartSpawnLocation() {
-		return getSpace().getAbove(getSpace().getCenter());
-	}
-
-	@Override
-	public void playerConstructor(PlayerConstructorEvent event) {
-		super.playerConstructor(event);
-		var player = event.getPlayer();
-		player.teleport(getStartSpawnLocation());
-		player.setPlayerTime(getDefaultTime(), false);
-		player.setPlayerWeather(getDefaultWeather());
-	}
-
-	@Override
-	public void playerDestructor(PlayerDestructorEvent event) {
-		super.playerDestructor(event);
-		var player = event.getPlayer();
-		player.resetPlayerWeather();
-		player.resetPlayerTime();
-	}
-
-	private void secureZoneValid() throws BoardStartException {
-		if (secureZone == null)
-			throw new BoardStartException("Method Board.generate() did not define SecureZone");
-	}
-
-	protected void setSecureZone(ISpatial spatial) {
-		secureZone = spatial;
-	}
-
-	public ISpatial getSecureZone() {
-		return secureZone;
-	}
+    public final ISpatial secureZone() {
+        return secureZone;
+    }
 }

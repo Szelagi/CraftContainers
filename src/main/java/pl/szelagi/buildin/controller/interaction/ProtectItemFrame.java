@@ -14,20 +14,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.ISessionComponent;
+import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.manager.BoardManager;
-import pl.szelagi.manager.ControllerManager;
+import pl.szelagi.manager.listener.ListenerManager;
+import pl.szelagi.manager.listener.Listeners;
 
-public class ProtectItemFrame extends Controller implements Listener {
-	public ProtectItemFrame(ISessionComponent sessionComponent) {
-		super(sessionComponent);
+public class ProtectItemFrame extends Controller {
+	public ProtectItemFrame(BaseComponent baseComponent) {
+		super(baseComponent);
 	}
 
 	@Override
-	public @Nullable Listener getListener() {
-		return new MyListener();
+	public Listeners defineListeners() {
+		return super.defineListeners().add(MyListener.class);
 	}
 
 	private static class MyListener implements Listener {
@@ -35,11 +35,9 @@ public class ProtectItemFrame extends Controller implements Listener {
 			var entityType = entity.getType();
 			if (entityType != EntityType.ITEM_FRAME)
 				return false;
-			var session = BoardManager.getSession(entity.getLocation());
-			if (session == null)
-				return false;
-			var controller = ControllerManager.getFirstController(session, ProtectItemFrame.class);
-			return (controller != null);
+			var session = BoardManager.session(entity.getLocation());
+			var component = ListenerManager.first(session, getClass(), ProtectItemFrame.class);
+			return (component != null);
 		}
 
 		@EventHandler(ignoreCancelled = true)

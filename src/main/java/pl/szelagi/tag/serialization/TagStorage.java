@@ -17,4 +17,5 @@ import java.util.List;
 public record TagStorage(@NotNull String tag,
                          @NotNull RelativePoint relativePoint,
                          @NotNull BlockFace blockFace,
-                         @NotNull List<String> args) implements Serializable {}
+                         @NotNull List<String> args) implements Serializable {
+}
