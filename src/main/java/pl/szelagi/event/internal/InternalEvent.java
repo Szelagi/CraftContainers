@@ -11,5 +11,15 @@ package pl.szelagi.event.internal;
 // Nie używa refleksji
 // Przykłady to ComponentConstructor, PlayerDestructor
 
+import java.util.LinkedList;
+
 public abstract class InternalEvent {
+    public LinkedList<Runnable> scheduled = new LinkedList<>();
+    public void safeSchedule(Runnable runnable) {
+        scheduled.add(runnable);
+    }
+
+    public LinkedList<Runnable> scheduled() {
+        return scheduled;
+    }
 }

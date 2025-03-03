@@ -20,9 +20,7 @@ import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.baseComponent.StartException;
 import pl.szelagi.component.baseComponent.StopException;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.InvokeType;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.*;
 import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
@@ -63,7 +61,7 @@ public abstract class Session extends BaseComponent {
         // Inaczej metoda super.stop(), wywoła destruktory graczy InvokeType SELF.
         var playersCopy = new ArrayList<>(players);
         for (var player : playersCopy) {
-            removePlayer(player);
+            removePlayer(player, Cause.SESSION_END);
         }
 
         // mapa jest rodzicem sesji, więc zostanie też wyłączona
@@ -101,8 +99,9 @@ public abstract class Session extends BaseComponent {
         players.add(player);
 
         // wywołaj event o dołączeniu gracza
-        var otherPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
-        var playerConstructorEvent = new PlayerConstructor(player, otherPlayers, players, InvokeType.PLAYER_CHANGE);
+        var prevPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
+        var newPlayers = players();
+        var playerConstructorEvent = new PlayerChangeConstructor(player, newPlayers, prevPlayers, newPlayers);
         callOldToYoung(playerConstructorEvent);
 
         // zarejestruj gracza w recovery (dla każdego komponentu)
@@ -112,8 +111,11 @@ public abstract class Session extends BaseComponent {
         recovery.updatePlayer(recoveryEvent);
     }
 
-    @MustBeInvokedByOverriders
     public final void removePlayer(Player player) throws PlayerQuitException {
+        removePlayer(player, Cause.OTHER);
+    }
+
+    private void removePlayer(Player player, Cause cause) throws PlayerQuitException {
         // Sprawdzenie, czy gracz jest w sesji, z której jest usuwany.
         if (!players.contains(player)) {
             throw new PlayerQuitException("Player " + player.getName() + " is not in this session");
@@ -123,12 +125,17 @@ public abstract class Session extends BaseComponent {
         recovery().destryPlayer(player);
 
         // wykonaj event o opuszczeniu gracza
-        var otherPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
-        var event = new PlayerDestructor(player, otherPlayers, players, InvokeType.PLAYER_CHANGE);
+        var prevPlayers = new ArrayList<>(players);
+        prevPlayers.add(player);
+
+        var newPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
+
+        var event = new PlayerChangeDestructor(player, prevPlayers, prevPlayers, newPlayers, cause);
         callYoungToOld(event);
 
         // usuń relację o graczu w managerze
         SessionManager.removeRelation(player);
+
         // usuń gracza z listy graczy w sesji
         players.remove(player);
     }
@@ -167,7 +174,7 @@ public abstract class Session extends BaseComponent {
     }
 
     @Override
-    public String rootDirectoryName() {
+    public String defineDirectoryPath() {
         return "session/" + name();
     }
 

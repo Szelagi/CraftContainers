@@ -34,17 +34,16 @@ public class OtherGameMode extends Controller {
 	@Override
 	public void onPlayerInit(PlayerConstructor event) {
 		super.onPlayerInit(event);
-		states.getOrCreate(event.getPlayer());
-		event.getPlayer().setGameMode(gameMode);
+		states.createOrThrow(event.player());
+		event.player().setGameMode(gameMode);
 	}
 
 	@Override
 	public void onPlayerDestroy(PlayerDestructor event) {
 		super.onPlayerDestroy(event);
-		var player = event.getPlayer();
-		var state = states.getOrCreate(player);
+		var player = event.player();
+		var state = states.removeOrThrow(player);
 		player.setGameMode(state.getGameMode());
-		states.removeIfExists(player);
 	}
 
 	@Override
@@ -56,5 +55,4 @@ public class OtherGameMode extends Controller {
 			player.setGameMode(gameMode);
 		});
 	}
-
 }

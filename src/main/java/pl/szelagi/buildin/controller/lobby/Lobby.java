@@ -73,7 +73,7 @@ public class Lobby extends Controller {
 	@Override
 	public void onPlayerInit(PlayerConstructor event) {
 		super.onPlayerInit(event);
-		var player = event.getPlayer();
+		var player = event.player();
 		if (!isLobby)
 			return;
 		player.teleport(lobby);
@@ -85,7 +85,7 @@ public class Lobby extends Controller {
 	@Override
 	public void onPlayerDestroy(PlayerDestructor event) {
 		super.onPlayerDestroy(event);
-		var player = event.getPlayer();
+		var player = event.player();
 		if (!isLobby)
 			return;
 		for (var p : players())

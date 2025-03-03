@@ -29,11 +29,11 @@ public class HideOtherPlayers extends Controller {
 		for (var player : plugin().getServer()
 				.getOnlinePlayers())
 			if (!players().contains(player))
-				event.getPlayer()
+				event.player()
 						.hidePlayer(plugin(), player);
 
 		for (var player : players())
-			player.showPlayer(plugin(), event.getPlayer());
+			player.showPlayer(plugin(), event.player());
 	}
 
 	@Override
@@ -41,11 +41,11 @@ public class HideOtherPlayers extends Controller {
 		super.onPlayerDestroy(event);
 		for (var player : plugin().getServer()
 				.getOnlinePlayers())
-			event.getPlayer()
+			event.player()
 					.showPlayer(plugin(), player);
 
 		for (var player : players())
-			player.hidePlayer(plugin(), event.getPlayer());
+			player.hidePlayer(plugin(), event.player());
 	}
 
 	@Override

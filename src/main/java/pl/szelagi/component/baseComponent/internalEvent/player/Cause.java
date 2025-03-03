@@ -7,13 +7,6 @@
 
 package pl.szelagi.component.baseComponent.internalEvent.player;
 
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-
-public class PlayerConstructor extends PlayerEvent {
-    public PlayerConstructor(@NotNull Player player, @NotNull List<Player> allPlayers) {
-        super(player, allPlayers);
-    }
+public enum Cause {
+    SESSION_END, OTHER
 }

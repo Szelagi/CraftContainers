@@ -246,7 +246,7 @@ public abstract class Board extends BaseComponent {
     public void onPlayerInit(PlayerConstructor event) {
         super.onPlayerInit(event);
 
-        var player = event.getPlayer();
+        var player = event.player();
         player.teleport(spawnLocation());
         player.setPlayerTime(defaultTime(), false);
         player.setPlayerWeather(defaultWeather());
@@ -256,7 +256,7 @@ public abstract class Board extends BaseComponent {
     public void onPlayerDestroy(PlayerDestructor event) {
         super.onPlayerDestroy(event);
 
-        var player = event.getPlayer();
+        var player = event.player();
         player.resetPlayerWeather();
         player.resetPlayerTime();
     }
@@ -279,7 +279,7 @@ public abstract class Board extends BaseComponent {
     }
 
     @Override
-    public String rootDirectoryName() {
+    public String defineDirectoryPath() {
         return "board/" + name();
     }
 

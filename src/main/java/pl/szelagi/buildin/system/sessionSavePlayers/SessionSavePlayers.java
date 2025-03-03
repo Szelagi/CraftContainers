@@ -30,7 +30,7 @@ public class SessionSavePlayers extends Controller {
     @Override
     public void onPlayerInit(PlayerConstructor event) {
         super.onPlayerInit(event);
-        var player = event.getPlayer();
+        var player = event.player();
         playerContainer.createOrThrow(player);
 
         player.setFallDistance(0);
@@ -43,7 +43,7 @@ public class SessionSavePlayers extends Controller {
     @Override
     public void onPlayerDestroy(PlayerDestructor event) {
         super.onPlayerDestroy(event);
-        var player = event.getPlayer();
+        var player = event.player();
         for (var potionEffectType : NEGATIVE_POTION_TYPES) {
             player.removePotionEffect(potionEffectType);
         }
