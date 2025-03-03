@@ -66,7 +66,7 @@ public class BossBarController extends Controller {
 	public void onPlayerInit(PlayerConstructor event) {
 		super.onPlayerInit(event);
 		if (bossBar != null) {
-			bossBar.addPlayer(event.getPlayer());
+			bossBar.addPlayer(event.player());
 		}
 	}
 
@@ -74,7 +74,7 @@ public class BossBarController extends Controller {
 	public void onPlayerDestroy(PlayerDestructor event) {
 		super.onPlayerDestroy(event);
 		if (bossBar != null) {
-			bossBar.removePlayer(event.getPlayer());
+			bossBar.removePlayer(event.player());
 		}
 	}
 

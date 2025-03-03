@@ -10,10 +10,10 @@ package pl.szelagi.component.baseComponent.internalEvent.player;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.List;
 
-public class PlayerDestructor extends PlayerChangeEvent {
-    public PlayerDestructor(@NotNull Player player, @NotNull Collection<Player> otherSessionPlayers, @NotNull Collection<Player> allSessionPlayers, @NotNull InvokeType invokeType) {
-        super(player, otherSessionPlayers, allSessionPlayers, invokeType);
+public class PlayerDestructor extends PlayerEvent {
+    public PlayerDestructor(@NotNull Player player, @NotNull List<Player> allPlayers) {
+        super(player, allPlayers);
     }
 }

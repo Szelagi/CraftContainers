@@ -118,9 +118,10 @@ public class ListenerManager implements Listener {
         if (session == null) return null;
         var pair = sessionListenerPair(session, listenerClass);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
-        if (components == null) {
-            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered correctly.");
-        }
+        if (components == null) return null;
+//        if (components == null) {
+//            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered correctly.");
+//        }
         return components;
     }
 
@@ -143,12 +144,16 @@ public class ListenerManager implements Listener {
         if (session == null) return null;
         var pair = sessionListenerPair(session, listenerClass);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
-        if (components == null) {
-            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered.");
-        }
-        if (components.isEmpty()) {
-            throw new IllegalStateException("Expected at least one component, but none were found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'.");
-        }
+        if (components == null) return null;
+        if (components.isEmpty()) return null;
+
+        // nie jest potrzebne
+//        if (components == null) {
+//            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered.");
+//        }
+//        if (components.isEmpty()) {
+//            throw new IllegalStateException("Expected at least one component, but none were found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'.");
+//        }
         return components.getFirst();
     }
 

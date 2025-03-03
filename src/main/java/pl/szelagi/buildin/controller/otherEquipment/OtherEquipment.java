@@ -34,7 +34,7 @@ public class OtherEquipment extends Controller {
 	public void onPlayerInit(PlayerConstructor event) {
 		super.onPlayerInit(event);
 
-		var player = event.getPlayer();
+		var player = event.player();
 		eqStatePlayerContainer.getOrCreate(player).save();
 		if (isClearEquipment) {
 			player.getInventory().clear();
@@ -52,7 +52,7 @@ public class OtherEquipment extends Controller {
 	@Override
 	public void onPlayerDestroy(PlayerDestructor event) {
 		super.onPlayerDestroy(event);
-		var player = event.getPlayer();
+		var player = event.player();
 		eqStatePlayerContainer.getOrThrow(player).load(player);
 	}
 

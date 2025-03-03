@@ -10,16 +10,13 @@ package pl.szelagi.component.baseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.InvokeType;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.*;
 import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
@@ -56,6 +53,9 @@ public abstract class BaseComponent implements SAPIListener {
     private final FileManager fileManager;
     private final Listeners listeners;
 
+    // testowy system śledzenie, jakie player init/destroy zostały wykonane, aby nie wykonywać wielokrotnie
+    private final Set<Player> constructedPlayers = new HashSet<>();
+
     // potrzebna do rozwiązania problemu "Recursive Flow Inversion"
     private boolean isInvokePlayersConstructor = false;
 
@@ -80,8 +80,13 @@ public abstract class BaseComponent implements SAPIListener {
         // Internal events
         eventHandlers.put(ComponentConstructor.class, e -> onComponentInit((ComponentConstructor) e));
         eventHandlers.put(ComponentDestructor.class, e -> onComponentDestroy((ComponentDestructor) e));
-        eventHandlers.put(PlayerConstructor.class, e -> onPlayerInit((PlayerConstructor) e));
-        eventHandlers.put(PlayerDestructor.class, e -> onPlayerDestroy((PlayerDestructor) e));
+
+        eventHandlers.put(PlayerConstructor.class, e -> watchdogPlayerInit((PlayerConstructor) e));
+        eventHandlers.put(PlayerChangeConstructor.class, e -> watchdogPlayerInit((PlayerChangeConstructor) e));
+
+        eventHandlers.put(PlayerDestructor.class, e -> watchdogPlayerDestroy((PlayerDestructor) e));
+        eventHandlers.put(PlayerChangeDestructor.class, e -> watchdogPlayerDestroy((PlayerChangeDestructor) e));
+
         eventHandlers.put(PlayerJoinRequest.class, e -> onPlayerJoinRequest((PlayerJoinRequest) e));
         eventHandlers.put(ComponentRecovery.class, e -> onComponentRecovery((ComponentRecovery) e));
         eventHandlers.put(PlayerRecovery.class, e -> onPlayerRecovery((PlayerRecovery) e));
@@ -97,7 +102,24 @@ public abstract class BaseComponent implements SAPIListener {
         // identifier wymaga zdefiniowanego: name & id
         identifier = ComponentManager.componentIdentifier(this);
 
-        fileManager = new FileManager(rootDirectoryName());
+        fileManager = new FileManager(defineDirectoryPath());
+    }
+
+    private void watchdogPlayerInit(PlayerConstructor event) {
+        var player = event.player();
+        // odrzuć, jeżeli ten event został wykonany już dla tego gracza
+        if (constructedPlayers.contains(player)) return;
+
+        constructedPlayers.add(player);
+        onPlayerInit(event);
+    }
+
+    private void watchdogPlayerDestroy(PlayerDestructor event) {
+        var player = event.player();
+        if (!constructedPlayers.contains(player)) return;
+
+        constructedPlayers.remove(player);
+        onPlayerDestroy(event);
     }
 
 
@@ -151,9 +173,8 @@ public abstract class BaseComponent implements SAPIListener {
 
             var playersClone = new ArrayList<>(players());
             for (var player : playersClone) {
-                var otherPlayers = playersClone.stream().filter(lp -> !lp.equals(player)).toList();
                 component.isInvokePlayersConstructor = true; // Nakładamy flagę że event został użyty, aby algorytm unikał tego komponentu
-                component.call(new PlayerConstructor(player, otherPlayers, players(), InvokeType.LOCAL));
+                component.call(new PlayerConstructor(player, players()));
 
                 // recovery player
                 component.backupPlayerOnFailure(player);
@@ -192,8 +213,7 @@ public abstract class BaseComponent implements SAPIListener {
         // InvokeType wynosi SELF, ponieważ event jest wywoływane bez zmiany ilości graczy w sesji.
         var playersClone = new ArrayList<>(players());
         for (var player : playersClone) {
-            var otherPlayers = playersClone.stream().filter(lp -> !lp.equals(player)).toList();
-            call(new PlayerDestructor(player, otherPlayers, players(), InvokeType.LOCAL));
+            call(new PlayerDestructor(player, players()));
         }
 
         // wywołaj event o destruktorze komponentu
@@ -240,7 +260,7 @@ public abstract class BaseComponent implements SAPIListener {
     public abstract @Nullable Board board();
 
     // Domyślnym folderem, z którego są ładowane pliki mapy jest folder o nazwie mapy
-    public String rootDirectoryName() {
+    public String defineDirectoryPath() {
         return "component/" + name();
     }
 
@@ -297,6 +317,7 @@ public abstract class BaseComponent implements SAPIListener {
     private void call(Iterator<BaseComponent> iterator, InternalEvent event) {
         while (iterator.hasNext()) {
             var component = iterator.next();
+            if (component.status() != ComponentStatus.RUNNING) continue;
             var handler = component.eventHandlers.get(event.getClass());
             if (handler == null) {
                 throw new IllegalStateException(
@@ -337,12 +358,12 @@ public abstract class BaseComponent implements SAPIListener {
 
     @MustBeInvokedByOverriders
     public void onPlayerInit(PlayerConstructor event) {
-        Debug.send(this, "player init: (" + event.getPlayer().getName() + ")" );
+        Debug.send(this, "player init: (" + event.player().getName() + ")" );
     }
 
     @MustBeInvokedByOverriders
     public void onPlayerDestroy(PlayerDestructor event) {
-        Debug.send(this, "player destroy: (" + event.getPlayer().getName() + ")" );
+        Debug.send(this, "player destroy: (" + event.player().getName() + ")" );
     }
 
     @MustBeInvokedByOverriders

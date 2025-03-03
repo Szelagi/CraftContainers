@@ -33,17 +33,17 @@ public class VisualEnvironment extends Controller {
 	@Override
 	public void onPlayerInit(PlayerConstructor event) {
 		super.onPlayerInit(event);
-		event.getPlayer()
+		event.player()
 				.setPlayerWeather(weatherType);
-		event.getPlayer()
+		event.player()
 				.setPlayerTime(ticks, false);
 	}
 
 	@Override
 	public void onPlayerDestroy(PlayerDestructor event) {
 		super.onPlayerDestroy(event);
-		event.getPlayer().resetPlayerWeather();
-		event.getPlayer().resetPlayerTime();
+		event.player().resetPlayerWeather();
+		event.player().resetPlayerTime();
 	}
 
 }
