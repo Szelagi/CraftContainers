@@ -80,13 +80,8 @@ public abstract class BaseComponent implements SAPIListener {
         // Internal events
         eventHandlers.put(ComponentConstructor.class, e -> onComponentInit((ComponentConstructor) e));
         eventHandlers.put(ComponentDestructor.class, e -> onComponentDestroy((ComponentDestructor) e));
-
         eventHandlers.put(PlayerConstructor.class, e -> watchdogPlayerInit((PlayerConstructor) e));
-        eventHandlers.put(PlayerChangeConstructor.class, e -> watchdogPlayerInit((PlayerChangeConstructor) e));
-
         eventHandlers.put(PlayerDestructor.class, e -> watchdogPlayerDestroy((PlayerDestructor) e));
-        eventHandlers.put(PlayerChangeDestructor.class, e -> watchdogPlayerDestroy((PlayerChangeDestructor) e));
-
         eventHandlers.put(PlayerJoinRequest.class, e -> onPlayerJoinRequest((PlayerJoinRequest) e));
         eventHandlers.put(ComponentRecovery.class, e -> onComponentRecovery((ComponentRecovery) e));
         eventHandlers.put(PlayerRecovery.class, e -> onPlayerRecovery((PlayerRecovery) e));
@@ -153,7 +148,7 @@ public abstract class BaseComponent implements SAPIListener {
         isInvokePlayersConstructor = false;
 
         // wywołaj event o konstruktorze komponentu
-        call(new ComponentConstructor(this, players()));
+        call(new ComponentConstructor(this));
 
         // Wywołaj event o konstruktorze gracza dla każdego gracza w sesji.
         // Klonujemy listę, aby zapobiec błędu wynikającego z modyfikacji graczy w trakcie przechodzenia przez listę.
@@ -174,7 +169,7 @@ public abstract class BaseComponent implements SAPIListener {
             var playersClone = new ArrayList<>(players());
             for (var player : playersClone) {
                 component.isInvokePlayersConstructor = true; // Nakładamy flagę że event został użyty, aby algorytm unikał tego komponentu
-                component.call(new PlayerConstructor(player, players()));
+                component.call(new PlayerConstructor(player, players(), PlayerInitCause.COMPONENT_INIT, null));
 
                 // recovery player
                 component.backupPlayerOnFailure(player);
@@ -213,11 +208,11 @@ public abstract class BaseComponent implements SAPIListener {
         // InvokeType wynosi SELF, ponieważ event jest wywoływane bez zmiany ilości graczy w sesji.
         var playersClone = new ArrayList<>(players());
         for (var player : playersClone) {
-            call(new PlayerDestructor(player, players()));
+            call(new PlayerDestructor(player, players(), PlayerDestroyCause.COMPONENT_DESTROY, null));
         }
 
         // wywołaj event o destruktorze komponentu
-        call(new ComponentDestructor(this, players()));
+        call(new ComponentDestructor(this));
 
         // wyrejestruj komponent z recovery
         session().recovery().destroyComponent(this);

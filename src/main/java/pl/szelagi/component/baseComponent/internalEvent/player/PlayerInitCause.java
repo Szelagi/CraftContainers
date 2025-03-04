@@ -7,6 +7,15 @@
 
 package pl.szelagi.component.baseComponent.internalEvent.player;
 
-public enum InvokeType {
-    LOCAL, PLAYER_CHANGE
+public enum PlayerInitCause {
+    COMPONENT_INIT(false), PLAYER_JOIN(true);
+
+    private final boolean isPlayerChange;
+    PlayerInitCause(boolean isPlayerChange) {
+        this.isPlayerChange = isPlayerChange;
+    }
+
+    public boolean isPlayerChange() {
+        return isPlayerChange;
+    }
 }

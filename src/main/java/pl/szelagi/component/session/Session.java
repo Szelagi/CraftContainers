@@ -61,7 +61,7 @@ public abstract class Session extends BaseComponent {
         // Inaczej metoda super.stop(), wywoła destruktory graczy InvokeType SELF.
         var playersCopy = new ArrayList<>(players);
         for (var player : playersCopy) {
-            removePlayer(player, Cause.SESSION_END);
+            removePlayer(player, PlayerDestroyCause.SESSION_DESTROY);
         }
 
         // mapa jest rodzicem sesji, więc zostanie też wyłączona
@@ -101,7 +101,8 @@ public abstract class Session extends BaseComponent {
         // wywołaj event o dołączeniu gracza
         var prevPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
         var newPlayers = players();
-        var playerConstructorEvent = new PlayerChangeConstructor(player, newPlayers, prevPlayers, newPlayers);
+        var playerChange = new PlayerChange(prevPlayers, newPlayers);
+        var playerConstructorEvent = new PlayerConstructor(player, newPlayers, PlayerInitCause.PLAYER_JOIN, playerChange);
         callOldToYoung(playerConstructorEvent);
 
         // zarejestruj gracza w recovery (dla każdego komponentu)
@@ -112,10 +113,10 @@ public abstract class Session extends BaseComponent {
     }
 
     public final void removePlayer(Player player) throws PlayerQuitException {
-        removePlayer(player, Cause.OTHER);
+        removePlayer(player, PlayerDestroyCause.PLAYER_QUIT);
     }
 
-    private void removePlayer(Player player, Cause cause) throws PlayerQuitException {
+    private void removePlayer(Player player, PlayerDestroyCause cause) throws PlayerQuitException {
         // Sprawdzenie, czy gracz jest w sesji, z której jest usuwany.
         if (!players.contains(player)) {
             throw new PlayerQuitException("Player " + player.getName() + " is not in this session");
@@ -129,8 +130,8 @@ public abstract class Session extends BaseComponent {
         prevPlayers.add(player);
 
         var newPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
-
-        var event = new PlayerChangeDestructor(player, prevPlayers, prevPlayers, newPlayers, cause);
+        var playerChange = new PlayerChange(prevPlayers, newPlayers);
+        var event = new PlayerDestructor(player, prevPlayers, cause, playerChange);
         callYoungToOld(event);
 
         // usuń relację o graczu w managerze

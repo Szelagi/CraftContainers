@@ -33,26 +33,6 @@ public abstract class PlayerEvent extends InternalEvent {
         return player;
     }
 
-    public @NotNull InvokeType invokeType() {
-        if (this instanceof PlayerChange) {
-            assert playerChange() != null;
-            return InvokeType.PLAYER_CHANGE;
-        } else {
-            return InvokeType.LOCAL;
-        }
-    }
-
-    public @Nullable PlayerChange playerChange() {
-        if (this instanceof PlayerChange) {
-            return (PlayerChange) this;
-        }
-        return null;
-    }
-
-    public @NotNull Cause cause() {
-        return Cause.OTHER;
-    }
-
     public @NotNull Collection<Player> allPlayers() {
         return allPlayers;
     }
@@ -61,4 +41,7 @@ public abstract class PlayerEvent extends InternalEvent {
         return allPlayers.stream().filter(p -> !p.equals(player)).toList();
     }
 
+    public abstract @Nullable PlayerChange playerChange();
+
+    public abstract @NotNull Object cause();
 }

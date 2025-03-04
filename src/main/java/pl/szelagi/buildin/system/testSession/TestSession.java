@@ -9,7 +9,10 @@ package pl.szelagi.buildin.system.testSession;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import pl.szelagi.buildin.InactiveDelayClose;
+import pl.szelagi.buildin.ZeroPlayerClose;
 import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
+import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
@@ -25,8 +28,9 @@ public class TestSession extends Session {
 	}
 
 	@Override
-	public void onComponentDestroy(ComponentDestructor event) {
-		super.onComponentDestroy(event);
+	public void onComponentInit(ComponentConstructor event) {
+		super.onComponentInit(event);
 		new OtherEquipment(this).start();
 	}
+
 }

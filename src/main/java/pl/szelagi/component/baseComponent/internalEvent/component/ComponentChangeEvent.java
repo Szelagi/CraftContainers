@@ -18,29 +18,27 @@ import java.util.List;
 
 public abstract class ComponentChangeEvent extends InternalEvent {
     private final @NotNull BaseComponent component;
-    private final @Nullable BaseComponent parentComponent;
-    private final @NotNull List<Player> currentPlayers;
 
-    public ComponentChangeEvent(@NotNull BaseComponent component, @NotNull List<Player> currentPlayers) {
+    public ComponentChangeEvent(@NotNull BaseComponent component) {
         this.component = component;
-        if (component.parent() != null) {
-            this.parentComponent = component
-                    .parent();
-        } else {
-            this.parentComponent = null;
-        }
-        this.currentPlayers = currentPlayers;
     }
 
+    public @NotNull BaseComponent component() {
+        return component;
+    }
+
+    @Deprecated
     public @NotNull BaseComponent getComponent() {
         return component;
     }
 
+    @Deprecated
     public @Nullable BaseComponent getParentComponent() {
-        return parentComponent;
+        return component.parent();
     }
 
+    @Deprecated
     public @NotNull Collection<Player> getCurrentPlayers() {
-        return currentPlayers;
+        return component.players();
     }
 }
