@@ -6,8 +6,8 @@
     <title>Project Migration to Version 2.3 | SessionAPI</title>
     <meta name="description" content="The library facilitates game containerization on a Minecraft server, enabling the creation of isolated environments within the game with separate logic and state.">
     <link rel="stylesheet" href="/SessionAPI/assets/style.427ad4b5.css">
-    <link rel="modulepreload" href="/SessionAPI/assets/app.2f48642a.js">
-    <link rel="modulepreload" href="/SessionAPI/assets/en_migration_2.3.md.a70a2d3a.lean.js">
+    <link rel="modulepreload" href="/SessionAPI/assets/app.1feda514.js">
+    <link rel="modulepreload" href="/SessionAPI/assets/en_migration_2.3.md.01f85a27.lean.js">
     
     <link rel="icon" type="image/svg+xml" href="/logo.svg">
   <meta name="keywords" content="SessionAPI, Minecraft, game, containerization, server, minigames">
@@ -76,7 +76,7 @@
 <span class="line"></span>
 <span class="line"><span style="color:#89DDFF;">@</span><span style="color:#C792EA;">Override</span></span>
 <span class="line"><span style="color:#C792EA;">public</span><span style="color:#A6ACCD;"> </span><span style="color:#C792EA;">void</span><span style="color:#A6ACCD;"> </span><span style="color:#82AAFF;">playerDestructorRecovery</span><span style="color:#89DDFF;">(</span><span style="color:#C792EA;">PlayerRecoveryEvent</span><span style="color:#A6ACCD;"> event</span><span style="color:#89DDFF;">)</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">{}</span></span>
-<span class="line"></span></code></pre></div></div><h2 id="bukkit-listener-i-filtrowanie-eventow" tabindex="-1">Bukkit Listener i filtrowanie eventów <a class="header-anchor" href="#bukkit-listener-i-filtrowanie-eventow" aria-hidden="true">#</a></h2><div class="tip custom-block"><p class="custom-block-title">v2.3</p><p>New methods have been introduced with constant computational complexity when searching for components related to a listener.</p><div class="language-java"><button title="Copy Code" class="copy"></button><span class="lang">java</span><pre class="shiki"><code><span class="line"><span style="color:#676E95;">// MyComponent.class</span></span>
+<span class="line"></span></code></pre></div></div><h2 id="bukkit-listener-and-event-filtering" tabindex="-1">Bukkit Listener and Event Filtering <a class="header-anchor" href="#bukkit-listener-and-event-filtering" aria-hidden="true">#</a></h2><div class="tip custom-block"><p class="custom-block-title">v2.3</p><p>New methods have been introduced with constant computational complexity when searching for components related to a listener.</p><div class="language-java"><button title="Copy Code" class="copy"></button><span class="lang">java</span><pre class="shiki"><code><span class="line"><span style="color:#676E95;">// MyComponent.class</span></span>
 <span class="line"><span style="color:#89DDFF;">@</span><span style="color:#C792EA;">Override</span></span>
 <span class="line"><span style="color:#C792EA;">public</span><span style="color:#A6ACCD;"> </span><span style="color:#C792EA;">Listeners</span><span style="color:#A6ACCD;"> </span><span style="color:#82AAFF;">defineListeners</span><span style="color:#89DDFF;">()</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">{</span></span>
 <span class="line"><span style="color:#A6ACCD;">    </span><span style="color:#89DDFF;">return</span><span style="color:#A6ACCD;"> super</span><span style="color:#89DDFF;">.</span><span style="color:#82AAFF;">defineListeners</span><span style="color:#89DDFF;">().</span><span style="color:#82AAFF;">add</span><span style="color:#89DDFF;">(</span><span style="color:#A6ACCD;">MyListener</span><span style="color:#89DDFF;">.</span><span style="color:#A6ACCD;">class</span><span style="color:#89DDFF;">);</span></span>
@@ -283,14 +283,14 @@
 <span class="line"></span>
 <span class="line"><span style="color:#89DDFF;">@</span><span style="color:#C792EA;">Override</span></span>
 <span class="line"><span style="color:#C792EA;">public</span><span style="color:#A6ACCD;"> </span><span style="color:#C792EA;">String</span><span style="color:#A6ACCD;"> </span><span style="color:#82AAFF;">defineDirectoryPath</span><span style="color:#89DDFF;">()</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">{</span></span>
-<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Sposób 1 (statyczna nazwa)</span></span>
-<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Wskazuje na plugins/SessionAPI/board/myDirectory</span></span>
-<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Każdy komponent tej instancji będzie korzystał z tego katalogu</span></span>
-<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Dlatego lepiej używać dynamicznej nazwy z użyciem name()</span></span>
+<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Method 1 (static name)</span></span>
+<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Points to plugins/SessionAPI/board/myDirectory</span></span>
+<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Every component of this instance will use this directory</span></span>
+<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// It’s better to use a dynamic name with name()</span></span>
 <span class="line"><span style="color:#A6ACCD;">    </span><span style="color:#89DDFF;">return</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">&quot;</span><span style="color:#C3E88D;">board/myDirectory</span><span style="color:#89DDFF;">&quot;</span><span style="color:#89DDFF;">;</span></span>
-<span class="line"><span style="color:#A6ACCD;">            </span></span>
-<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Sposób 2 (dynamiczna nazwa)</span></span>
-<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// name() zwraca: &lt;className&gt;&lt;C for controller | B for board | S for session&gt;#&lt;pluginName&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// Method 2 (dynamic name)</span></span>
+<span class="line"><span style="color:#89DDFF;">    </span><span style="color:#676E95;">// name() returns: &lt;className&gt;&lt;C for controller | B for board | S for session&gt;#&lt;pluginName&gt;</span></span>
 <span class="line"><span style="color:#A6ACCD;">    </span><span style="color:#89DDFF;">return</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">&quot;</span><span style="color:#C3E88D;">board/</span><span style="color:#89DDFF;">&quot;</span><span style="color:#A6ACCD;"> </span><span style="color:#89DDFF;">+</span><span style="color:#A6ACCD;"> </span><span style="color:#82AAFF;">name</span><span style="color:#89DDFF;">();</span></span>
 <span class="line"><span style="color:#89DDFF;">}</span></span>
 <span class="line"></span></code></pre></div></div><div class="danger custom-block"><p class="custom-block-title">Old</p><p>Previously, the file system for the map could be defined by overriding the <strong>getName()</strong> method.</p></div><h2 id="loading-schematics" tabindex="-1">Loading Schematics <a class="header-anchor" href="#loading-schematics" aria-hidden="true">#</a></h2><div class="tip custom-block"><p class="custom-block-title">v2.3</p><p>The default <strong>generate()</strong> method loads a map from a schematic in the map files.</p><div class="language-java"><button title="Copy Code" class="copy"></button><span class="lang">java</span><pre class="shiki"><code><span class="line"><span style="color:#89DDFF;">@</span><span style="color:#C792EA;">Override</span></span>
@@ -364,8 +364,8 @@
 <span class="line"></span>
 <span class="line"><span style="color:#89DDFF;">}</span></span>
 <span class="line"></span></code></pre></div></div></div></div></main><!--[--><!--]--><footer class="VPDocFooter" data-v-cfb513e0 data-v-21f75714><!----><div class="prev-next" data-v-21f75714><div class="pager" data-v-21f75714><a class="pager-link prev" href="/SessionAPI/en/" data-v-21f75714><span class="desc" data-v-21f75714>Previous page</span><span class="title" data-v-21f75714>Introduction</span></a></div><div class="has-prev pager" data-v-21f75714><!----></div></div></footer><!--[--><!--]--></div></div></div></div></div><!----><!--[--><!--]--></div></div>
-    <script>__VP_HASH_MAP__ = JSON.parse("{\"en_index.md\":\"66e380f8\",\"en_migration_2.3.md\":\"a70a2d3a\",\"index.md\":\"9034c68a\",\"pl_first-project.md\":\"af1bf80e\",\"pl_index.md\":\"8b73c2d7\",\"pl_installation.md\":\"7d043925\",\"pl_migration_2.3.md\":\"5e966010\",\"pl_security.md\":\"bd562c1c\"}")</script>
-    <script type="module" async src="/SessionAPI/assets/app.2f48642a.js"></script>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"en_index.md\":\"9f0b7146\",\"en_migration_2.3.md\":\"01f85a27\",\"index.md\":\"29fd85f0\",\"pl_engine_admin-commands.md\":\"cee48477\",\"pl_engine_board-creator.md\":\"c3439d46\",\"pl_engine_board.md\":\"2741e7b8\",\"pl_engine_bukkit-events.md\":\"2fee0bbd\",\"pl_engine_containers.md\":\"5c588e16\",\"pl_engine_grouping.md\":\"181093d0\",\"pl_engine_internal-events.md\":\"f22cec67\",\"pl_engine_location-tags.md\":\"14d99d08\",\"pl_engine_multi-komponent-session.md\":\"e6c2632e\",\"pl_engine_recovery.md\":\"6ec49b32\",\"pl_index.md\":\"12569920\",\"pl_introduction_application.md\":\"83114517\",\"pl_introduction_first-project.md\":\"81464f24\",\"pl_introduction_key-features.md\":\"e9e85a39\",\"pl_introduction_modularity.md\":\"f8876276\",\"pl_migration_2.3.md\":\"c973ab4c\",\"pl_security.md\":\"8aae2b73\",\"pl_technical_creator.md\":\"48b4435b\",\"pl_technical_installation.md\":\"371499ee\",\"pl_technical_internal-events.md\":\"f1fe90c8\",\"pl_technical_nested-trees.md\":\"29075d01\",\"pl_technical_sequence-event-execution.md\":\"ead00fd4\",\"pl_technical_tasks.md\":\"d0aac117\"}")</script>
+    <script type="module" async src="/SessionAPI/assets/app.1feda514.js"></script>
     
   </body>
 </html>

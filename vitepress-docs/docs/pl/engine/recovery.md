@@ -1,0 +1,1 @@
+# Awaryjne przywracanie stanu graczy i komponentów

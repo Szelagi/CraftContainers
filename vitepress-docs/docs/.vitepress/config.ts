@@ -42,36 +42,51 @@ export default defineConfig({
         sidebar: {
             pl: [
                 {
-                    text: 'Podstawy',
+                    text: 'Wprowadzenie',
                     items: [
-                        {text: 'Wprowadzenie', link: '/pl/'},
-                        {text: 'Instalacja', link: '/pl/installation'},
-                        {text: 'Pierwszy projekt', link: '/pl/first-project'},
-                        // {text: 'Kreator mapy', link: '/creator'},
+                        {text: 'Korzyści i rozwiązania', link: '/pl/introduction/key-features.md'},
+                        {text: 'Zastosowania', link: '/pl/introduction/application.md'},
+                        {text: 'Modularne podejście', link: '/pl/introduction/modularity.md'},
+                        {text: 'Pierwszy projekt', link: '/pl/introduction/first-project.md'}
                     ]
                 },
                 {
-                    text: 'Dokumentacja',
+                    text: 'Przewodnik techniczny',
                     items: [
-                        // {text: 'Kreator mapy', link: '/'},
-                        // {text: 'Adnotacje przestrzenne', link: '/getting-started/faq'},
-                        // {text: 'Sesja (Session)', link: '/getting-started/installation'},
-                        // {text: 'Mapa (Board)', link: '/getting-started/quick-start'},
-                        // {text: 'Kontroller (Controller)', link: '/getting-started/faq'},
-                        // {text: 'Zagnieżdzenia', link: '/getting-started/faq'},
-                        // {text: 'Listenery', link: '/getting-started/faq'},
-                        // {text: 'Zadania i wątki', link: '/getting-started/faq'},
-
+                        {text: 'Instalacja', link: '/pl/technical/installation.md'},
+                        {text: 'Zdarzenia wewnętrzne', link: '/pl/technical/internal-events.md'},
+                        {text: 'Kolejność zdarzeń lokalna', link: '/pl/technical/sequence-event-execution.md'},
+                        {text: 'Drzewa zagnieżdżone', link: '/pl/technical/nested-trees.md'},
+                        {text: 'Kreator map', link: '/pl/technical/creator.md'},
+                        {text: 'Zdarzenia bukkit', link: '/pl/technical/listeners.md'},
+                        {text: 'Zadania i wątki', link: '/pl/technical/tasks.md'},
+                        {text: 'Kontenery graczy', link: '/pl/technical/container.md'},
+                        {text: 'Przywracanie stanu', link: '/pl/technical/recovery.md'},
+                        {text: 'Generowanie mapy', link: '/pl/technical/board.md'},
+                        {text: 'Własne zdarzenia', link: '/pl/technical/custom-events.md'},
                     ]
                 },
                 {
                     text: 'Wbudowane komponenty',
-                    items: []
+                    items: [
+                        {text: 'Algorytmy grupujące', link: '/pl/buildin/grouping.md'},
+                        {text: 'Osobny ekwipunek', link: '/pl/buildin/other-equipment.md'},
+                        {text: 'Osobny tryb gry', link: '/pl/buildin/other-gamemode.md'},
+                        {text: 'Interaktywny sklep', link: '/pl/buildin/trader.md'},
+                        {text: 'Generator itemów', link: '/pl/buildin/generator.md'},
+                        {text: 'Poczekalnia', link: '/pl/buildin/lobby.md'},
+                    ]
+                },
+                {
+                    text: 'Przykładowe projekty',
+                    items: [
+                        {text: 'Gra CakeWars', link: '/pl/project/cakewars.md'},
+                    ]
                 },
                 {
                     text: 'Artykuły',
                     items: [
-                        {text: 'Migracja do 2.3', link: '/pl/migration_2.3'},
+                        {text: 'Migracja do v2.3', link: '/pl/migration_2.3'},
                         {text: 'Bezpieczeństwo w grach', link: '/pl/security'}
                     ]
                 },

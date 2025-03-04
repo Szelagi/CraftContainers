@@ -70,7 +70,7 @@ public void playerDestructorRecovery(PlayerRecoveryEvent event) {}
 ```
 :::
 
-## Bukkit Listener i filtrowanie eventów
+## Bukkit Listener and Event Filtering
 
 ::: tip v2.3
 New methods have been introduced with constant computational complexity when searching for components related to a listener.
@@ -331,14 +331,14 @@ Defines which folder the **fileManager()** method points to. Schematics, tags, a
 
 @Override
 public String defineDirectoryPath() {
-    // Sposób 1 (statyczna nazwa)
-    // Wskazuje na plugins/SessionAPI/board/myDirectory
-    // Każdy komponent tej instancji będzie korzystał z tego katalogu
-    // Dlatego lepiej używać dynamicznej nazwy z użyciem name()
+    // Method 1 (static name)
+    // Points to plugins/SessionAPI/board/myDirectory
+    // Every component of this instance will use this directory
+    // It’s better to use a dynamic name with name()
     return "board/myDirectory";
-            
-    // Sposób 2 (dynamiczna nazwa)
-    // name() zwraca: <className><C for controller | B for board | S for session>#<pluginName>
+
+    // Method 2 (dynamic name)
+    // name() returns: <className><C for controller | B for board | S for session>#<pluginName>
     return "board/" + name();
 }
 ```
