@@ -274,7 +274,7 @@ public abstract class Board extends BaseComponent {
     }
 
     @Override
-    public final @NotNull Board board() {
+    public final @Nullable Board board() {
         return session.board();
     }
 
