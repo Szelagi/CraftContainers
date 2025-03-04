@@ -7,6 +7,15 @@
 
 package pl.szelagi.component.baseComponent.internalEvent.player;
 
-public enum Cause {
-    SESSION_END, OTHER
+public enum PlayerDestroyCause {
+    COMPONENT_DESTROY(false), PLAYER_QUIT(true), SESSION_DESTROY(true);
+
+    private final boolean isPlayerChange;
+    PlayerDestroyCause(boolean isPlayerChange) {
+        this.isPlayerChange = isPlayerChange;
+    }
+
+    public boolean isPlayerChange() {
+        return isPlayerChange;
+    }
 }

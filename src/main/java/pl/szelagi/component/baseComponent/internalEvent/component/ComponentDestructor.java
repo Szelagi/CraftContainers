@@ -14,7 +14,7 @@ import pl.szelagi.component.baseComponent.BaseComponent;
 import java.util.List;
 
 public class ComponentDestructor extends ComponentChangeEvent {
-    public ComponentDestructor(@NotNull BaseComponent component, @NotNull List<Player> currentPlayers) {
-        super(component, currentPlayers);
+    public ComponentDestructor(@NotNull BaseComponent component) {
+        super(component);
     }
 }

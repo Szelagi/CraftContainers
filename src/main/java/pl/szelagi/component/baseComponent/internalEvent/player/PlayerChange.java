@@ -9,10 +9,8 @@ package pl.szelagi.component.baseComponent.internalEvent.player;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
-public interface PlayerChange {
-    @NotNull Player player();
-    @NotNull List<Player> prevPlayers();
-    @NotNull List<Player> newPlayers();
+public record PlayerChange(@NotNull List<Player> prevPlayers, @NotNull List<Player> newPlayers) {
 }
