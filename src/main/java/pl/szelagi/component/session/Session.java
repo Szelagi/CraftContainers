@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.szelagi.buildin.controller.HideOtherPlayers;
 import pl.szelagi.buildin.system.LoadingBoard;
 import pl.szelagi.buildin.system.SessionWatchDog;
@@ -161,7 +162,7 @@ public abstract class Session extends BaseComponent {
     }
 
     @Override
-    public final @NotNull Board board() {
+    public final @Nullable Board board() {
         return currentBoard;
     }
 

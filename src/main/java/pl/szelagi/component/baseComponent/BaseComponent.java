@@ -237,7 +237,7 @@ public abstract class BaseComponent implements SAPIListener {
 
     public abstract @NotNull Session session();
 
-    public abstract @NotNull Board board();
+    public abstract @Nullable Board board();
 
     // Domyślnym folderem, z którego są ładowane pliki mapy jest folder o nazwie mapy
     public String rootDirectoryName() {

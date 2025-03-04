@@ -9,6 +9,7 @@ package pl.szelagi.component.controller;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.baseComponent.StartException;
 import pl.szelagi.component.baseComponent.StopException;
@@ -53,7 +54,7 @@ public abstract class Controller extends BaseComponent {
     }
 
     @Override
-    public final @NotNull Board board() {
+    public final @Nullable Board board() {
         return session.board();
     }
 
