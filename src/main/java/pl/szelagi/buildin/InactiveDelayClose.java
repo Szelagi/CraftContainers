@@ -28,7 +28,7 @@ public class InactiveDelayClose extends Controller {
     }
 
     public InactiveDelayClose(@NotNull BaseComponent parent) {
-        this(parent, Time.seconds(12));
+        this(parent, Time.seconds(120));
     }
 
     @Override
