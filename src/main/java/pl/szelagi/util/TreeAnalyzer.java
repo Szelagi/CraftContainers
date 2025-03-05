@@ -4,6 +4,7 @@ import pl.szelagi.component.baseComponent.BaseComponent;
 
 import java.util.*;
 
+@Deprecated
 public class TreeAnalyzer {
     private final Map<Integer, List<BaseComponent>> layers;
 
