@@ -30,14 +30,13 @@ import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.recovery.internalEvent.ComponentRecovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
-import pl.szelagi.util.Debug;
-import pl.szelagi.util.IncrementalGenerator;
-import pl.szelagi.util.TreeAnalyzer;
+import pl.szelagi.util.*;
 import pl.szelagi.util.timespigot.Time;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public abstract class BaseComponent implements SAPIListener {
     private static final IncrementalGenerator incrementalGenerator = new IncrementalGenerator();
@@ -181,10 +180,8 @@ public abstract class BaseComponent implements SAPIListener {
     @MustBeInvokedByOverriders
     public void stop() throws StopException {
         // wyłącz najpierw dzieci
-        var analyze = new TreeAnalyzer(this);
-        for (var child : analyze.iterableYoungToOldNoRoot()) {
-            child.stop();
-        }
+        var childrenIterator = new ReverseDepthFirstSearch(this, false);
+        childrenIterator.forEachRemaining(BaseComponent::stop);
 
         // nie można wyłączyć komponentu, który nie jest uruchomiony
         if (status != ComponentStatus.RUNNING) {
@@ -296,15 +293,13 @@ public abstract class BaseComponent implements SAPIListener {
 
     // wywołuje event na wskazanym liściu oraz na wszystkich dzieciach dzieci od najstarszego do najmłodszego
     public final void callOldToYoung(SAPIEvent event) {
-        var analyze = new TreeAnalyzer(this);
-        var iterator = analyze.iterateOldToYoung().iterator();
+        var iterator = new DepthFirstSearch(this, true);
         call(iterator, event);
     }
 
     // wywołuje event na wskazanym liściu oraz na wszystkich dzieciach dzieci od młodszego do najstarszego
     public final void callYoungToOld(SAPIEvent event) {
-        var analyze = new TreeAnalyzer(this);
-        var iterator = analyze.iterableYoungToOld().iterator();
+        var iterator = new ReverseDepthFirstSearch(this, true);
         call(iterator, event);
     }
 
@@ -329,14 +324,12 @@ public abstract class BaseComponent implements SAPIListener {
     }
 
     public final void callOldToYoung(InternalEvent event) {
-        var analyze = new TreeAnalyzer(this);
-        var iterator = analyze.iterateOldToYoung().iterator();
+        var iterator = new DepthFirstSearch(this, true);
         call(iterator, event);
     }
 
     public final void callYoungToOld(InternalEvent event) {
-        var analyze = new TreeAnalyzer(this);
-        var iterator = analyze.iterableYoungToOld().iterator();
+        var iterator = new ReverseDepthFirstSearch(this, true);
         call(iterator, event);
     }
 
