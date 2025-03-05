@@ -16,6 +16,7 @@ import pl.szelagi.util.TreeAnalyzer;
 
 import java.util.List;
 
+@Deprecated
 public class ControllerManager {
     private static JavaPlugin plugin;
 

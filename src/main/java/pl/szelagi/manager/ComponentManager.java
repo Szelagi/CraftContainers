@@ -15,6 +15,7 @@ import pl.szelagi.component.controller.Controller;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.event.sapi.SAPIEvent;
 import pl.szelagi.event.sapi.SAPIListener;
+import pl.szelagi.util.DepthFirstSearch;
 import pl.szelagi.util.PluginRegistry;
 import pl.szelagi.util.ReflectionRecursive;
 import pl.szelagi.util.TreeAnalyzer;
@@ -23,6 +24,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ComponentManager {
     // CACHE SAPI EVENT
@@ -80,21 +83,21 @@ public class ComponentManager {
     }
 
     public static @NotNull <T extends Controller> List<T> components(@Nullable Session session, @NotNull Class<T> clazz) {
-        var analyze = new TreeAnalyzer(session);
-        return analyze.layers().values().stream()
-                .flatMap(List::stream)
-                .filter(clazz::isInstance)
-                .map(clazz::cast)
-                .toList();
+        var iterator = new DepthFirstSearch(session, true);
+        var stream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false
+        );
+        return stream.filter(clazz::isInstance).map(clazz::cast).toList();
     }
 
     public static @Nullable <T extends Controller> T firstComponent(@Nullable Session session, @NotNull Class<T> clazz) {
-        var analyze = new TreeAnalyzer(session);
-        return analyze.layers().values().stream()
-                .flatMap(List::stream)
-                .filter(clazz::isInstance)
-                .map(clazz::cast)
-                .findFirst().orElse(null);
+        var iterator = new DepthFirstSearch(session, true);
+        while (iterator.hasNext()) {
+            var component = iterator.next();
+            if (!clazz.isInstance(component)) continue;
+            return clazz.cast(component);
+        }
+        return null;
     }
 
 }
