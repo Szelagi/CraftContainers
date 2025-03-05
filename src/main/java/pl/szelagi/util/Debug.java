@@ -69,10 +69,12 @@ public class Debug {
     }
 
     private static class CustomFormatter extends Formatter {
+        private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
         @Override
         public String format(LogRecord record) {
-            // Zwracamy tylko wiadomość logu, bez daty i poziomu logowania
-            return record.getMessage() + "\n\n";
+            String time = dateFormat.format(new Date(record.getMillis()));
+            return "[" + time + "] " + record.getMessage() + "\n";
         }
     }
 }
