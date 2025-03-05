@@ -12,14 +12,14 @@ import org.bukkit.entity.Player;
 import pl.szelagi.state.PlayerState;
 
 public class GameModeState extends PlayerState {
-	private final GameMode gameMode;
+    private final GameMode gameMode;
 
-	public GameModeState(Player player) {
-		super(player);
-		gameMode = player.getGameMode();
-	}
+    public GameModeState(Player player) {
+        super(player);
+        gameMode = player.getGameMode();
+    }
 
-	public GameMode getGameMode() {
-		return gameMode;
-	}
+    public GameMode getGameMode() {
+        return gameMode;
+    }
 }

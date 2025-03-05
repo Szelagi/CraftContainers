@@ -17,23 +17,23 @@ import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class NoCreatureDrop extends Controller {
-	public NoCreatureDrop(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+    public NoCreatureDrop(BaseComponent baseComponent) {
+        super(baseComponent);
+    }
 
-	@Override
-	public Listeners defineListeners() {
-		return super.defineListeners().add(MyListener.class);
-	}
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
 
-	private static final class MyListener implements Listener {
-		@EventHandler(ignoreCancelled = true)
-		public void onEntityDeath(EntityDeathEvent event) {
-			var session = BoardManager.session(event.getEntity());
-			ListenerManager.first(session, getClass(), NoCreatureDrop.class, noCreatureDrop -> {
-				event.getDrops().clear();
-				event.setDroppedExp(0);
-			});
-		}
-	}
+    private static final class MyListener implements Listener {
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityDeath(EntityDeathEvent event) {
+            var session = BoardManager.session(event.getEntity());
+            ListenerManager.first(session, getClass(), NoCreatureDrop.class, noCreatureDrop -> {
+                event.getDrops().clear();
+                event.setDroppedExp(0);
+            });
+        }
+    }
 }

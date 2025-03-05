@@ -9,9 +9,7 @@ package pl.szelagi.buildin.system;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.TitlePart;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,9 +17,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.SessionAPI;
-import pl.szelagi.buildin.controller.HideOtherPlayers;
-import pl.szelagi.buildin.controller.lobby.LobbyListener;
 import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
 import pl.szelagi.buildin.controller.otherSpeed.OtherSpeed;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
@@ -106,7 +101,7 @@ public class LoadingBoard extends Board {
             if (cause != PlayerTeleportEvent.TeleportCause.SPECTATE) return;
             var session = SessionManager.session(player);
             ListenerManager.first(session, getClass(), LoadingBoard.class, loadingBoard -> {
-               event.setCancelled(true);
+                event.setCancelled(true);
             });
         }
 

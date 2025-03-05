@@ -7,11 +7,8 @@
 
 package pl.szelagi.component.baseComponent.internalEvent.component;
 
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.baseComponent.BaseComponent;
-
-import java.util.List;
 
 public class ComponentDestructor extends ComponentChangeEvent {
     public ComponentDestructor(@NotNull BaseComponent component) {

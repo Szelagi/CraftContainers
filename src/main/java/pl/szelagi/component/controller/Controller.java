@@ -22,6 +22,7 @@ import java.util.List;
 
 public abstract class Controller extends BaseComponent {
     private final Session session;
+
     public Controller(@NotNull BaseComponent parent) {
         super(parent);
         this.session = parent.session();

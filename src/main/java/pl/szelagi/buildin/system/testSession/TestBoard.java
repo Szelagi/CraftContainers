@@ -13,12 +13,12 @@ import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.spatial.Spatial;
 
 public class TestBoard extends Board {
-	public TestBoard(Session session) {
-		super(session);
-	}
+    public TestBoard(Session session) {
+        super(session);
+    }
 
-	@Override
-	public ISpatial defineSecureZone() {
-		return new Spatial(center(), center());
-	}
+    @Override
+    public ISpatial defineSecureZone() {
+        return new Spatial(center(), center());
+    }
 }

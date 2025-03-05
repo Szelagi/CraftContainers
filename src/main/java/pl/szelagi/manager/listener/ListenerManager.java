@@ -89,7 +89,7 @@ public class ListenerManager implements Listener {
     private static void trackingStart(BaseComponent component, Class<? extends Listener> listener) {
         var pair = sessionListenerPair(component.session(), listener);
         var components = SESSION_LISTENER_TO_COMPONENTS.computeIfAbsent(pair, k -> {
-           return new LinkedHashSet<>();
+            return new LinkedHashSet<>();
         });
         components.add(component);
     }
@@ -118,8 +118,7 @@ public class ListenerManager implements Listener {
         if (session == null) return null;
         var pair = sessionListenerPair(session, listenerClass);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
-        if (components == null) return null;
-//        if (components == null) {
+        //        if (components == null) {
 //            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered correctly.");
 //        }
         return components;

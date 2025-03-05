@@ -14,36 +14,36 @@ import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
 import pl.szelagi.component.controller.Controller;
 
 public class VisualEnvironment extends Controller {
-	public static final Class<TimeType> TIME_TYPE = TimeType.class;
-	private final long ticks;
-	private final WeatherType weatherType;
+    public static final Class<TimeType> TIME_TYPE = TimeType.class;
+    private final long ticks;
+    private final WeatherType weatherType;
 
-	public VisualEnvironment(BaseComponent baseComponent, WeatherType weatherType, long ticks) {
-		super(baseComponent);
-		this.weatherType = weatherType;
-		this.ticks = ticks;
-	}
+    public VisualEnvironment(BaseComponent baseComponent, WeatherType weatherType, long ticks) {
+        super(baseComponent);
+        this.weatherType = weatherType;
+        this.ticks = ticks;
+    }
 
-	public VisualEnvironment(BaseComponent baseComponent, WeatherType weatherType, TimeType timeType) {
-		super(baseComponent);
-		this.weatherType = weatherType;
-		this.ticks = timeType.getTicks();
-	}
+    public VisualEnvironment(BaseComponent baseComponent, WeatherType weatherType, TimeType timeType) {
+        super(baseComponent);
+        this.weatherType = weatherType;
+        this.ticks = timeType.getTicks();
+    }
 
-	@Override
-	public void onPlayerInit(PlayerConstructor event) {
-		super.onPlayerInit(event);
-		event.player()
-				.setPlayerWeather(weatherType);
-		event.player()
-				.setPlayerTime(ticks, false);
-	}
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        super.onPlayerInit(event);
+        event.player()
+                .setPlayerWeather(weatherType);
+        event.player()
+                .setPlayerTime(ticks, false);
+    }
 
-	@Override
-	public void onPlayerDestroy(PlayerDestructor event) {
-		super.onPlayerDestroy(event);
-		event.player().resetPlayerWeather();
-		event.player().resetPlayerTime();
-	}
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        super.onPlayerDestroy(event);
+        event.player().resetPlayerWeather();
+        event.player().resetPlayerTime();
+    }
 
 }

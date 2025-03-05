@@ -18,13 +18,11 @@ import pl.szelagi.event.sapi.SAPIListener;
 import pl.szelagi.util.DepthFirstSearch;
 import pl.szelagi.util.PluginRegistry;
 import pl.szelagi.util.ReflectionRecursive;
-import pl.szelagi.util.TreeAnalyzer;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ComponentManager {

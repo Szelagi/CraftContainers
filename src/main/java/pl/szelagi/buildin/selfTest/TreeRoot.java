@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class TreeRoot extends Controller {
-    
-    
+
 
     public static final List<String> CONS_EXPECTED_RECURSIVE_RESULT = new ArrayList<>();
     public static final List<String> CONS_EXCEPTED_LAYER_RESULT = new ArrayList<>();
@@ -53,18 +52,6 @@ class TreeRoot extends Controller {
         CONS_EXCEPTED_LAYER_RESULT.add("A2B1C2");
         CONS_EXCEPTED_LAYER_RESULT.add("A2B2C1");
         CONS_EXCEPTED_LAYER_RESULT.add("A2B2C2");
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //        DEST_EXPECTED_RESULT.add("A2B2C2");
@@ -104,7 +91,6 @@ class TreeRoot extends Controller {
         super(baseComponent);
         this.treeResult = treeResult;
     }
-
 
 
     @Override

@@ -19,66 +19,66 @@ import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
 import pl.szelagi.component.controller.Controller;
 
 public class BossBarController extends Controller {
-	private BossBar bossBar;
-	private final BarColor templateBarColor;
-	private final BarStyle templateBarStyle;
-	private final String templateBarLabel;
+    private BossBar bossBar;
+    private final BarColor templateBarColor;
+    private final BarStyle templateBarStyle;
+    private final String templateBarLabel;
 
-	public BossBarController(BaseComponent baseComponent) {
-		super(baseComponent);
-		this.templateBarColor = BarColor.WHITE;
-		this.templateBarStyle = BarStyle.SOLID;
-		this.templateBarLabel = "";
-	}
+    public BossBarController(BaseComponent baseComponent) {
+        super(baseComponent);
+        this.templateBarColor = BarColor.WHITE;
+        this.templateBarStyle = BarStyle.SOLID;
+        this.templateBarLabel = "";
+    }
 
-	public BossBarController(BaseComponent baseComponent, BarColor templateBarColor, BarStyle templateBarStyle) {
-		super(baseComponent);
-		this.templateBarColor = templateBarColor;
-		this.templateBarStyle = templateBarStyle;
-		this.templateBarLabel = "";
-	}
+    public BossBarController(BaseComponent baseComponent, BarColor templateBarColor, BarStyle templateBarStyle) {
+        super(baseComponent);
+        this.templateBarColor = templateBarColor;
+        this.templateBarStyle = templateBarStyle;
+        this.templateBarLabel = "";
+    }
 
-	public BossBarController(BaseComponent baseComponent, BarColor templateBarColor, BarStyle templateBarStyle, String templateBarLabel) {
-		super(baseComponent);
-		this.templateBarColor = templateBarColor;
-		this.templateBarStyle = templateBarStyle;
-		this.templateBarLabel = templateBarLabel;
-	}
+    public BossBarController(BaseComponent baseComponent, BarColor templateBarColor, BarStyle templateBarStyle, String templateBarLabel) {
+        super(baseComponent);
+        this.templateBarColor = templateBarColor;
+        this.templateBarStyle = templateBarStyle;
+        this.templateBarLabel = templateBarLabel;
+    }
 
-	@Override
-	public void onComponentInit(ComponentConstructor event) {
-		super.onComponentInit(event);
-		bossBar = Bukkit.createBossBar(templateBarLabel, templateBarColor, templateBarStyle);
-		bossBar.setVisible(true);
-	}
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        bossBar = Bukkit.createBossBar(templateBarLabel, templateBarColor, templateBarStyle);
+        bossBar.setVisible(true);
+    }
 
-	@Override
-	public void onComponentDestroy(ComponentDestructor event) {
-		super.onComponentDestroy(event);
-		if (bossBar != null) {
-			bossBar.removeAll();
-			bossBar.setVisible(false);
-			bossBar = null;
-		}
-	}
+    @Override
+    public void onComponentDestroy(ComponentDestructor event) {
+        super.onComponentDestroy(event);
+        if (bossBar != null) {
+            bossBar.removeAll();
+            bossBar.setVisible(false);
+            bossBar = null;
+        }
+    }
 
-	@Override
-	public void onPlayerInit(PlayerConstructor event) {
-		super.onPlayerInit(event);
-		if (bossBar != null) {
-			bossBar.addPlayer(event.player());
-		}
-	}
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        super.onPlayerInit(event);
+        if (bossBar != null) {
+            bossBar.addPlayer(event.player());
+        }
+    }
 
-	@Override
-	public void onPlayerDestroy(PlayerDestructor event) {
-		super.onPlayerDestroy(event);
-		if (bossBar != null) {
-			bossBar.removePlayer(event.player());
-		}
-	}
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        super.onPlayerDestroy(event);
+        if (bossBar != null) {
+            bossBar.removePlayer(event.player());
+        }
+    }
 
-	public BossBar bossBar() {
-		return bossBar;
-	}
+    public BossBar bossBar() {
+        return bossBar;
+    }
 }

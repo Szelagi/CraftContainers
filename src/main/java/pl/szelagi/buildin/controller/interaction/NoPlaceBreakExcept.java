@@ -22,82 +22,82 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NoPlaceBreakExcept extends Controller {
-	Set<Material> allowBreak = new HashSet<>();
-	Set<Material> allowPlace = new HashSet<>();
+    Set<Material> allowBreak = new HashSet<>();
+    Set<Material> allowPlace = new HashSet<>();
 
-	public NoPlaceBreakExcept(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+    public NoPlaceBreakExcept(BaseComponent baseComponent) {
+        super(baseComponent);
+    }
 
-	public NoPlaceBreakExcept setPlaceFlag(Material material, boolean allow) {
-		if (allow)
-			allowPlace.add(material);
-		else
-			allowPlace.remove(material);
-		return this;
-	}
+    public NoPlaceBreakExcept setPlaceFlag(Material material, boolean allow) {
+        if (allow)
+            allowPlace.add(material);
+        else
+            allowPlace.remove(material);
+        return this;
+    }
 
-	public NoPlaceBreakExcept setBreakFlag(Material material, boolean allow) {
-		if (allow)
-			allowBreak.add(material);
-		else
-			allowBreak.remove(material);
-		return this;
-	}
+    public NoPlaceBreakExcept setBreakFlag(Material material, boolean allow) {
+        if (allow)
+            allowBreak.add(material);
+        else
+            allowBreak.remove(material);
+        return this;
+    }
 
-	public void clearPlaceFlags() {
-		allowPlace.clear();
-	}
+    public void clearPlaceFlags() {
+        allowPlace.clear();
+    }
 
-	public void clearBreakFlags() {
-		allowBreak.clear();
-	}
+    public void clearBreakFlags() {
+        allowBreak.clear();
+    }
 
-	public void clearAllFlags() {
-		clearPlaceFlags();
-		clearBreakFlags();
-	}
+    public void clearAllFlags() {
+        clearPlaceFlags();
+        clearBreakFlags();
+    }
 
-	public boolean canPlace(Material material) {
-		return allowPlace.contains(material);
-	}
+    public boolean canPlace(Material material) {
+        return allowPlace.contains(material);
+    }
 
-	public boolean canBreak(Material material) {
-		return allowBreak.contains(material);
-	}
+    public boolean canBreak(Material material) {
+        return allowBreak.contains(material);
+    }
 
-	@Override
-	public Listeners defineListeners() {
-		return super.defineListeners().add(MyListener.class);
-	}
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
 
-	private static class MyListener implements Listener {
-		@EventHandler(ignoreCancelled = true)
-		public void onBlockPlace(BlockPlaceEvent event) {
-			var session = BoardManager.session(event.getBlock());
-			if (session == null)
-				return;
-			var material = event.getBlock()
-			                    .getType();
-			ListenerManager.each(session, getClass(), NoPlaceBreakExcept.class, noPlaceBreakExcept -> {
-				if (noPlaceBreakExcept.canPlace(material))
-					return;
-				event.setCancelled(true);
-			});
-		}
+    private static class MyListener implements Listener {
+        @EventHandler(ignoreCancelled = true)
+        public void onBlockPlace(BlockPlaceEvent event) {
+            var session = BoardManager.session(event.getBlock());
+            if (session == null)
+                return;
+            var material = event.getBlock()
+                    .getType();
+            ListenerManager.each(session, getClass(), NoPlaceBreakExcept.class, noPlaceBreakExcept -> {
+                if (noPlaceBreakExcept.canPlace(material))
+                    return;
+                event.setCancelled(true);
+            });
+        }
 
-		@EventHandler(ignoreCancelled = true)
-		public void onBlockBreak(BlockBreakEvent event) {
-			var session = BoardManager.session(event.getBlock());
-			if (session == null)
-				return;
-			var material = event.getBlock()
-			                    .getType();
-			ListenerManager.each(session, getClass(), NoPlaceBreakExcept.class, noPlaceBreakExcept -> {
-				if (noPlaceBreakExcept.canBreak(material))
-					return;
-				event.setCancelled(true);
-			});
-		}
-	}
+        @EventHandler(ignoreCancelled = true)
+        public void onBlockBreak(BlockBreakEvent event) {
+            var session = BoardManager.session(event.getBlock());
+            if (session == null)
+                return;
+            var material = event.getBlock()
+                    .getType();
+            ListenerManager.each(session, getClass(), NoPlaceBreakExcept.class, noPlaceBreakExcept -> {
+                if (noPlaceBreakExcept.canBreak(material))
+                    return;
+                event.setCancelled(true);
+            });
+        }
+    }
 }

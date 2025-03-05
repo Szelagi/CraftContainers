@@ -17,25 +17,25 @@ import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class NoCreatureNaturalSpawn extends Controller {
-	public NoCreatureNaturalSpawn(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+    public NoCreatureNaturalSpawn(BaseComponent baseComponent) {
+        super(baseComponent);
+    }
 
-	@Override
-	public Listeners defineListeners() {
-		return super.defineListeners().add(MyListener.class);
-	}
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
 
-	private static final class MyListener implements Listener {
-		@EventHandler(ignoreCancelled = true)
-		public void onCreatureSpawn(CreatureSpawnEvent event) {
-			if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL)
-				return;
-			var session = BoardManager.session(event.getEntity());
-			ListenerManager.first(session, getClass(), NoCreatureNaturalSpawn.class, noCreatureDrop -> {
-				event.setCancelled(true);
-			});
-		}
+    private static final class MyListener implements Listener {
+        @EventHandler(ignoreCancelled = true)
+        public void onCreatureSpawn(CreatureSpawnEvent event) {
+            if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL)
+                return;
+            var session = BoardManager.session(event.getEntity());
+            ListenerManager.first(session, getClass(), NoCreatureNaturalSpawn.class, noCreatureDrop -> {
+                event.setCancelled(true);
+            });
+        }
 
-	}
+    }
 }

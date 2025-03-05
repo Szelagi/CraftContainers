@@ -16,79 +16,79 @@ import pl.szelagi.component.controller.Controller;
 import pl.szelagi.util.timespigot.Time;
 
 public class BarTimerController extends Controller {
-	private BossBarController bossBarController;
-	private final int ticks;
-	private final String template;
-	private final Runnable runnable;
-	private int remainingTicks;
+    private BossBarController bossBarController;
+    private final int ticks;
+    private final String template;
+    private final Runnable runnable;
+    private int remainingTicks;
 
-	public BarTimerController(BaseComponent baseComponent, Time time, String template, @Nullable Runnable runnable) {
-		super(baseComponent);
-		this.ticks = time.toTicks();
-		this.template = template;
-		this.runnable = runnable;
-	}
+    public BarTimerController(BaseComponent baseComponent, Time time, String template, @Nullable Runnable runnable) {
+        super(baseComponent);
+        this.ticks = time.toTicks();
+        this.template = template;
+        this.runnable = runnable;
+    }
 
-	public BarTimerController(BaseComponent baseComponent, Time time, String template) {
-		super(baseComponent);
-		this.ticks = time.toTicks();
-		this.template = template;
-		this.runnable = null;
-	}
+    public BarTimerController(BaseComponent baseComponent, Time time, String template) {
+        super(baseComponent);
+        this.ticks = time.toTicks();
+        this.template = template;
+        this.runnable = null;
+    }
 
-	public BarTimerController(BaseComponent baseComponent, Time time, Runnable runnable) {
-		super(baseComponent);
-		this.ticks = time.toTicks();
-		this.template = "Time remaining: %.2fs";
-		this.runnable = runnable;
-	}
+    public BarTimerController(BaseComponent baseComponent, Time time, Runnable runnable) {
+        super(baseComponent);
+        this.ticks = time.toTicks();
+        this.template = "Time remaining: %.2fs";
+        this.runnable = runnable;
+    }
 
-	public BarTimerController(BaseComponent baseComponent, Time time) {
-		super(baseComponent);
-		this.ticks = time.toTicks();
-		this.template = "Time remaining: %.2fs";
-		this.runnable = null;
-	}
+    public BarTimerController(BaseComponent baseComponent, Time time) {
+        super(baseComponent);
+        this.ticks = time.toTicks();
+        this.template = "Time remaining: %.2fs";
+        this.runnable = null;
+    }
 
-	@Override
-	public void onComponentInit(ComponentConstructor event) {
-		super.onComponentInit(event);
-		remainingTicks = ticks;
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        remainingTicks = ticks;
 
-		bossBarController = new BossBarController(this);
-		bossBarController.start();
+        bossBarController = new BossBarController(this);
+        bossBarController.start();
 
-		bossBarController.bossBar()
-				.setStyle(BarStyle.SEGMENTED_12);
-		bossBarController.bossBar()
-				.setColor(BarColor.BLUE);
+        bossBarController.bossBar()
+                .setStyle(BarStyle.SEGMENTED_12);
+        bossBarController.bossBar()
+                .setColor(BarColor.BLUE);
 
-		runTaskTimer(this::next, Time.zero(), Time.ticks(5));
-	}
+        runTaskTimer(this::next, Time.zero(), Time.ticks(5));
+    }
 
-	private void next() {
-		remainingTicks -= 5;
-		if (remainingTicks <= 0) {
-			if (runnable != null) {
-				runnable.run();
-			}
-			stop();
-			return;
-		}
-		update();
-	}
+    private void next() {
+        remainingTicks -= 5;
+        if (remainingTicks <= 0) {
+            if (runnable != null) {
+                runnable.run();
+            }
+            stop();
+            return;
+        }
+        update();
+    }
 
-	private void update() {
-		if (bossBarController == null)
-			return;
+    private void update() {
+        if (bossBarController == null)
+            return;
 
-		var bar = bossBarController.bossBar();
-		var percent = remainingTicks / (double) ticks;
-		var percentNormalized = Math.min(Math.max(0, percent), 1);
-		var remaining = (ticks - (ticks - remainingTicks)) / 20d;
-		var formattedMessage = String.format(template, remaining);
+        var bar = bossBarController.bossBar();
+        var percent = remainingTicks / (double) ticks;
+        var percentNormalized = Math.min(Math.max(0, percent), 1);
+        var remaining = (ticks - (ticks - remainingTicks)) / 20d;
+        var formattedMessage = String.format(template, remaining);
 
-		bar.setProgress(percentNormalized);
-		bar.setTitle(formattedMessage);
-	}
+        bar.setProgress(percentNormalized);
+        bar.setTitle(formattedMessage);
+    }
 }

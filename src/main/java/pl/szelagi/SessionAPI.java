@@ -10,7 +10,6 @@ package pl.szelagi;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
 import pl.szelagi.command.Command;
 import pl.szelagi.manager.BoardManager;
 import pl.szelagi.manager.ControllerManager;
@@ -20,7 +19,6 @@ import pl.szelagi.recovery.RecoveryManager;
 import pl.szelagi.world.SessionWorldManager;
 
 import java.io.File;
-import java.util.stream.Collectors;
 
 public final class SessionAPI extends JavaPlugin {
     FileConfiguration config = getConfig();

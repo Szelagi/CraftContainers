@@ -11,6 +11,7 @@ public enum PlayerInitCause {
     COMPONENT_INIT(false), PLAYER_JOIN(true);
 
     private final boolean isPlayerChange;
+
     PlayerInitCause(boolean isPlayerChange) {
         this.isPlayerChange = isPlayerChange;
     }
