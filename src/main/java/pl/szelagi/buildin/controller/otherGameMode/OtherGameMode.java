@@ -17,42 +17,42 @@ import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 import pl.szelagi.state.PlayerContainer;
 
 public class OtherGameMode extends Controller {
-	private PlayerContainer<GameModeState> states;
-	private final GameMode gameMode;
+    private PlayerContainer<GameModeState> states;
+    private final GameMode gameMode;
 
-	public OtherGameMode(BaseComponent baseComponent, GameMode gameMode) {
-		super(baseComponent);
-		this.gameMode = gameMode;
-	}
+    public OtherGameMode(BaseComponent baseComponent, GameMode gameMode) {
+        super(baseComponent);
+        this.gameMode = gameMode;
+    }
 
-	@Override
-	public void onComponentInit(ComponentConstructor event) {
-		super.onComponentInit(event);
-		states = new PlayerContainer<>(GameModeState::new);
-	}
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        states = new PlayerContainer<>(GameModeState::new);
+    }
 
-	@Override
-	public void onPlayerInit(PlayerConstructor event) {
-		super.onPlayerInit(event);
-		states.createOrThrow(event.player());
-		event.player().setGameMode(gameMode);
-	}
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        super.onPlayerInit(event);
+        states.createOrThrow(event.player());
+        event.player().setGameMode(gameMode);
+    }
 
-	@Override
-	public void onPlayerDestroy(PlayerDestructor event) {
-		super.onPlayerDestroy(event);
-		var player = event.player();
-		var state = states.removeOrThrow(player);
-		player.setGameMode(state.getGameMode());
-	}
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        super.onPlayerDestroy(event);
+        var player = event.player();
+        var state = states.removeOrThrow(player);
+        player.setGameMode(state.getGameMode());
+    }
 
-	@Override
-	public void onPlayerRecovery(PlayerRecovery event) {
-		super.onPlayerRecovery(event);
-		var state = states.getOrThrow(event.owner());
-		final var gameMode = state.getGameMode();
-		event.register(this, player -> {
-			player.setGameMode(gameMode);
-		});
-	}
+    @Override
+    public void onPlayerRecovery(PlayerRecovery event) {
+        super.onPlayerRecovery(event);
+        var state = states.getOrThrow(event.owner());
+        final var gameMode = state.getGameMode();
+        event.register(this, player -> {
+            player.setGameMode(gameMode);
+        });
+    }
 }

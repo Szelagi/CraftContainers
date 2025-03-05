@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RecoveryManager implements Listener {
-    public static final String COMPONENT_RECOVERY_PREFIX  = "component";
-    public static final String PLAYER_RECOVERY_PREFIX  = "player";
+    public static final String COMPONENT_RECOVERY_PREFIX = "component";
+    public static final String PLAYER_RECOVERY_PREFIX = "player";
     public static final String SEPARATOR = "-";
     public static final String EXTENSION = ".bin";
 
@@ -123,8 +123,6 @@ public class RecoveryManager implements Listener {
             file.delete();
         }
     }
-
-
 
 
     public static Set<RecoveryFile> findRecoveries(String prefix) {

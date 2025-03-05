@@ -2,7 +2,9 @@ package pl.szelagi.util;
 
 import pl.szelagi.component.baseComponent.BaseComponent;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Stack;
 
 public class DepthFirstSearch implements Iterator<BaseComponent> {
     Stack<BaseComponent> stack = new Stack<>();

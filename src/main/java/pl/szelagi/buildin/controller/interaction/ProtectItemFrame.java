@@ -21,41 +21,41 @@ import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class ProtectItemFrame extends Controller {
-	public ProtectItemFrame(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+    public ProtectItemFrame(BaseComponent baseComponent) {
+        super(baseComponent);
+    }
 
-	@Override
-	public Listeners defineListeners() {
-		return super.defineListeners().add(MyListener.class);
-	}
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
 
-	private static class MyListener implements Listener {
-		public boolean check(Entity entity) {
-			var entityType = entity.getType();
-			if (entityType != EntityType.ITEM_FRAME)
-				return false;
-			var session = BoardManager.session(entity.getLocation());
-			var component = ListenerManager.first(session, getClass(), ProtectItemFrame.class);
-			return (component != null);
-		}
+    private static class MyListener implements Listener {
+        public boolean check(Entity entity) {
+            var entityType = entity.getType();
+            if (entityType != EntityType.ITEM_FRAME)
+                return false;
+            var session = BoardManager.session(entity.getLocation());
+            var component = ListenerManager.first(session, getClass(), ProtectItemFrame.class);
+            return (component != null);
+        }
 
-		@EventHandler(ignoreCancelled = true)
-		public void onEntityDamage(EntityDamageEvent event) {
-			if (check(event.getEntity()))
-				event.setCancelled(true);
-		}
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (check(event.getEntity()))
+                event.setCancelled(true);
+        }
 
-		@EventHandler(ignoreCancelled = true)
-		public void onHangingBreak(HangingBreakEvent event) {
-			if (check(event.getEntity()))
-				event.setCancelled(true);
-		}
+        @EventHandler(ignoreCancelled = true)
+        public void onHangingBreak(HangingBreakEvent event) {
+            if (check(event.getEntity()))
+                event.setCancelled(true);
+        }
 
-		@EventHandler(ignoreCancelled = true)
-		public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-			if (check(event.getRightClicked()))
-				event.setCancelled(true);
-		}
-	}
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+            if (check(event.getRightClicked()))
+                event.setCancelled(true);
+        }
+    }
 }

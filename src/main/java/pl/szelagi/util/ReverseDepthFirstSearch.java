@@ -2,7 +2,10 @@ package pl.szelagi.util;
 
 import pl.szelagi.component.baseComponent.BaseComponent;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ReverseDepthFirstSearch implements Iterator<BaseComponent> {
     private final Deque<BaseComponent> stack = new ArrayDeque<>();

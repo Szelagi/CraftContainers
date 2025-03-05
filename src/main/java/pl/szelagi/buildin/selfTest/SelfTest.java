@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
 
@@ -102,7 +101,7 @@ public class SelfTest extends Session {
         } else {
             fail(message);
             if (failAction != null)
-              failAction.run();
+                failAction.run();
         }
     }
 

@@ -14,7 +14,6 @@ import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.event.internal.InternalEvent;
 
 import java.util.Collection;
-import java.util.List;
 
 public abstract class ComponentChangeEvent extends InternalEvent {
     private final @NotNull BaseComponent component;

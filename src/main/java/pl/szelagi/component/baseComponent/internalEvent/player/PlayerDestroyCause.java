@@ -11,6 +11,7 @@ public enum PlayerDestroyCause {
     COMPONENT_DESTROY(false), PLAYER_QUIT(true), SESSION_DESTROY(true);
 
     private final boolean isPlayerChange;
+
     PlayerDestroyCause(boolean isPlayerChange) {
         this.isPlayerChange = isPlayerChange;
     }

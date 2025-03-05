@@ -78,7 +78,7 @@ public class SessionManager {
 
             @EventHandler(ignoreCancelled = true)
             public void onPluginDisable(PluginDisableEvent event) {
-                if(!SessionAPI.instance().equals(event.getPlugin())) return;
+                if (!SessionAPI.instance().equals(event.getPlugin())) return;
                 for (var session : sessions()) {
                     session.stop();
                 }

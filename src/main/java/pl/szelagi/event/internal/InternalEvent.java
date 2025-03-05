@@ -15,6 +15,7 @@ import java.util.LinkedList;
 
 public abstract class InternalEvent {
     public LinkedList<Runnable> scheduled = new LinkedList<>();
+
     public void safeSchedule(Runnable runnable) {
         scheduled.add(runnable);
     }

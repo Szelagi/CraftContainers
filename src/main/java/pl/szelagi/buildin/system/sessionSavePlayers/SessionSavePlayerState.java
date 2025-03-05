@@ -15,10 +15,10 @@ import pl.szelagi.state.PlayerState;
 import java.io.Serializable;
 
 public class SessionSavePlayerState extends PlayerState implements Serializable {
-    private GameMode gameMode;
-    private LocationAdapted locationAdapted;
-    private float fallDistance;
-    private int fireTicks;
+    private final GameMode gameMode;
+    private final LocationAdapted locationAdapted;
+    private final float fallDistance;
+    private final int fireTicks;
 
     public SessionSavePlayerState(Player player) {
         super(player);

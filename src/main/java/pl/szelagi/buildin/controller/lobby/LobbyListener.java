@@ -18,36 +18,36 @@ import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.listener.ListenerManager;
 
 public class LobbyListener implements Listener {
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockBreak(BlockBreakEvent event) {
-		if (check(event.getPlayer()))
-			event.setCancelled(true);
-	}
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (check(event.getPlayer()))
+            event.setCancelled(true);
+    }
 
-	@EventHandler(ignoreCancelled = true)
-	public void onBlockPlace(BlockPlaceEvent event) {
-		if (check(event.getPlayer()))
-			event.setCancelled(true);
-	}
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (check(event.getPlayer()))
+            event.setCancelled(true);
+    }
 
-	@EventHandler(ignoreCancelled = true)
-	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player player)
-			if (check(player))
-				event.setCancelled(true);
-	}
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player player)
+            if (check(player))
+                event.setCancelled(true);
+    }
 
-	@EventHandler(ignoreCancelled = true)
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (check(event.getPlayer()))
-			event.setCancelled(true);
-	}
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (check(event.getPlayer()))
+            event.setCancelled(true);
+    }
 
-	private boolean check(Player player) {
-		var session = SessionManager.session(player);
-		var lobby = ListenerManager.first(session, getClass(), Lobby.class);
-		if (lobby == null)
-			return false;
-		return lobby.isLobby();
-	}
+    private boolean check(Player player) {
+        var session = SessionManager.session(player);
+        var lobby = ListenerManager.first(session, getClass(), Lobby.class);
+        if (lobby == null)
+            return false;
+        return lobby.isLobby();
+    }
 }

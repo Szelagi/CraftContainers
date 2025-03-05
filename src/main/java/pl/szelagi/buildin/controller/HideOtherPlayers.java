@@ -19,49 +19,49 @@ import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class HideOtherPlayers extends Controller {
-	public HideOtherPlayers(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+    public HideOtherPlayers(BaseComponent baseComponent) {
+        super(baseComponent);
+    }
 
-	@Override
-	public void onPlayerInit(PlayerConstructor event) {
-		super.onPlayerInit(event);
-		for (var player : plugin().getServer()
-				.getOnlinePlayers())
-			if (!players().contains(player))
-				event.player()
-						.hidePlayer(plugin(), player);
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        super.onPlayerInit(event);
+        for (var player : plugin().getServer()
+                .getOnlinePlayers())
+            if (!players().contains(player))
+                event.player()
+                        .hidePlayer(plugin(), player);
 
-		for (var player : players())
-			player.showPlayer(plugin(), event.player());
-	}
+        for (var player : players())
+            player.showPlayer(plugin(), event.player());
+    }
 
-	@Override
-	public void onPlayerDestroy(PlayerDestructor event) {
-		super.onPlayerDestroy(event);
-		for (var player : plugin().getServer()
-				.getOnlinePlayers())
-			event.player()
-					.showPlayer(plugin(), player);
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        super.onPlayerDestroy(event);
+        for (var player : plugin().getServer()
+                .getOnlinePlayers())
+            event.player()
+                    .showPlayer(plugin(), player);
 
-		for (var player : players())
-			player.hidePlayer(plugin(), event.player());
-	}
+        for (var player : players())
+            player.hidePlayer(plugin(), event.player());
+    }
 
-	@Override
-	public Listeners defineListeners() {
-		return super.defineListeners().add(MyListener.class);
-	}
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
 
-	public static class MyListener implements Listener {
-		@EventHandler(ignoreCancelled = true)
-		public void onPlayerJoin(PlayerJoinEvent event) {
-			for (var session : SessionManager.sessions()) {
-				ListenerManager.first(session, getClass(), HideOtherPlayers.class, hideOtherPlayers -> {
-					for (var player : hideOtherPlayers.players())
-						player.hidePlayer(hideOtherPlayers.plugin(), event.getPlayer());
-				});
-			}
-		}
-	}
+    public static class MyListener implements Listener {
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerJoin(PlayerJoinEvent event) {
+            for (var session : SessionManager.sessions()) {
+                ListenerManager.first(session, getClass(), HideOtherPlayers.class, hideOtherPlayers -> {
+                    for (var player : hideOtherPlayers.players())
+                        player.hidePlayer(hideOtherPlayers.plugin(), event.getPlayer());
+                });
+            }
+        }
+    }
 }

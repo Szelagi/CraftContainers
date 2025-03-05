@@ -20,28 +20,28 @@ import pl.szelagi.util.CooldownVolatile;
 import pl.szelagi.util.timespigot.Time;
 
 public class NoPvP extends Controller {
-	public NoPvP(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+    public NoPvP(BaseComponent baseComponent) {
+        super(baseComponent);
+    }
 
-	@Override
-	public Listeners defineListeners() {
-		return super.defineListeners().add(MyListener.class);
-	}
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
 
-	private static class MyListener implements Listener {
-		@EventHandler(ignoreCancelled = true)
-		public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-			if (!(event.getEntity() instanceof Player victim))
-				return;
-			if (!(event.getDamager() instanceof Player attacker))
-				return;
-			var session = SessionManager.session(victim);
-			ListenerManager.first(session, getClass(), NoPvP.class, noPvP -> {
-				if (CooldownVolatile.canUseAndStart(attacker, noPvP.name(), Time.seconds(2)))
-					attacker.sendMessage("§cYou cannot attack a player because pvp is disabled!");
-				event.setCancelled(true);
-			});
-		}
-	}
+    private static class MyListener implements Listener {
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+            if (!(event.getEntity() instanceof Player victim))
+                return;
+            if (!(event.getDamager() instanceof Player attacker))
+                return;
+            var session = SessionManager.session(victim);
+            ListenerManager.first(session, getClass(), NoPvP.class, noPvP -> {
+                if (CooldownVolatile.canUseAndStart(attacker, noPvP.name(), Time.seconds(2)))
+                    attacker.sendMessage("§cYou cannot attack a player because pvp is disabled!");
+                event.setCancelled(true);
+            });
+        }
+    }
 }

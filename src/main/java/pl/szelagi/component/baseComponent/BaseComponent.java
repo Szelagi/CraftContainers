@@ -16,7 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.*;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestroyCause;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
+import pl.szelagi.component.baseComponent.internalEvent.player.PlayerInitCause;
 import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
@@ -30,13 +33,15 @@ import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.recovery.internalEvent.ComponentRecovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
-import pl.szelagi.util.*;
+import pl.szelagi.util.Debug;
+import pl.szelagi.util.DepthFirstSearch;
+import pl.szelagi.util.IncrementalGenerator;
+import pl.szelagi.util.ReverseDepthFirstSearch;
 import pl.szelagi.util.timespigot.Time;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public abstract class BaseComponent implements SAPIListener {
     private static final IncrementalGenerator incrementalGenerator = new IncrementalGenerator();
@@ -115,7 +120,6 @@ public abstract class BaseComponent implements SAPIListener {
         constructedPlayers.remove(player);
         onPlayerDestroy(event);
     }
-
 
 
     // LIFE CYCLES
@@ -346,17 +350,17 @@ public abstract class BaseComponent implements SAPIListener {
 
     @MustBeInvokedByOverriders
     public void onPlayerInit(PlayerConstructor event) {
-        Debug.send(this, "player init: (" + event.player().getName() + ")" );
+        Debug.send(this, "player init: (" + event.player().getName() + ")");
     }
 
     @MustBeInvokedByOverriders
     public void onPlayerDestroy(PlayerDestructor event) {
-        Debug.send(this, "player destroy: (" + event.player().getName() + ")" );
+        Debug.send(this, "player destroy: (" + event.player().getName() + ")");
     }
 
     @MustBeInvokedByOverriders
     public void onPlayerJoinRequest(PlayerJoinRequest event) {
-        Debug.send(this, "player join request: (" + event.getPlayer().getName() + ")" );
+        Debug.send(this, "player join request: (" + event.getPlayer().getName() + ")");
     }
 
     @MustBeInvokedByOverriders
@@ -366,7 +370,7 @@ public abstract class BaseComponent implements SAPIListener {
 
     @MustBeInvokedByOverriders
     public void onPlayerRecovery(PlayerRecovery event) {
-        Debug.send(this, "player recovery: (" + event.owner().getName() + ")" );
+        Debug.send(this, "player recovery: (" + event.owner().getName() + ")");
     }
 
     // TASK SYSTEM

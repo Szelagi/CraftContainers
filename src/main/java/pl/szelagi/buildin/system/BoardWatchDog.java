@@ -69,7 +69,7 @@ public class BoardWatchDog extends Controller {
         if (!isIn)
             return;
 
-        if (player.isOp() && player.getGameMode() == GameMode.SPECTATOR )
+        if (player.isOp() && player.getGameMode() == GameMode.SPECTATOR)
             return;
 
         boolean isBackIn = space.isLocationInXZ(backLocation);

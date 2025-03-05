@@ -82,7 +82,7 @@ public class Recovery {
     private void saveComponentsRecovery() throws IOException {
         var unix = System.currentTimeMillis();
         var uuid = session.uuid().toString().replace("-", "");
-        var name = COMPONENT_RECOVERY_PREFIX + SEPARATOR + uuid + SEPARATOR  + unix + EXTENSION;
+        var name = COMPONENT_RECOVERY_PREFIX + SEPARATOR + uuid + SEPARATOR + unix + EXTENSION;
 
         var object = new HashSet<ComponentRecoveryLambda>();
         componentDestroyRecoveries.values().forEach(object::addAll);
@@ -106,7 +106,7 @@ public class Recovery {
     private void savePlayerRecovery(Player player) throws IOException {
         var unix = System.currentTimeMillis();
         var uuid = player.getUniqueId().toString().replace("-", "");
-        var name = PLAYER_RECOVERY_PREFIX + SEPARATOR + uuid + SEPARATOR  + unix + EXTENSION;
+        var name = PLAYER_RECOVERY_PREFIX + SEPARATOR + uuid + SEPARATOR + unix + EXTENSION;
 
         var lambdas = playerDestroyRecoveries.get(player);
         var object = new HashSet<PlayerRecoveryLambda>();
@@ -121,11 +121,10 @@ public class Recovery {
 
         var playerRecoveries = findRecoveries(PLAYER_RECOVERY_PREFIX + SEPARATOR + uuid);
         playerRecoveries.stream().filter(r -> r.unix() != unix).forEach(r -> {
-           r.file().delete();
+            r.file().delete();
         });
 
     }
-
 
 
     public void destroyComponent(BaseComponent component) {
