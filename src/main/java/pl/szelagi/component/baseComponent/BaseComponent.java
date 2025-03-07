@@ -32,7 +32,9 @@ import pl.szelagi.manager.listener.ImmutableListeners;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.recovery.internalEvent.ComponentRecovery;
+import pl.szelagi.recovery.internalEvent.ComponentRecoveryCause;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
+import pl.szelagi.recovery.internalEvent.PlayerRecoveryCause;
 import pl.szelagi.util.Debug;
 import pl.szelagi.util.DepthFirstSearch;
 import pl.szelagi.util.IncrementalGenerator;
@@ -167,7 +169,7 @@ public abstract class BaseComponent implements SAPIListener {
         for (var component : components) {
 
             // recovery component
-            component.backupComponentOnFailure();
+            component.backupComponentOnFailure(ComponentRecoveryCause.COMPONENT_INIT);
 
             var playersClone = new ArrayList<>(players());
             for (var player : playersClone) {
@@ -175,7 +177,7 @@ public abstract class BaseComponent implements SAPIListener {
                 component.call(new PlayerConstructor(player, players(), PlayerInitCause.COMPONENT_INIT, null));
 
                 // recovery player
-                component.backupPlayerOnFailure(player);
+                component.backupPlayerOnFailure(player, PlayerRecoveryCause.COMPONENT_INIT);
             }
 
         }
@@ -462,8 +464,12 @@ public abstract class BaseComponent implements SAPIListener {
 
     // Recovery
     public final void backupComponentOnFailure() {
+        backupComponentOnFailure(ComponentRecoveryCause.FORCE_REFRESH);
+    }
+
+    private void backupComponentOnFailure(ComponentRecoveryCause cause) {
         var recovery = session().recovery();
-        var event = new ComponentRecovery();
+        var event = new ComponentRecovery(cause);
         call(event);
         recovery.updateComponent(event);
     }
@@ -476,8 +482,12 @@ public abstract class BaseComponent implements SAPIListener {
     }
 
     public final void backupPlayerOnFailure(Player player) {
+        backupPlayerOnFailure(player, PlayerRecoveryCause.FORCE_REFRESH);
+    }
+
+    private void backupPlayerOnFailure(Player player, PlayerRecoveryCause cause) {
         var recovery = session().recovery();
-        var event = new PlayerRecovery(player);
+        var event = new PlayerRecovery(player, cause);
         call(event);
         recovery.updatePlayer(event);
     }

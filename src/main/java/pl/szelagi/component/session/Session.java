@@ -28,6 +28,7 @@ import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.recovery.Recovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
+import pl.szelagi.recovery.internalEvent.PlayerRecoveryCause;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +108,7 @@ public abstract class Session extends BaseComponent {
 
         // zarejestruj gracza w recovery (dla każdego komponentu)
         var recovery = session().recovery();
-        var recoveryEvent = new PlayerRecovery(player);
+        var recoveryEvent = new PlayerRecovery(player, PlayerRecoveryCause.PLAYER_JOIN);
         callOldToYoung(recoveryEvent);
         recovery.updatePlayer(recoveryEvent);
     }
