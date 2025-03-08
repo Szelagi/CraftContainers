@@ -14,7 +14,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.szelagi.SessionAPI;
 import pl.szelagi.file.FileManager;
+import pl.szelagi.util.Debug;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,6 +32,8 @@ public class RecoveryManager implements Listener {
     public static final String PLAYER_RECOVERY_PREFIX = "player";
     public static final String SEPARATOR = "-";
     public static final String EXTENSION = ".bin";
+    private static final String PLAYER_RECOVERY_DEBUG = "Called %s different recoveries for player %s";
+    private static final String SESSION_RECOVERY_DEBUG = "Called %s different recoveries for session %s";
 
     public static void initialize(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(new RecoveryManager(), plugin);
@@ -68,6 +72,10 @@ public class RecoveryManager implements Listener {
                 var object = (HashSet<ComponentRecoveryLambda>) ois.readObject();
 
                 object.forEach(ComponentRecoveryLambda::run);
+
+                var message = String.format(SESSION_RECOVERY_DEBUG, object.size(), recovery.uuid());
+                Debug.send(message);
+
                 break;
 
             } catch (IOException | ClassNotFoundException ignore) {
@@ -105,6 +113,9 @@ public class RecoveryManager implements Listener {
                 var object = (HashSet<PlayerRecoveryLambda>) ois.readObject();
 
                 object.forEach(c -> c.accept(player));
+
+                var message = String.format(PLAYER_RECOVERY_DEBUG, object.size(), player.getName());
+                Debug.send(message);
                 break;
 
             } catch (IOException | ClassNotFoundException ignore) {
@@ -126,7 +137,7 @@ public class RecoveryManager implements Listener {
 
 
     public static Set<RecoveryFile> findRecoveries(String prefix) {
-        var fileManager = new FileManager("recovery");
+        var fileManager = new FileManager(SessionAPI.RECOVERY_DIRNAME);
         var hashSet = new HashSet<RecoveryFile>();
         var files = fileManager.directory().listFiles();
         if (files == null) return new HashSet<>();

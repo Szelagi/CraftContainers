@@ -19,6 +19,7 @@ import pl.szelagi.buildin.creator.Creator;
 import pl.szelagi.component.baseComponent.StartException;
 import pl.szelagi.component.session.PlayerJoinException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,8 @@ public class EditBoardCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        var files = SessionAPI.BOARD_DIRECTORY.listFiles();
+        var boardDirectory = new File(SessionAPI.instance().getDataFolder(), SessionAPI.BOARD_DIRNAME);
+        var files = boardDirectory.listFiles();
         if (files == null || files.length == 0)
             return null;
         var list = new ArrayList<String>();

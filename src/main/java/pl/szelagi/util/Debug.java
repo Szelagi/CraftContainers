@@ -10,6 +10,7 @@ package pl.szelagi.util;
 import org.slf4j.LoggerFactory;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.session.Session;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -31,7 +32,11 @@ public class Debug {
 
     public static void send(BaseComponent component, String message) {
         if (!enable) return;
-        send(component.name() + ": " + message);
+        if (component instanceof Session) {
+            send(component.name() + ": " + message + " (" + component.uuid() + ")");
+        } else {
+            send(component.name() + ": " + message);
+        }
     }
 
     public static boolean enable() {
