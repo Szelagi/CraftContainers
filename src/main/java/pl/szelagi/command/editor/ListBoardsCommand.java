@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.SessionAPI;
 
+import java.io.File;
+
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
 public class ListBoardsCommand implements CommandExecutor {
@@ -21,7 +23,8 @@ public class ListBoardsCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) return false;
 
-        var files = SessionAPI.BOARD_DIRECTORY.listFiles();
+        var boardDirectory = new File(SessionAPI.instance().getDataFolder(), SessionAPI.BOARD_DIRNAME);
+        var files = boardDirectory.listFiles();
         if (files == null || files.length == 0) {
             player.sendMessage(PREFIX + "§cNo board saves found.");
             return false;

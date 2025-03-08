@@ -16,18 +16,15 @@ import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.VersionManager;
 import pl.szelagi.recovery.RecoveryManager;
+import pl.szelagi.util.Debug;
 import pl.szelagi.world.SessionWorldManager;
 
 import java.io.File;
 
 public final class SessionAPI extends JavaPlugin {
-    FileConfiguration config = getConfig();
-    public static final File SESSION_API_DIRECTORY = new File(Bukkit
-            .getServer()
-            .getPluginsFolder()
-            .getPath() + "/SessionAPI");
-    public static final File RECOVERY_DIRECTORY = new File(SESSION_API_DIRECTORY.getPath() + "/recovery");
-    public static final File BOARD_DIRECTORY = new File(SESSION_API_DIRECTORY.getPath() + "/board");
+    public static final String RECOVERY_DIRNAME = "recovery";
+    public static final String BOARD_DIRNAME = "board";
+
     private static SessionAPI instance;
 
     @Deprecated
@@ -42,15 +39,22 @@ public final class SessionAPI extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        // Plugin startup logic
-        if (!SESSION_API_DIRECTORY.exists())
-            SESSION_API_DIRECTORY.mkdir();
-        if (!RECOVERY_DIRECTORY.exists())
-            RECOVERY_DIRECTORY.mkdir();
-        if (!BOARD_DIRECTORY.exists())
-            BOARD_DIRECTORY.mkdir();
 
-        createConfig();
+        // Plugin startup logic
+        var directory = getDataFolder();
+        if (!directory.exists()) directory.mkdir();
+
+        var recoveryDir = new File(directory, RECOVERY_DIRNAME);
+        if (!recoveryDir.exists()) recoveryDir.mkdir();
+
+        var boardDir = new File(directory, BOARD_DIRNAME);
+        if (!boardDir.exists()) boardDir.mkdir();
+
+        ConfigManager.init(this);
+
+        var debugOnStart = ConfigManager.config().debugOnStart;
+        if (debugOnStart)
+            Debug.enable(true);
 
         VersionManager.initialize();
         SessionManager.initialize(this);
@@ -61,20 +65,12 @@ public final class SessionAPI extends JavaPlugin {
         Command.registerCommands();
     }
 
-    private void createConfig() {
-        config.addDefault("max-board-size", 300);
-        config.addDefault("distance-between-maps", 500);
-        config.addDefault("minecraft_version", "auto");
-        config.options().copyDefaults(true);
-        saveConfig();
-    }
-
     @Override
     public void onDisable() {
         // Plugin shutdown logic
     }
 
     public FileConfiguration config() {
-        return config;
+        return ConfigManager.config().fileConfiguration;
     }
 }

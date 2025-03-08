@@ -22,7 +22,8 @@ public class FileManager {
     private final File directory;
 
     public FileManager(String directoryName) {
-        this.directory = new File(SessionAPI.SESSION_API_DIRECTORY, directoryName);
+        var pluginFolder = SessionAPI.instance().getDataFolder();
+        this.directory = new File(pluginFolder, directoryName);
     }
 
     public File directory() {

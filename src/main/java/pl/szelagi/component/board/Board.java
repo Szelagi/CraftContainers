@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.Scheduler;
+import pl.szelagi.SessionAPI;
 import pl.szelagi.buildin.system.BoardWatchDog;
 import pl.szelagi.buildin.system.SecureZone;
 import pl.szelagi.component.baseComponent.BaseComponent;
@@ -280,7 +281,7 @@ public abstract class Board extends BaseComponent {
 
     @Override
     public String defineDirectoryPath() {
-        return "board/" + name();
+        return SessionAPI.BOARD_DIRNAME + '/' + name();
     }
 
     public ISpatial defineSecureZone() {
