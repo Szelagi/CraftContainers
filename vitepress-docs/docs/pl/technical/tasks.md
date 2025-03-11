@@ -9,16 +9,40 @@ Zadania można uruchamiać od momentu inicjalizacji komponentu, co jest określo
 
 
 ### Przykład
+![zadanie](../../img/task.gif)
+
 ```java
+private Location spawnLocation;
+private int counter = 0;
+
 @Override
 public void onComponentInit(ComponentConstructor event) {
     super.onComponentInit(event);
 
-    // Zadanie zostanie uruchomione natychmiast (0 delay)
-    // i będzie wykonywane cyklicznie co 1 sekundę.
-    runTaskTimer(() -> {
-        // Kod wykonywanego zadania
-    }, Time.zero(), Time.seconds(1));
+    var board = board();
+    if (board == null) return;
+
+    // Pobranie lokalizacji spawnu na podstawie tagu "spawn"
+    var spawnTag = board.tags("spawn");
+    spawnLocation = spawnTag.firstCentredXZ();
+
+    // Uruchomienie cyklicznego zadania spawnującego zombie co 2 sekundy
+    runTaskTimer(this::spawn, Time.seconds(2), Time.seconds(2));
+}
+
+private void spawn() {
+    if (spawnLocation == null) return;
+
+    var world = spawnLocation.getWorld();
+    var zombieNumber = counter++;
+
+    world.spawn(spawnLocation, Zombie.class, zombie -> {
+        zombie.setCustomNameVisible(true);
+        zombie.customName(Component.text(zombieNumber));
+    });
+
+    // Powiadomienie graczy o nowym zombie
+    Bukkit.broadcast(Component.text("§eSpawned zombie (#" + zombieNumber + ")"));
 }
 ```
 

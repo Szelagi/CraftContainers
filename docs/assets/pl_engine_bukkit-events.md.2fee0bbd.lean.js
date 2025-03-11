@@ -1,1 +1,0 @@
-import{_ as e,c as t,o as n}from"./app.1feda514.js";const k=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"pl/engine/bukkit-events.md"}'),a={name:"pl/engine/bukkit-events.md"};function s(r,o,c,i,p,_){return n(),t("div")}const l=e(a,[["render",s]]);export{k as __pageData,l as default};

@@ -61,26 +61,26 @@ export default defineConfig({
                         {text: 'Zdarzenia bukkit', link: '/pl/technical/listeners.md'},
                         {text: 'Zadania i wątki', link: '/pl/technical/tasks.md'},
                         {text: 'Kontenery graczy', link: '/pl/technical/container.md'},
-                        {text: 'Przywracanie stanu', link: '/pl/technical/recovery.md'},
-                        {text: 'Generowanie mapy', link: '/pl/technical/board.md'},
-                        {text: 'Własne zdarzenia', link: '/pl/technical/custom-events.md'},
+                        // {text: 'Przywracanie stanu', link: '/pl/technical/recovery.md'},
+                        // {text: 'Generowanie mapy', link: '/pl/technical/board.md'},
+                        // {text: 'Własne zdarzenia', link: '/pl/technical/custom-events.md'},
                     ]
                 },
                 {
                     text: 'Wbudowane komponenty',
                     items: [
-                        {text: 'Algorytmy grupujące', link: '/pl/buildin/grouping.md'},
-                        {text: 'Osobny ekwipunek', link: '/pl/buildin/other-equipment.md'},
-                        {text: 'Osobny tryb gry', link: '/pl/buildin/other-gamemode.md'},
-                        {text: 'Interaktywny sklep', link: '/pl/buildin/trader.md'},
-                        {text: 'Generator itemów', link: '/pl/buildin/generator.md'},
-                        {text: 'Poczekalnia', link: '/pl/buildin/lobby.md'},
+                        // {text: 'Algorytmy grupujące', link: '/pl/buildin/grouping.md'},
+                        // {text: 'Osobny ekwipunek', link: '/pl/buildin/other-equipment.md'},
+                        // {text: 'Osobny tryb gry', link: '/pl/buildin/other-gamemode.md'},
+                        // {text: 'Interaktywny sklep', link: '/pl/buildin/trader.md'},
+                        // {text: 'Generator itemów', link: '/pl/buildin/generator.md'},
+                        // {text: 'Poczekalnia', link: '/pl/buildin/lobby.md'},
                     ]
                 },
                 {
                     text: 'Przykładowe projekty',
                     items: [
-                        {text: 'Gra CakeWars', link: '/pl/project/cakewars.md'},
+                        // {text: 'Gra CakeWars', link: '/pl/project/cakewars.md'},
                     ]
                 },
                 {
