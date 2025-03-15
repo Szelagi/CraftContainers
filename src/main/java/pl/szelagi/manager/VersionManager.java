@@ -8,7 +8,7 @@
 package pl.szelagi.manager;
 
 import org.bukkit.Bukkit;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.ConfigManager;
 
 import java.util.regex.Pattern;
 
@@ -23,7 +23,7 @@ public class VersionManager {
     }
 
     public static void initialize() throws IllegalArgumentException {
-        var version = SessionAPI.getInstance().getConfig().getString("minecraft_version");
+        var version = ConfigManager.config().minecraftVersion;
         if (version == null || version.equals("auto")) {
             version = Bukkit.getBukkitVersion().split("-")[0];
         }

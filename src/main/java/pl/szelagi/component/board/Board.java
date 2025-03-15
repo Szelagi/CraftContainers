@@ -239,8 +239,6 @@ public abstract class Board extends BaseComponent {
         super.onComponentInit(event);
         new BoardWatchDog(this).start();
         new SecureZone(this).start();
-        //		// TODO: It may be necessary to ensure that
-        // all session maps are checked by these controllers
     }
 
     @Override

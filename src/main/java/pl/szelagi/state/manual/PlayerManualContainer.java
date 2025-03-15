@@ -20,24 +20,21 @@ import java.util.function.Predicate;
 public class PlayerManualContainer<T extends PlayerState> implements Serializable {
     private final HashMap<Player, T> map = new HashMap<>();
 
-    @NotNull
-    public T create(@NotNull Player player, @NotNull InstanceCreator<T> creator) throws ManualContainerException {
+    public @NotNull T create(@NotNull Player player, @NotNull InstanceCreator<T> creator) throws ManualContainerException {
         if (map.containsKey(player))
             throw new ManualContainerException("player " + player + " multi initialization");
         map.put(player, creator.get(player));
         return get(player);
     }
 
-    @NotNull
-    public T get(@NotNull Player player) throws ManualContainerException {
+    public @NotNull T get(@NotNull Player player) throws ManualContainerException {
         var record = map.get(player);
         if (record == null)
             throw new ManualContainerException("player " + player + " is not initialized");
         return record;
     }
 
-    @NotNull
-    public T remove(@NotNull Player player) throws ManualContainerException {
+    public @NotNull T remove(@NotNull Player player) throws ManualContainerException {
         var record = map.remove(player);
         if (record == null)
             throw new ManualContainerException("remove not exists player " + player);
