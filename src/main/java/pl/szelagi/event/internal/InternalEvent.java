@@ -12,15 +12,16 @@ package pl.szelagi.event.internal;
 // Przykłady to ComponentConstructor, PlayerDestructor
 
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class InternalEvent {
-    public LinkedList<Runnable> scheduled = new LinkedList<>();
+    public List<Runnable> scheduled = new LinkedList<>();
 
     public void safeSchedule(Runnable runnable) {
         scheduled.add(runnable);
     }
 
-    public LinkedList<Runnable> scheduled() {
+    public List<Runnable> scheduled() {
         return scheduled;
     }
 }
