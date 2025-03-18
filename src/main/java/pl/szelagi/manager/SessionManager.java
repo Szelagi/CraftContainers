@@ -15,18 +15,17 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
 import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SessionManager {
-    public static final ArrayList<Session> SESSIONS = new ArrayList<>();
-    private static final HashMap<Player, Session> PLAYER_SESSION_HASH_MAP = new HashMap<>();
+    public static final Set<Session> SESSIONS = new LinkedHashSet<>();
+    private static final Map<Player, Session> PLAYER_SESSION_HASH_MAP = new HashMap<>();
 
     public static void addRelation(Player p, Session d) {
         PLAYER_SESSION_HASH_MAP.put(p, d);
@@ -51,8 +50,7 @@ public class SessionManager {
         return classType.isInstance(session) ? classType.cast(session) : null;
     }
 
-    @NotNull
-    public static List<Session> sessions() {
+    public static @NotNull @Unmodifiable Set<Session> sessions() {
         return SESSIONS;
     }
 

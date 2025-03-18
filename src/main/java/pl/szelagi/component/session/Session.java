@@ -31,11 +31,12 @@ import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecoveryCause;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class Session extends BaseComponent {
     private final Recovery recovery;
-    private final ArrayList<Player> players = new ArrayList<>();
+    private final List<Player> players = new LinkedList<>();
     private Board currentBoard;
 
     public Session(JavaPlugin plugin) {
