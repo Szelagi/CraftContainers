@@ -11,18 +11,27 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extension.factory.parser.pattern.SingleBlockPatternParser;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.*;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.spatial.ISpatial;
 
@@ -200,4 +209,29 @@ public class FAWESchematicLoader {
             throw new SchematicException(e.getMessage());
         }
     }
+
+
+    public static void setBlocks(@NotNull Location location1, @NotNull Location location2, Material material) {
+        var world = BukkitAdapter.adapt(location1.getWorld());
+
+        BlockVector3 min = BlockVector3.at(
+                Math.min(location1.getBlockX(), location2.getBlockX()),
+                Math.min(location1.getBlockY(), location2.getBlockY()),
+                Math.min(location1.getBlockZ(), location2.getBlockZ())
+        );
+
+        BlockVector3 max = BlockVector3.at(
+                Math.max(location1.getBlockX(), location2.getBlockX()),
+                Math.max(location1.getBlockY(), location2.getBlockY()),
+                Math.max(location1.getBlockZ(), location2.getBlockZ())
+        );
+
+        var region = (Region) new CuboidRegion(world, min, max);
+        var blockState = BukkitAdapter.adapt(material.createBlockData());
+
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(world)) {
+            editSession.setBlocks(region, blockState);
+        }
+    }
+
 }

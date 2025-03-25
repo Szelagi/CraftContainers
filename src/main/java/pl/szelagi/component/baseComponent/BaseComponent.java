@@ -293,18 +293,33 @@ public abstract class BaseComponent implements SAPIListener {
 
     // SAPI EVENT (reflection)
     // wywołuje event tylko na tym elemencie
+    @Deprecated
     public final void call(SAPIEvent event) {
+        callSelf(event);
+    }
+
+    public final void callSelf(SAPIEvent event) {
         call(List.of(this).iterator(), event);
     }
 
     // wywołuje event na wskazanym liściu oraz na wszystkich dzieciach dzieci od najstarszego do najmłodszego
+    @Deprecated
     public final void callOldToYoung(SAPIEvent event) {
+       callSpecialization(event);
+    }
+
+    public final void callSpecialization(SAPIEvent event) {
         var iterator = new DepthFirstSearch(this, true);
         call(iterator, event);
     }
 
     // wywołuje event na wskazanym liściu oraz na wszystkich dzieciach dzieci od młodszego do najstarszego
+    @Deprecated
     public final void callYoungToOld(SAPIEvent event) {
+        callGeneralization(event);
+    }
+
+    public final void callGeneralization(SAPIEvent event) {
         var iterator = new ReverseDepthFirstSearch(this, true);
         call(iterator, event);
     }
@@ -325,16 +340,31 @@ public abstract class BaseComponent implements SAPIListener {
         }
     }
 
+    @Deprecated
     public final void call(InternalEvent event) {
+        callSelf(event);
+    }
+
+    public final void callSelf(InternalEvent event) {
         call(List.of(this).iterator(), event);
     }
 
+    @Deprecated
     public final void callOldToYoung(InternalEvent event) {
+        callSpecialization(event);
+    }
+
+    public final void callSpecialization(InternalEvent event) {
         var iterator = new DepthFirstSearch(this, true);
         call(iterator, event);
     }
 
+    @Deprecated
     public final void callYoungToOld(InternalEvent event) {
+       callGeneralization(event);
+    }
+
+    public final void callGeneralization(InternalEvent event) {
         var iterator = new ReverseDepthFirstSearch(this, true);
         call(iterator, event);
     }

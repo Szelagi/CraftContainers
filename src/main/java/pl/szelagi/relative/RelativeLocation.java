@@ -8,11 +8,12 @@
 package pl.szelagi.relative;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 public class RelativeLocation extends Location {
-    private final double xRelative;
-    private final double yRelative;
-    private final double zRelative;
+    private double xRelative;
+    private double yRelative;
+    private double zRelative;
 
     public RelativeLocation(double xMoveRelative, double yMoveRelative, double zMoveRelative, Location base) {
         super(base.getWorld(), base.getX() + xMoveRelative, base.getY() + yMoveRelative, base.getZ() + zMoveRelative);
@@ -23,9 +24,20 @@ public class RelativeLocation extends Location {
 
     public RelativeLocation(Location location, Location base) {
         super(base.getWorld(), location.getX(), location.getY(), location.getZ());
-        this.xRelative = location.getX() - base.getX();
-        this.yRelative = location.getY() - base.getY();
-        this.zRelative = location.getZ() - base.getZ();
+        rebase(base);
+    }
+
+    public RelativeLocation(Location location, double xRelative, double yRelative, double zRelative) {
+        super(location.getWorld(), location.getX(), location.getY(), location.getZ());
+        this.xRelative = xRelative;
+        this.yRelative = yRelative;
+        this.zRelative = zRelative;
+    }
+
+    public void rebase(Location base) {
+        xRelative = getX() - base.getX();
+        yRelative = getY() - base.getY();
+        zRelative = getZ() - base.getZ();
     }
 
     public boolean equalsRelative(RelativeLocation location) {
@@ -60,5 +72,10 @@ public class RelativeLocation extends Location {
 
     public RelativePoint toRelativePoint() {
         return new RelativePoint(xRelative, yRelative, zRelative);
+    }
+
+    @Override
+    public @NotNull RelativeLocation clone() {
+        return new RelativeLocation(this, xRelative, yRelative, zRelative);
     }
 }
