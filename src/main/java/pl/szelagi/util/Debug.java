@@ -7,7 +7,6 @@
 
 package pl.szelagi.util;
 
-import org.slf4j.LoggerFactory;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.session.Session;
@@ -21,7 +20,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class Debug {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Debug.class);
     private static boolean enable = false;
     private static Logger logger;
 

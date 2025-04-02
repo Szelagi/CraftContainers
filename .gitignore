@@ -19,6 +19,8 @@ out/
 
 # Package Files #
 *.jar
+!src/test/resources/*.jar
+
 *.war
 *.nar
 *.ear
@@ -111,9 +113,6 @@ buildNumber.properties
 
 # Common working directory
 run/
-
-# Test only directories
-test/
 
 # META-INF and MANIFEST.MF
 src/main/resources/META-INF/
