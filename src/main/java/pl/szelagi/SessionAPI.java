@@ -21,7 +21,7 @@ import pl.szelagi.world.SessionWorldManager;
 
 import java.io.File;
 
-public final class SessionAPI extends JavaPlugin {
+public class SessionAPI extends JavaPlugin {
     public static final String RECOVERY_DIRNAME = "recovery";
     public static final String BOARD_DIRNAME = "board";
 

@@ -56,8 +56,8 @@ public abstract class BaseComponent implements SAPIListener {
     private final String name;
     private final String identifier;
 
-    private final FileManager fileManager;
-    private final Listeners listeners;
+    private FileManager cachedFileManager = null;
+    private Listeners cachedListeners = null;
 
     // testowy system śledzenie, jakie player init/destroy zostały wykonane, aby nie wykonywać wielokrotnie
     private final Set<Player> constructedPlayers = new HashSet<>();
@@ -92,8 +92,6 @@ public abstract class BaseComponent implements SAPIListener {
         eventHandlers.put(ComponentRecovery.class, e -> onComponentRecovery((ComponentRecovery) e));
         eventHandlers.put(PlayerRecovery.class, e -> onPlayerRecovery((PlayerRecovery) e));
 
-        listeners = defineListeners();
-
         this.parent = parent;
         this.children = new LinkedList<>();
 
@@ -102,8 +100,6 @@ public abstract class BaseComponent implements SAPIListener {
         name = ComponentManager.componentName(this.getClass());
         // identifier wymaga zdefiniowanego: name & id
         identifier = ComponentManager.componentIdentifier(this);
-
-        fileManager = new FileManager(defineDirectoryPath());
     }
 
     private void watchdogPlayerInit(PlayerConstructor event) {
@@ -264,7 +260,11 @@ public abstract class BaseComponent implements SAPIListener {
 
     // Główny folder do plików komponentu
     public final @NotNull FileManager fileManager() {
-        return fileManager;
+        if (cachedFileManager == null) {
+            var path = defineDirectoryPath();
+            cachedFileManager = new FileManager(path);
+        }
+        return cachedFileManager;
     }
 
     protected final void callBukkit(Event event) {
@@ -471,7 +471,10 @@ public abstract class BaseComponent implements SAPIListener {
 
     // LISTENERS
     public final ImmutableListeners listeners() {
-        return listeners;
+        if (cachedListeners == null) {
+            cachedListeners = defineListeners();
+        }
+        return cachedListeners;
     }
 
     public Listeners defineListeners() {
@@ -521,5 +524,4 @@ public abstract class BaseComponent implements SAPIListener {
         call(event);
         recovery.updatePlayer(event);
     }
-
 }
