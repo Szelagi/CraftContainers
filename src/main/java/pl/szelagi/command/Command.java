@@ -20,6 +20,7 @@ import pl.szelagi.command.manage.JoinSessionCommand;
 import pl.szelagi.command.manage.LeaveSessionCommand;
 import pl.szelagi.command.manage.PlayerSessionCommand;
 import pl.szelagi.command.manage.StopSessionCommand;
+import pl.szelagi.command.test.IntegrationTestCommand;
 
 
 public class Command {
@@ -108,5 +109,11 @@ public class Command {
         assert selfTest != null;
         var selfTestResolver = new SelfTestCommand();
         selfTest.setExecutor(selfTestResolver);
+
+        // session-integration-test
+        var integrationTest = sapi.getCommand("session-integration-test");
+        assert integrationTest != null;
+        var integrationTestResolver = new IntegrationTestCommand();
+        integrationTest.setExecutor(integrationTestResolver);
     }
 }

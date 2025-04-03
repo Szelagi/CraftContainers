@@ -63,6 +63,11 @@ commands:
     description: "Checks if SessionAPI is working correctly."
     permission: "sessionapi.debug"
 
+  session-integration-test:
+    description: "Command for running integration tests."
+    permission: "sessionapi.test"
+
+
 
 permissions:
   # Board editor permissions
@@ -102,4 +107,8 @@ permissions:
   # Session debug permissions
   sessionapi.debug:
     description: "Allows the user to start test sessions and toggle debug messages."
+    default: op
+
+  sessionapi.test:
+    description: "Allows use of the integration test command"
     default: op
