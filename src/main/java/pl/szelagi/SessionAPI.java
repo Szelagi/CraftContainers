@@ -16,6 +16,7 @@ import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.VersionManager;
 import pl.szelagi.recovery.RecoveryManager;
+import pl.szelagi.test.Tests;
 import pl.szelagi.util.Debug;
 import pl.szelagi.world.SessionWorldManager;
 
@@ -63,6 +64,8 @@ public class SessionAPI extends JavaPlugin {
         RecoveryManager.initialize(this);
         SessionWorldManager.initialize(this);
         Command.registerCommands();
+
+        Tests.loadAll();
     }
 
     @Override
