@@ -22,14 +22,13 @@ import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
 import pl.szelagi.component.baseComponent.internalEvent.player.PlayerInitCause;
 import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
 import pl.szelagi.component.board.Board;
+import pl.szelagi.component.controller.Controller;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.event.internal.InternalEvent;
 import pl.szelagi.event.sapi.SAPIEvent;
 import pl.szelagi.event.sapi.SAPIListener;
 import pl.szelagi.file.FileManager;
-import pl.szelagi.manager.CardinalityManager;
-import pl.szelagi.manager.ComponentManager;
-import pl.szelagi.manager.SingletonManager;
+import pl.szelagi.manager.*;
 import pl.szelagi.manager.listener.ImmutableListeners;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
@@ -126,10 +125,13 @@ public abstract class BaseComponent implements SAPIListener {
 
         // Wymaga najpierw CardinalityManager.baseComponentStart(this);
         SingletonManager.check(this);
+        // Wymaga najpierw CardinalityManager.baseComponentStart(this);
+        DependencyManager.componentStart(this);
     }
 
     private void internalOnStop() {
         CardinalityManager.baseComponentStop(this);
+        DependencyManager.componentStop(this);
     }
 
 
@@ -540,5 +542,45 @@ public abstract class BaseComponent implements SAPIListener {
         var event = new PlayerRecovery(player, cause);
         call(event);
         recovery.updatePlayer(event);
+    }
+
+    protected boolean hasDependency(Class<? extends BaseComponent> dependencyClass) {
+        return DependencyManager.getDependencies(getClass()).contains(dependencyClass);
+    }
+
+    public <T extends Controller> @Nullable T findController(Class<T> componentClass) {
+        return ComponentManager.firstComponent(session(), componentClass);
+    }
+
+    public <T extends Controller> @NotNull List<T> findControllers(Class<T> componentClass) {
+        return ComponentManager.components(session(), componentClass);
+    }
+
+    public <T extends Controller> @NotNull T useController(Class<T> component) {
+        checkDependency(component);
+        checkSingletonDependency(component);
+        return Objects.requireNonNull(findController(component));
+    }
+
+    public <T extends Controller> @NotNull List<T> useControllers(Class<T> component) {
+        checkDependency(component);
+        return Objects.requireNonNull(findControllers(component));
+    }
+
+    private void checkDependency(Class<? extends Controller> controllerClass) {
+        if (hasDependency(controllerClass)) return;
+        throw new UseComponentException(
+                "Component " + controllerClass.getSimpleName() +
+                        " is not a declared dependency of " + this.name()
+        );
+    }
+
+    private void checkSingletonDependency(Class<? extends BaseComponent> controllerClass) {
+        if (SingletonManager.isSingleton(controllerClass)) return;
+        throw new UseComponentException(
+                "Cannot use a method that returns a single instance for dependency " +
+                        controllerClass.getSimpleName() +
+                        ", because it is not marked with @Singleton (used in " + this.name() + ")"
+        );
     }
 }

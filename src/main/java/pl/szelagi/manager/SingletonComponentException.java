@@ -7,10 +7,14 @@
 
 package pl.szelagi.manager;
 
+import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.session.Session;
 import pl.szelagi.util.ServerRuntimeException;
 
 public class SingletonComponentException extends ServerRuntimeException {
-    public SingletonComponentException(String name) {
-        super(name);
+    public SingletonComponentException(BaseComponent baseComponent) {
+        super("An instance of " + baseComponent.name() +
+                " exists more than once in the same session (" +
+                baseComponent.session().name() + ").");
     }
 }
