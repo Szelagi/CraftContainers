@@ -17,18 +17,16 @@ import java.util.Map;
 public class SingletonManager {
     private static final Map<Class<? extends BaseComponent>, Boolean> IS_SINGLETON = new HashMap<>();
 
-    public static boolean isSingleton(BaseComponent component) {
+    public static boolean isSingleton(Class<? extends BaseComponent> componentClass) {
         return IS_SINGLETON.computeIfAbsent(
-                component.getClass(),
-                k -> component.getClass().isAnnotationPresent(SingletonComponent.class));
+                componentClass,
+                k -> componentClass.isAnnotationPresent(SingletonComponent.class));
     }
 
     public static void check(@NotNull BaseComponent baseComponent) {
-        boolean isSingleton = isSingleton(baseComponent);
+        boolean isSingleton = isSingleton(baseComponent.getClass());
         boolean cardinalityMoreThanOne = CardinalityManager.cardinality(baseComponent.session(), baseComponent.getClass()) > 1;
         if (isSingleton && cardinalityMoreThanOne)
-            throw new SingletonComponentException("An instance of " + baseComponent.name() +
-                    " exists more than once in the same session (" +
-                    baseComponent.session().name() + ").");
+            throw new SingletonComponentException(baseComponent);
     }
 }
