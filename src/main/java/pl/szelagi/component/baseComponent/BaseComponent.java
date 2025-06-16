@@ -27,7 +27,9 @@ import pl.szelagi.event.internal.InternalEvent;
 import pl.szelagi.event.sapi.SAPIEvent;
 import pl.szelagi.event.sapi.SAPIListener;
 import pl.szelagi.file.FileManager;
+import pl.szelagi.manager.CardinalityManager;
 import pl.szelagi.manager.ComponentManager;
+import pl.szelagi.manager.SingletonManager;
 import pl.szelagi.manager.listener.ImmutableListeners;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
@@ -119,6 +121,17 @@ public abstract class BaseComponent implements SAPIListener {
         onPlayerDestroy(event);
     }
 
+    private void internalOnStart() {
+        CardinalityManager.baseComponentStart(this);
+
+        // Wymaga najpierw CardinalityManager.baseComponentStart(this);
+        SingletonManager.check(this);
+    }
+
+    private void internalOnStop() {
+        CardinalityManager.baseComponentStop(this);
+    }
+
 
     // LIFE CYCLES
     @MustBeInvokedByOverriders
@@ -147,6 +160,8 @@ public abstract class BaseComponent implements SAPIListener {
 
         // ustaw flagę, że nie został wykonany na nim PlayerConstructor
         isInvokePlayersConstructor = false;
+
+        internalOnStart();
 
         // wywołaj event o konstruktorze komponentu
         call(new ComponentConstructor(this));
@@ -201,6 +216,8 @@ public abstract class BaseComponent implements SAPIListener {
         // niszczy wszystkie kontrolowane taski
         taskSystem.destroy();
         taskSystem = null;
+
+        internalOnStop();
 
         // Wywołaj event o destruktorze gracza dla każdego gracza w sesji.
         // Klonujemy listę, aby zapobiec błędu wynikającego z modyfikacji graczy w trakcie przechodzenia przez listę.
