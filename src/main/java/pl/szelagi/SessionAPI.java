@@ -17,6 +17,7 @@ import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.VersionManager;
 import pl.szelagi.recovery.RecoveryManager;
 import pl.szelagi.test.Tests;
+import pl.szelagi.util.CooldownVolatile;
 import pl.szelagi.util.Debug;
 import pl.szelagi.world.SessionWorldManager;
 
@@ -57,6 +58,7 @@ public class SessionAPI extends JavaPlugin {
         if (debugOnStart)
             Debug.enable(true);
 
+        CooldownVolatile.initialize(this);
         VersionManager.initialize();
         SessionManager.initialize(this);
         BoardManager.initialize(this);
