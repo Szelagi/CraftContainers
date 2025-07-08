@@ -11,43 +11,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.state.InstanceCreator;
+import pl.szelagi.state.ManualContainer;
 import pl.szelagi.state.PlayerState;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-public class PlayerManualContainer<T extends PlayerState> implements Serializable {
-    private final HashMap<Player, T> map = new HashMap<>();
-
-    public @NotNull T create(@NotNull Player player, @NotNull InstanceCreator<T> creator) throws ManualContainerException {
-        if (map.containsKey(player))
-            throw new ManualContainerException("player " + player + " multi initialization");
-        map.put(player, creator.get(player));
-        return get(player);
-    }
-
-    public @NotNull T get(@NotNull Player player) throws ManualContainerException {
-        var record = map.get(player);
-        if (record == null)
-            throw new ManualContainerException("player " + player + " is not initialized");
-        return record;
-    }
-
-    public @NotNull T remove(@NotNull Player player) throws ManualContainerException {
-        var record = map.remove(player);
-        if (record == null)
-            throw new ManualContainerException("remove not exists player " + player);
-        return record;
-    }
-
-    public boolean isExists(@NotNull Player player) {
-        return map.containsKey(player);
-    }
-
-    public @Nullable T find(Predicate<T> predicate) {
-        return map.values().stream()
-                .filter(predicate).findFirst()
-                .orElse(null);
-    }
+public class PlayerManualContainer<T extends PlayerState> extends ManualContainer<Player, T> {
 }
