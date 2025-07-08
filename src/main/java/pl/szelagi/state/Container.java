@@ -11,11 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.state.manual.ManualContainerException;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class Container<I, S> extends ManualContainer<I, S> {
     private final @NotNull Function<I, S> creator;

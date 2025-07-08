@@ -5,16 +5,13 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-import com.github.dockerjava.api.model.HostConfig;
 import com.github.t9t.minecraftrconclient.RconClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.shaded.com.trilead.ssh2.log.Logger;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.MountableFile;
 import pl.szelagi.command.test.IntegrationTestCommand;

@@ -8,6 +8,7 @@
 package pl.szelagi.buildin.grouper;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,8 +37,19 @@ public class Grouper<T extends Group> {
         return groups.stream().anyMatch(group -> group.hasPlayer(player));
     }
 
+    @Deprecated
     public @Nullable T findPlayer(Player player) {
+        return findGroup(player);
+    }
+
+    public @Nullable T findGroup(Player player) {
         return groups.stream().filter(group -> group.hasPlayer(player)).findFirst().orElse(null);
+    }
+
+    public @NotNull T getGroup(Player player) {
+        var group = findGroup(player);
+        if (group == null) throw new IllegalArgumentException("group not found");
+        return group;
     }
 
 }

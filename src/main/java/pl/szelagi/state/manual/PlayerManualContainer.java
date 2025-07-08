@@ -8,15 +8,8 @@
 package pl.szelagi.state.manual;
 
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import pl.szelagi.state.InstanceCreator;
 import pl.szelagi.state.ManualContainer;
 import pl.szelagi.state.PlayerState;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.function.Predicate;
 
 public class PlayerManualContainer<T extends PlayerState> extends ManualContainer<Player, T> {
 }
