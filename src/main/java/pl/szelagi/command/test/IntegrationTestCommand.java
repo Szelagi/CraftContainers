@@ -10,20 +10,13 @@ package pl.szelagi.command.test;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.buildin.creator.Creator;
-import pl.szelagi.buildin.creator.CreatorBoard;
-import pl.szelagi.component.board.Board;
-import pl.szelagi.manager.SessionManager;
-import pl.szelagi.spatial.ISpatial;
-import pl.szelagi.tag.TagAnalyzer;
 import pl.szelagi.test.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static pl.szelagi.command.CommandHelper.PREFIX;
 
 public class IntegrationTestCommand implements CommandExecutor {
     public static final String SUCCESS = "OK";

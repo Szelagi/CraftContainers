@@ -8,7 +8,6 @@
 package pl.szelagi.manager;
 
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.session.Session;
 import pl.szelagi.util.ServerRuntimeException;
 
 public class SingletonComponentException extends ServerRuntimeException {

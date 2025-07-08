@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.ConfigManager;
-import pl.szelagi.SessionAPI;
 import pl.szelagi.spatial.ISpatial;
 
 public class Space implements ISpatial {

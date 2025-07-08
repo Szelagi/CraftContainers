@@ -13,7 +13,6 @@ import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.event.internal.InternalEvent;
 import pl.szelagi.recovery.ComponentRecoveryLambda;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 

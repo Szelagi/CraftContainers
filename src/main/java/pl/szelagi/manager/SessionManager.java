@@ -21,7 +21,10 @@ import pl.szelagi.component.session.Session;
 import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
 import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class SessionManager {
     public static final Set<Session> SESSIONS = new LinkedHashSet<>();

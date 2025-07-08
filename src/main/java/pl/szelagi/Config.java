@@ -10,7 +10,6 @@ package pl.szelagi;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import static pl.szelagi.ConfigManager.*;
-import static pl.szelagi.ConfigManager.DEBUG_ON_START;
 
 public class Config {
     public final FileConfiguration fileConfiguration;

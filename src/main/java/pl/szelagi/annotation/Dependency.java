@@ -8,7 +8,6 @@
 package pl.szelagi.annotation;
 
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.controller.Controller;
 
 import java.lang.annotation.*;
 
