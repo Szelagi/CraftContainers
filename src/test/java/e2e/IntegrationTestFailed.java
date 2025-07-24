@@ -5,7 +5,7 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-public class IntegrationTestFailed extends RuntimeException {
+package e2e;public class IntegrationTestFailed extends RuntimeException {
     public IntegrationTestFailed(String message) {
         super(message);
     }

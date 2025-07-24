@@ -5,6 +5,8 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
+package e2e;
+
 import com.github.t9t.minecraftrconclient.RconClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +29,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-public class MainTest {
+public class CoreIT {
     private static String generatePassword(int length) {
         var random = new SecureRandom();
         return random.ints(48, 122)
@@ -56,7 +58,7 @@ public class MainTest {
 
     private static Path fawePath() throws URISyntaxException {
         var plugin = Paths.get(
-                Objects.requireNonNull(MainTest.class.getClassLoader().getResource("fawe.jar")).toURI()
+                Objects.requireNonNull(CoreIT.class.getClassLoader().getResource("fawe.jar")).toURI()
         );
         if (!Files.exists(plugin)) {
             throw new RuntimeException("Could not find fawe.jar");
@@ -66,7 +68,7 @@ public class MainTest {
 
     private static Path worldPath() throws URISyntaxException {
         var plugin = Paths.get(
-                Objects.requireNonNull(MainTest.class.getClassLoader().getResource("world.zip")).toURI()
+                Objects.requireNonNull(CoreIT.class.getClassLoader().getResource("world.zip")).toURI()
         );
         if (!Files.exists(plugin)) {
             throw new RuntimeException("Could not find world.zip");
