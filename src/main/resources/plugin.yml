@@ -59,14 +59,9 @@ commands:
     description: "Toggles debugging messages on or off."
     permission: "sessionapi.debug"
 
-  session-selftest:
-    description: "Checks if SessionAPI is working correctly."
-    permission: "sessionapi.debug"
-
-  session-integration-test:
-    description: "Command for running integration tests."
+  session-internal-test:
+    description: "Command for running internal tests."
     permission: "sessionapi.test"
-
 
 
 permissions:

@@ -9,30 +9,30 @@ package e2e;
 
 import com.github.t9t.minecraftrconclient.RconClient;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.utility.MountableFile;
-import pl.szelagi.command.test.IntegrationTestCommand;
-import pl.szelagi.test.Tests;
+import pl.szelagi.command.test.TestCommand;
+import pl.szelagi.test.TestName;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+@ExtendWith(Watcher.class)
 public class CoreIT {
     private static String generatePassword(int length) {
         var random = new SecureRandom();
@@ -55,11 +55,19 @@ public class CoreIT {
     private static RconClient rcon;
 
     private static Path sapiPath() {
-        var plugin = Paths.get("target", "sessionapi-test.jar");
-        if (!Files.exists(plugin)) {
-            throw new RuntimeException("Could not find sessionapi-test.jar");
+        Properties props = new Properties();
+        try (InputStream in = CoreIT.class.getResourceAsStream("/build.properties")) {
+            props.load(in);
+            String finalName = props.getProperty("project.finalName");
+            var fileName = finalName + ".jar";
+            var plugin = Paths.get("target", fileName);
+            if (!Files.exists(plugin)) {
+                throw new RuntimeException("Could not find sessionapi-test.jar");
+            }
+            return plugin;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return plugin;
     }
 
     private static Path fawePath() throws URISyntaxException {
@@ -72,17 +80,6 @@ public class CoreIT {
         return plugin;
     }
 
-    private static Path worldPath() throws URISyntaxException {
-        var plugin = Paths.get(
-                Objects.requireNonNull(CoreIT.class.getClassLoader().getResource("world.zip")).toURI()
-        );
-        if (!Files.exists(plugin)) {
-            throw new RuntimeException("Could not find world.zip");
-        }
-        return plugin;
-    }
-
-
     @BeforeAll
     public static void setup() throws IOException, InterruptedException, URISyntaxException {
         sharedNetwork = Network.newNetwork();
@@ -92,7 +89,6 @@ public class CoreIT {
 
         var sapiPath = sapiPath();
         var fawePath = fawePath();
-        var worldPath = worldPath();
 
         server = new GenericContainer<>("itzg/minecraft-server")
                 .withCreateContainerCmdModifier(cmd -> cmd.withName("sessionapi-test-server"))
@@ -118,7 +114,7 @@ public class CoreIT {
         server.start();
         System.out.println("Waiting for the server to fully start...");
 
-        Awaitility.await()
+        await()
                 .pollInterval(Duration.ofMillis(100))
                 .until(() -> {
                     String logs = server.getLogs();
@@ -133,7 +129,6 @@ public class CoreIT {
         System.out.println("RCON is running on port: " + rconPort);
         rcon = RconClient.open(HOST, rconPort, rconPassword);
 
-
         bot = new GenericContainer<>("szelagi/mc-test-player")
                 .withCreateContainerCmdModifier(cmd -> cmd.withName("sessionapi-test-client"))
                 .withEnv("SERVER_HOST", "mc-server")
@@ -144,7 +139,7 @@ public class CoreIT {
 
         bot.start();
 
-        Awaitility.await()
+        await()
                 .pollInterval(Duration.ofMillis(100))
                 .until(() -> {
                     String logs = server.getLogs();
@@ -154,6 +149,11 @@ public class CoreIT {
 
     @AfterAll
     public static void teardown() {
+        if (Watcher.anyTestFailed()) {
+            assert server != null;
+            System.err.println("Server logs:\n" + server.getLogs(OutputFrame.OutputType.STDOUT));
+        }
+
         if (rcon != null) rcon.close();
         if (bot != null) bot.stop();
         if (server != null) server.stop();
@@ -162,7 +162,6 @@ public class CoreIT {
     @Test
     public void hasPlayer() {
         var res = rcon.sendCommand("list");
-        System.out.println(res.toString());
         var pattern = Pattern.compile(" 0 ");
         var matches = pattern.matcher(res).find();
         Assertions.assertFalse(matches);
@@ -179,17 +178,56 @@ public class CoreIT {
     }
 
     @Test
-    public void sample() {
-        internalTest(Tests.SAMPLE_TEST_NAME, null);
+    public void sessionStartStopTest() {
+        internalTest(TestName.SESSION_START_STOP_TEST);
     }
 
-    private void internalTest(@NotNull String name, @Nullable List<String> args) throws IntegrationTestFailed {
-        var query = "session-integration-test " + name + (args == null || args.isEmpty() ? "" : String.join(" ", args));
+    @Test
+    public void sessionStartStopWithPlayerTest() {
+        internalTest(TestName.SESSION_START_STOP_WITH_PLAYER_TEST);
+    }
+
+    @Test
+    public void constructorTreeTest() {
+        internalTest(TestName.CONSTRUCTOR_TREE_TEST);
+    }
+
+    @Test
+    public void destructorTreeTest() {
+        internalTest(TestName.DESTRUCTOR_TREE_TEST);
+    }
+
+    @Test
+    public void playerConstructorAfterTreeTest() {
+        internalTest(TestName.PLAYER_CONSTRUCTOR_AFTER_TREE_TEST);
+    }
+
+    @Test
+    public void playerDestructorAfterTreeTest() {
+        internalTest(TestName.PLAYER_DESTRUCTOR_AFTER_TREE_TEST);
+    }
+
+    @Test
+    public void playerDestructorBeforeTreeTest() {
+        internalTest(TestName.PLAYER_DESTRUCTOR_BEFORE_TREE_TEST);
+    }
+
+    @Test
+    public void playerJoinRequestTreeTest() {
+        internalTest(TestName.PLAYER_JOIN_REQUEST_TREE_TEST);
+    }
+
+    @Test
+    public void addRemovePlayerTest() {
+        internalTest(TestName.ADD_REMOVE_PLAYER);
+    }
+
+
+    private void internalTest(@NotNull TestName testName) throws RemoteTestFailed {
+        var query = TestCommand.COMMAND_NAME + " " + testName;
         var res = rcon.sendCommand(query);
-        if (!res.contains(IntegrationTestCommand.SUCCESS)) {
-            throw new IntegrationTestFailed(res);
-        } else {
-            System.out.println("Successfully executed: " + name);
+        if (!res.contains(TestCommand.SUCCESS)) {
+            throw new RemoteTestFailed(res);
         }
     }
 
