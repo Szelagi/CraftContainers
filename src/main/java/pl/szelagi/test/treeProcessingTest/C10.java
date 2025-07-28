@@ -5,8 +5,13 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.test;
+package pl.szelagi.test.treeProcessingTest;
 
-public abstract class Test {
-    public abstract void execute(String[] args) throws Exception;
+import org.jetbrains.annotations.NotNull;
+import pl.szelagi.component.baseComponent.BaseComponent;
+
+class C10 extends CNode {
+    public C10(@NotNull BaseComponent parent) {
+        super(parent);
+    }
 }

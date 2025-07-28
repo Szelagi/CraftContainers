@@ -5,13 +5,13 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.buildin.selfTest;
+package pl.szelagi.test.treeProcessingTest;
 
+import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.controller.Controller;
 
-public class DummyNode extends Controller {
-    public DummyNode(BaseComponent baseComponent) {
-        super(baseComponent);
+class C3 extends CNode {
+    public C3(@NotNull BaseComponent parent) {
+        super(parent);
     }
 }

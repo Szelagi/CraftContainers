@@ -5,20 +5,20 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.test.sample;
+package pl.szelagi.test.sessionAddRemovePlayer;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.board.Board;
 import pl.szelagi.component.session.Session;
 
-public class SampleSession extends Session {
-    public SampleSession(JavaPlugin plugin) {
+class MySession extends Session {
+    public MySession(JavaPlugin plugin) {
         super(plugin);
     }
 
     @Override
     protected @NotNull Board defaultBoard() {
-        return new SampleBoard(this);
+        return new MyBoard(this);
     }
 }
