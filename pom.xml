@@ -29,24 +29,6 @@
                     <target>21</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <id>pre-test-jar</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>sessionapi</finalName>
-                            <classifier>test</classifier>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- unit -->
             <plugin>
@@ -234,5 +216,13 @@
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
+
     </dependencies>
 </project>

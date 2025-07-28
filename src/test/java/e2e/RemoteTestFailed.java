@@ -5,8 +5,10 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package e2e;public class IntegrationTestFailed extends RuntimeException {
-    public IntegrationTestFailed(String message) {
-        super(message);
+package e2e;
+
+public class RemoteTestFailed extends RuntimeException {
+    public RemoteTestFailed(String message) {
+        super("Remote test failure:\n" + ((message == null || message.isBlank()) ? "(empty message)" : message));
     }
 }

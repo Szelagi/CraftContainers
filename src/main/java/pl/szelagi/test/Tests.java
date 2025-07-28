@@ -7,13 +7,45 @@
 
 package pl.szelagi.test;
 
-import pl.szelagi.command.test.IntegrationTestCommand;
-import pl.szelagi.test.sample.SampleTest;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
 
-public abstract class Tests {
-    public static final String SAMPLE_TEST_NAME = "sample-test";
+import java.lang.reflect.Method;
+import java.util.List;
 
-    public static void loadAll() {
-        IntegrationTestCommand.register(SAMPLE_TEST_NAME, new SampleTest());
+public class Tests {
+    private static List<Method> findTests(TestName testName) {
+        var reflections = new Reflections(new ConfigurationBuilder()
+                .forPackages(Tests.class.getPackage().getName())
+                .addScanners(Scanners.MethodsAnnotated));
+
+        var methods = reflections.getMethodsAnnotatedWith(SAPITest.class);
+        return methods
+                .stream()
+                .filter(method ->
+                        method.getAnnotation(SAPITest.class).test().equals(testName)
+                ).toList();
+    }
+
+    public static void perform(TestName testName) throws Exception {
+        if (testName == null)
+            throw new IllegalStateException("Test name not provided.");
+
+        var methods = findTests(testName);
+
+        if (methods.isEmpty())
+            throw new IllegalStateException("No tests found. (" + testName + ")");
+
+        if (methods.size() > 1)
+            throw new IllegalStateException("Too many tests found. (" + testName + ")");
+
+        var method = methods.getFirst();
+
+        var constructor = method.getDeclaringClass().getDeclaredConstructor();
+        constructor.setAccessible(true);
+        var instance = constructor.newInstance();
+        method.setAccessible(true);
+        method.invoke(instance);
     }
 }

@@ -65,8 +65,6 @@ public class SessionAPI extends JavaPlugin {
         RecoveryManager.initialize(this);
         SessionWorldManager.initialize(this);
         Command.registerCommands();
-
-        Tests.loadAll();
     }
 
     @Override
