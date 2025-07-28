@@ -5,7 +5,7 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.test.sample;
+package pl.szelagi.test.sessionStartStopWithPlayerTest;
 
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.board.Board;
@@ -13,8 +13,8 @@ import pl.szelagi.component.session.Session;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.spatial.Spatial;
 
-public class SampleBoard extends Board {
-    public SampleBoard(@NotNull Session session) {
+class MyBoard extends Board {
+    public MyBoard(@NotNull Session session) {
         super(session);
     }
 
