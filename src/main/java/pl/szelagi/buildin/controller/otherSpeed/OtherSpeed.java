@@ -53,7 +53,7 @@ public class OtherSpeed extends Controller {
     public void onPlayerDestroy(PlayerDestructor event) {
         super.onPlayerDestroy(event);
         var player = event.player();
-        var state = playerContainer.getOrThrow(player);
+        var state = playerContainer.removeOrThrow(player);
         state.load(player);
     }
 
