@@ -11,6 +11,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.baseComponent.ComponentStatus;
 import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
 import pl.szelagi.component.controller.Controller;
 import pl.szelagi.util.timespigot.Time;
@@ -72,7 +73,8 @@ public class BarTimerController extends Controller {
             if (runnable != null) {
                 runnable.run();
             }
-            stop();
+            if (status() == ComponentStatus.RUNNING)
+                stop();
             return;
         }
         update();
