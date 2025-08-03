@@ -28,12 +28,10 @@ import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
 import pl.szelagi.component.board.bukkitEvent.BoardStartEvent;
 import pl.szelagi.component.board.bukkitEvent.BoardStopEvent;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.space.Space;
-import pl.szelagi.space.SpaceAllocator;
+import pl.szelagi.space.*;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.tag.TagQuery;
 import pl.szelagi.tag.TagResolve;
-import pl.szelagi.world.SessionWorldManager;
 
 import java.util.List;
 
@@ -43,16 +41,23 @@ public abstract class Board extends BaseComponent {
     public final static String TAG_FILE_NAME = "tag";
 
     private final Session session;
+    private final ISpaceAllocator allocator;
     private final boolean isUsed;
-    private Space space;
+    private IAllocate space;
     private TagResolve tagResolve;
     private ISpatial secureZone;
 
     private BukkitTask generateTask;
 
+    @Deprecated
     public Board(@NotNull Session session) {
+        this(session, Allocators.defaultAllocator());
+    }
+
+    public Board(@NotNull Session session, ISpaceAllocator allocator) {
         super(session);
         this.session = session;
+        this.allocator = allocator;
         this.isUsed = false;
     }
 
@@ -85,7 +90,7 @@ public abstract class Board extends BaseComponent {
         };
 
         // Przed uruchomieniem komponentu prosimy o przydzielenie przestrzeni
-        space = SpaceAllocator.allocate(SessionWorldManager.getSessionWorld());
+        space = allocator.allocate();
 
         // Ładowanie tagów musi zostać wykonane przed eventem generate, ComponentConstructor oraz PlayerConstructor, ponieważ one mogą korzystać z tagów
         tagResolve = defineTags();
@@ -149,7 +154,7 @@ public abstract class Board extends BaseComponent {
             // Niszczmy pozostałości mapy
             degenerate();
             // Zwalniamy przydzieloną przestrzeń
-            SpaceAllocator.deallocate(space);
+            allocator.deallocate(space);
         };
 
         if (isAsync) {
@@ -200,7 +205,7 @@ public abstract class Board extends BaseComponent {
         return space.getCenter();
     }
 
-    public final Space space() {
+    public final IAllocate space() {
         if (space == null) throw new IllegalStateException("Space not set");
         return space;
     }

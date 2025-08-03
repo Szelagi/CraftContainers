@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.buildin.controller.HideOtherPlayers;
 import pl.szelagi.buildin.system.LoadingBoard;
-import pl.szelagi.buildin.system.SessionWatchDog;
 import pl.szelagi.buildin.system.sessionSavePlayers.SessionSavePlayers;
 import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.baseComponent.StartException;
@@ -154,7 +153,7 @@ public abstract class Session extends BaseComponent {
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        new SessionWatchDog(this).start();
+//        new SessionWatchDog(this).start();
         new SessionSavePlayers(this).start();
         new HideOtherPlayers(this).start();
     }

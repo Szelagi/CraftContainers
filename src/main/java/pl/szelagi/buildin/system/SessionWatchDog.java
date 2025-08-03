@@ -22,6 +22,7 @@ import pl.szelagi.util.ServerWarning;
 import pl.szelagi.util.timespigot.Time;
 import pl.szelagi.world.SessionWorldManager;
 
+@Deprecated
 public class SessionWatchDog extends Controller {
     public SessionWatchDog(@NotNull BaseComponent parent) {
         super(parent);

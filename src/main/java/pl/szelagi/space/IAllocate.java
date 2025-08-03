@@ -7,10 +7,16 @@
 
 package pl.szelagi.space;
 
-import pl.szelagi.util.ServerRuntimeException;
+import pl.szelagi.spatial.ISpatial;
 
-public class DeallocateException extends ServerRuntimeException {
-    public DeallocateException(String name, Space space) {
-        super(name + "in " + space.toString());
+public interface IAllocate extends ISpatial {
+    ISpaceAllocator getAllocator();
+
+    default boolean isAllocated() {
+        return getAllocator().isAllocated(this);
+    }
+
+    default void deallocate() {
+        getAllocator().deallocate(this);
     }
 }
