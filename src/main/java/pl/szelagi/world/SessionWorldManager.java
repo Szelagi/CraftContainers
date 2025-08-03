@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import static org.bukkit.Bukkit.getServer;
 
+@Deprecated
 public class SessionWorldManager {
     private static final String SESSION_WORLD_NAME = "session_world";
     private static World SESSION_WORLD;

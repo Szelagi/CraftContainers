@@ -15,10 +15,10 @@ import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.VersionManager;
 import pl.szelagi.recovery.RecoveryManager;
-import pl.szelagi.test.Tests;
+import pl.szelagi.space.Allocators;
+import pl.szelagi.space.TemporaryWorld;
 import pl.szelagi.util.CooldownVolatile;
 import pl.szelagi.util.Debug;
-import pl.szelagi.world.SessionWorldManager;
 
 import java.io.File;
 
@@ -57,19 +57,21 @@ public class SessionAPI extends JavaPlugin {
         if (debugOnStart)
             Debug.enable(true);
 
+        TemporaryWorld.clean();
         CooldownVolatile.initialize(this);
         VersionManager.initialize();
         SessionManager.initialize(this);
         BoardManager.initialize(this);
         ControllerManager.initialize(this);
         RecoveryManager.initialize(this);
-        SessionWorldManager.initialize(this);
+        Allocators.initialize();
         Command.registerCommands();
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        TemporaryWorld.clean();
     }
 
     public FileConfiguration config() {
