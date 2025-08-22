@@ -7,23 +7,27 @@
 
 package pl.szelagi.world;
 
-import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Random;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
 
 public class EmptyChunkGenerator extends ChunkGenerator {
     @Override
-    @NotNull
-    public ChunkData generateChunkData(@NotNull World world, @NotNull Random random, int chunkX, int chunkZ, @NotNull BiomeGrid biome) {
-        var chunkData = createChunkData(world);
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                biome.setBiome(x, 0, z, Biome.MEADOW);
+    public @Nullable BiomeProvider getDefaultBiomeProvider(@NotNull WorldInfo worldInfo) {
+        return new BiomeProvider() {
+            @Override
+            public @NotNull Biome getBiome(@NotNull WorldInfo worldInfo, int i, int i1, int i2) {
+                return Biome.PLAINS;
             }
-        }
-        return chunkData;
+
+            @Override
+            public @NotNull List<Biome> getBiomes(@NotNull WorldInfo worldInfo) {
+                return List.of(Biome.PLAINS);
+            }
+        };
     }
 }

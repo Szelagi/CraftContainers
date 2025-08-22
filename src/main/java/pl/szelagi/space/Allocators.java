@@ -15,14 +15,20 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import pl.szelagi.ConfigManager;
 import pl.szelagi.Scheduler;
 import pl.szelagi.SessionAPI;
+import pl.szelagi.util.pool.PoolAllocator;
+import pl.szelagi.util.pool.GenerativeAllocatorWrapper;
+import pl.szelagi.util.pool.SimplePool;
 import pl.szelagi.util.timespigot.Time;
 import pl.szelagi.world.EmptyChunkGenerator;
 
-public class Allocators {
-    private static RegionAllocator regionAllocator;
+import java.util.Set;
 
-    public static void initialize() {
-        regionAllocator = new RegionAllocator(ConfigManager.config().maxBoardSize, ConfigManager.config().distanceBetweenMaps, new EmptyChunkGenerator(), world -> {
+public class Allocators {
+    private static ISpaceAllocator productionAllocator;
+    private static ISpaceAllocator developmentAllocator;
+
+    private static ISpaceAllocator createDefaultAllocator(int minSize) {
+        var allocator = new RegionAllocator(ConfigManager.config().maxBoardSize, ConfigManager.config().distanceBetweenMaps, new EmptyChunkGenerator(), world -> {
             Scheduler.runTaskTimer(() -> {
                 world.setTime(13000L);
             }, Time.zero(), Time.seconds(450));
@@ -30,11 +36,33 @@ public class Allocators {
             Bukkit.getPluginManager().registerEvents(new WorldEnvironment(world), SessionAPI.instance());
         });
 
-        regionAllocator.initialize();
+        var generativeAllocator = new GenerativeAllocatorWrapper(allocator);
+        var pool = new SimplePool<IAllocate>(minSize) {
+            @Override
+            protected IAllocate creator() {
+                return generativeAllocator.allocate();
+            }
+
+            @Override
+            protected void releaser(IAllocate allocate) {
+                allocate.deallocate();
+            }
+        };
+
+        return new PoolAllocator(generativeAllocator, pool);
     }
 
-    public static RegionAllocator defaultAllocator() {
-        return regionAllocator;
+    public static void initialize() {
+        productionAllocator = createDefaultAllocator(6);
+        developmentAllocator = createDefaultAllocator(2);
+    }
+
+    public static ISpaceAllocator productionAllocator() {
+        return productionAllocator;
+    }
+
+    public static ISpaceAllocator developmentAllocator() {
+        return developmentAllocator;
     }
 
     private record WorldEnvironment(World world) implements Listener {
