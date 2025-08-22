@@ -50,7 +50,7 @@ public abstract class Controller extends BaseComponent {
     }
 
     @Override
-    public final @NotNull Session session() {
+    public @NotNull Session session() {
         return session;
     }
 
