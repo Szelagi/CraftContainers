@@ -166,7 +166,7 @@ public abstract class Session extends BaseComponent {
     }
 
     @Override
-    public final @NotNull Session session() {
+    public @NotNull Session session() {
         return this;
     }
 
