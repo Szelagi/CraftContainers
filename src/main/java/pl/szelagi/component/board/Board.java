@@ -51,7 +51,7 @@ public abstract class Board extends BaseComponent {
 
     @Deprecated
     public Board(@NotNull Session session) {
-        this(session, Allocators.defaultAllocator());
+        this(session, Allocators.productionAllocator());
     }
 
     public Board(@NotNull Session session, ISpaceAllocator allocator) {
@@ -273,12 +273,12 @@ public abstract class Board extends BaseComponent {
     }
 
     @Override
-    public final @NotNull Session session() {
+    public @NotNull Session session() {
         return session;
     }
 
     @Override
-    public final @Nullable Board board() {
+    public @Nullable Board board() {
         return session.board();
     }
 
