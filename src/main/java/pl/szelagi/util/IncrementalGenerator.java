@@ -7,7 +7,9 @@
 
 package pl.szelagi.util;
 
-public class IncrementalGenerator {
+import java.io.Serializable;
+
+public class IncrementalGenerator implements Serializable {
     private long currentId = 0;
 
     public long next() {
