@@ -63,6 +63,15 @@ commands:
     description: "Command for running internal tests."
     permission: "sessionapi.test"
 
+  # blueprint
+  blueprint:
+    description: "Manages the editor for creating and editing schematic structures."
+    permission: "sessionapi.blueprint"
+
+  # marker
+  marker:
+    description: "Manages saved coordinates within the Blueprint editor."
+    permission: "sessionapi.blueprint"
 
 permissions:
   # Board editor permissions
@@ -106,4 +115,8 @@ permissions:
 
   sessionapi.test:
     description: "Allows use of the integration test command"
+    default: op
+
+  sessionapi.blueprint:
+    description: "Allows the user to manage blueprints"
     default: op

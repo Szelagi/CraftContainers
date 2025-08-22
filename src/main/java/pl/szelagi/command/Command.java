@@ -19,6 +19,8 @@ import pl.szelagi.command.manage.JoinSessionCommand;
 import pl.szelagi.command.manage.LeaveSessionCommand;
 import pl.szelagi.command.manage.PlayerSessionCommand;
 import pl.szelagi.command.manage.StopSessionCommand;
+import pl.szelagi.command.blueprint.BlueprintCommand;
+import pl.szelagi.command.marker.MarkerCommand;
 import pl.szelagi.command.test.TestCommand;
 
 
@@ -108,5 +110,20 @@ public class Command {
         assert internalTest != null;
         var internalTestResolver = new TestCommand();
         internalTest.setExecutor(internalTestResolver);
+
+        // blueprint
+        var blueprint = sapi.getCommand("blueprint");
+        assert blueprint != null;
+        var blueprintResolver = new BlueprintCommand();
+        blueprint.setExecutor(blueprintResolver);
+        blueprint.setTabCompleter(blueprintResolver);
+
+        // marker
+        var marker = sapi.getCommand("marker");
+        assert marker != null;
+        var markerResolver = new MarkerCommand();
+        marker.setExecutor(markerResolver);
+        marker.setTabCompleter(markerResolver);
+
     }
 }
