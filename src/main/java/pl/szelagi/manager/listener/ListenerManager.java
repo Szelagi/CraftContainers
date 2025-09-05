@@ -23,22 +23,22 @@ public class ListenerManager implements Listener {
     // Przechowuje instancje Listener, dla konkretnej klasy.
     // Używany do znalezienia aktualnej instancji Listener dla konkretnej klasy.
     // Potrzebne, aby od rejestrować listener.
-    private static final HashMap<Class<? extends Listener>, Listener> ENABLE_LISTENERS = new HashMap<>();
+    private static final Map<Class<? extends Listener>, Listener> ENABLE_LISTENERS = new HashMap<>();
 
     // Przechowuje, jakie ID BaseComponent aktualnie korzystają z konkretnej klasy Listener
     // Używany, aby śledzić, jakie Listener są aktualnie używane i przez jakie ID BaseComponent.
     // Potrzebne, aby wykryć, kiedy dany listener jest nieużywany i go od wyrejestrować.
-    private static final HashMap<Class<? extends Listener>, HashSet<Long>> LISTENER_TO_COMPONENT_IDS = new HashMap<>();
+    private static final Map<Class<? extends Listener>, HashSet<Long>> LISTENER_TO_COMPONENT_IDS = new HashMap<>();
 
     // Przechowuje jakie komponenty używają konkretnego Listener na konkretnej Session.
     // Używany, aby śledzić, które BaseComponent korzysta z konkretnego Listener na danej Session.
     // Dzięki temu nie musimy ciągle analizować drzewa sesji w poszukiwaniu odpowiadających BaseComponent.
-    private static final HashMap<Pair<Session, Class<? extends Listener>>, LinkedHashSet<BaseComponent>> SESSION_LISTENER_TO_COMPONENTS = new HashMap<>();
+    private static final Map<Pair<Session, Class<? extends Listener>>, LinkedHashSet<BaseComponent>> SESSION_LISTENER_TO_COMPONENTS = new HashMap<>();
 
     // BUKKIT LISTENER METHODS
     public static void controllerStart(BaseComponent component) {
         var listeners = component.listeners();
-        for (var listener : listeners.set()) {
+        for (var listener : listeners.get()) {
             trackingStart(component, listener);
             listenerStart(component, listener);
         }
@@ -46,7 +46,7 @@ public class ListenerManager implements Listener {
 
     public static void controllerStop(BaseComponent component) {
         var listeners = component.listeners();
-        for (var listener : listeners.set()) {
+        for (var listener : listeners.get()) {
             listenerStop(component, listener);
             trackingStop(component, listener);
         }

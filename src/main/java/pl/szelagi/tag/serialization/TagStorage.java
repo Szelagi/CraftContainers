@@ -14,6 +14,7 @@ import pl.szelagi.relative.RelativePoint;
 import java.io.Serializable;
 import java.util.List;
 
+@Deprecated
 public record TagStorage(@NotNull String tag,
                          @NotNull RelativePoint relativePoint,
                          @NotNull BlockFace blockFace,

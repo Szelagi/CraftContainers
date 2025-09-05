@@ -12,8 +12,8 @@ import org.bukkit.boss.BarStyle;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.baseComponent.ComponentStatus;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Controller;
 import pl.szelagi.util.timespigot.Time;
 
 public class BarTimerController extends Controller {

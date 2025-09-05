@@ -7,6 +7,7 @@
 
 package pl.szelagi.tag.exception;
 
+@Deprecated
 public class NoTagException extends SignTagException {
     public NoTagException(String elementName) {
         super("Not found sign with tag: " + elementName);

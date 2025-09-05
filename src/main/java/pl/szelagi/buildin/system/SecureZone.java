@@ -21,19 +21,27 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Controller;
 import pl.szelagi.manager.BoardManager;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
+import pl.szelagi.spatial.ISpatial;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 public class SecureZone extends Controller {
-    public SecureZone(@NotNull BaseComponent parent) {
+    private final ISpatial zone;
+
+    public SecureZone(@NotNull BaseComponent parent, ISpatial zone) {
         super(parent);
+        this.zone = zone;
+    }
+
+    public ISpatial getZone() {
+        return zone;
     }
 
     @Override
@@ -44,13 +52,13 @@ public class SecureZone extends Controller {
     private static final class MyListener implements Listener {
         private boolean check(Player player, Block block) {
             var session = SessionManager.session(player);
-            var controller = ListenerManager.first(session, getClass(), Controller.class);
+            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return false;
 
             var blockLoc = block.getLocation();
 
             assert session != null;
-            return !session.board().secureZone().isLocationIn(blockLoc);
+            return !controller.getZone().isLocationIn(blockLoc);
         }
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -72,9 +80,7 @@ public class SecureZone extends Controller {
             if (controller == null) return;
 
             assert session != null;
-            Function<Location, Boolean> isLocationIn = session
-                    .board()
-                    .secureZone()::isLocationIn;
+            Function<Location, Boolean> isLocationIn = controller.getZone()::isLocationIn;
 
             var headLocation = event.getBlock()
                     .getRelative(event.getDirection(), event
@@ -100,9 +106,7 @@ public class SecureZone extends Controller {
             if (controller == null) return;
 
             assert session != null;
-            Function<Location, Boolean> isLocationIn = session
-                    .board()
-                    .secureZone()::isLocationIn;
+            Function<Location, Boolean> isLocationIn = controller.getZone()::isLocationIn;
 
             if (!event.isSticky())
                 return;
@@ -125,10 +129,7 @@ public class SecureZone extends Controller {
 
             event.getBlocks().forEach(block -> {
                 assert session != null;
-                boolean isApart = !session
-                        .board()
-                        .secureZone()
-                        .isLocationIn(block.getLocation());
+                boolean isApart = !controller.getZone().isLocationIn(block.getLocation());
                 if (isApart)
                     toRemove.add(block);
             });
@@ -152,9 +153,7 @@ public class SecureZone extends Controller {
             if (controller == null) return;
 
             assert session != null;
-            Function<Location, Boolean> isLocationIn = session
-                    .board()
-                    .secureZone()::isLocationIn;
+            Function<Location, Boolean> isLocationIn = controller.getZone()::isLocationIn;
 
             if (!isLocationIn.apply(to))
                 event.setCancelled(true);
@@ -166,9 +165,7 @@ public class SecureZone extends Controller {
             if (controller == null) return false;
 
             assert session != null;
-            Function<Location, Boolean> isLocationIn = session
-                    .board()
-                    .secureZone()::isLocationIn;
+            Function<Location, Boolean> isLocationIn = controller.getZone()::isLocationIn;
             return !isLocationIn.apply(location);
         }
 

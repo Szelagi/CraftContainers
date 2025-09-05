@@ -8,7 +8,7 @@
 package pl.szelagi.buildin.system;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.TitlePart;
+import net.kyori.adventure.title.Title;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,10 +19,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
 import pl.szelagi.buildin.controller.otherSpeed.OtherSpeed;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.player.PlayerConstructor;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.listener.ListenerManager;
@@ -31,6 +31,8 @@ import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.spatial.Spatial;
 import pl.szelagi.util.timespigot.Time;
+
+import java.time.Duration;
 
 public class LoadingBoard extends Board {
     public LoadingBoard(Session session) {
@@ -52,7 +54,7 @@ public class LoadingBoard extends Board {
         new OtherSpeed(this, 0, 0).start();
         runTaskTimer(
                 () -> players().forEach(this::showMessage),
-                Time.seconds(5),
+                Time.seconds(0),
                 Time.seconds(5)
         );
     }
@@ -60,8 +62,18 @@ public class LoadingBoard extends Board {
     private void showMessage(@NotNull Player player) {
         var title = Component.text("§6§lSessionAPI");
         var subtitle = Component.text("§eThe map is being generated...");
-        player.sendTitlePart(TitlePart.TITLE, title);
-        player.sendTitlePart(TitlePart.SUBTITLE, subtitle);
+
+        var fullTitle = Title.title(
+                title,
+                subtitle,
+                Title.Times.times(
+                        Duration.ofMillis(0),
+                        Duration.ofSeconds(6),
+                        Duration.ofMillis(0)
+                )
+        );
+
+        player.showTitle(fullTitle);
     }
 
     @Override
@@ -107,8 +119,4 @@ public class LoadingBoard extends Board {
 
     }
 
-    @Override
-    public ISpatial defineSecureZone() {
-        return new Spatial(center(), center());
-    }
 }

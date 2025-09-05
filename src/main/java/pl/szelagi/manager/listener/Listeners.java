@@ -9,17 +9,20 @@ package pl.szelagi.manager.listener;
 
 import org.bukkit.event.Listener;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Listeners implements ImmutableListeners {
-    private final HashSet<Class<? extends Listener>> listeners = new HashSet<>();
+    private final Set<Class<? extends Listener>> listeners = new HashSet<>();
 
     public <T extends Listener> Listeners add(Class<T> listenerClass) {
         listeners.add(listenerClass);
         return this;
     }
 
-    public HashSet<Class<? extends Listener>> set() {
-        return listeners;
+    @Override
+    public Set<Class<? extends Listener>> get() {
+        return Collections.unmodifiableSet(listeners);
     }
 }

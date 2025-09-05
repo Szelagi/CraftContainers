@@ -22,9 +22,9 @@ public class BlockMethods {
     }
 
     public static List<Block> getBlocksIn(Location loc1, Location loc2) {
-        var list = new ArrayList<Block>();
+        var list = new LinkedList<Block>();
         BlockMethods.eachBlocks(loc1, loc2, list::add);
-        return list;
+        return new ArrayList<>(list);
     }
 
     public static void eachBlocks(Location loc1, Location loc2, Consumer<Block> predicate) {

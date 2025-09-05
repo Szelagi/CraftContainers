@@ -7,18 +7,59 @@
 
 package pl.szelagi.buildin.system.testSession;
 
-import pl.szelagi.component.board.Board;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import pl.szelagi.Scheduler;
+import pl.szelagi.SessionAPI;
+import pl.szelagi.fawe.ISchematic;
+import pl.szelagi.fawe.Schematics;
+import pl.szelagi.marker.AbstractMarkers;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.spatial.ISpatial;
-import pl.szelagi.spatial.Spatial;
+import pl.szelagi.marker.IMarkers;
+import pl.szelagi.transform.RotAxis;
+import pl.szelagi.transform.Degree;
+import pl.szelagi.transform.Rotation;
+
+import java.util.*;
 
 public class TestBoard extends Board {
+    private final List<ISchematic<?>> schematics = new ArrayList<>();
+
     public TestBoard(Session session) {
         super(session);
     }
 
     @Override
-    public ISpatial defineSecureZone() {
-        return new Spatial(center(), center());
+    protected void generate() {
+        final int rooms = 4;
+        var sapi = SessionAPI.instance();
+        var spawnSchemFile = ISchematic.getFile(sapi, "droom3");
+        var spawnMarkerFile = IMarkers.getFile(sapi, "droom3");
+
+        var spawnSchematic = Schematics.newMassive(spawnSchemFile, space(), center());
+        var spawnMarkers = AbstractMarkers.read(spawnMarkerFile, center());
+        var connector = spawnMarkers.getByName("connector").getFirst().getLocation();
+
+
+        for (int i = 0; i < rooms; i++) {
+            schematics.add(spawnSchematic);
+            spawnSchematic.load();
+            connector = spawnMarkers.getByName("connector").getFirst().getLocation();
+
+            final Location c = connector;
+            Scheduler.runAndWait(() -> {
+                c.getBlock().setType(Material.BEDROCK);
+            });
+
+            spawnMarkers = spawnMarkers.translateAbsoluteTo(connector).rotate(Degree.DEG_90, Rotation.CLOCKWISE, RotAxis.YAW_Y);
+            spawnSchematic = spawnSchematic.translateAbsoluteTo(connector).rotate(Degree.DEG_90, Rotation.CLOCKWISE, RotAxis.YAW_Y);
+
+        }
+    }
+
+    @Override
+    protected void degenerate() {
+        schematics.forEach(ISchematic::clean);
     }
 }

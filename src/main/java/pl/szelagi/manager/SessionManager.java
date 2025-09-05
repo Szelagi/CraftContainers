@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.component.session.Session;
-import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
-import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
+import pl.szelagi.event.bukkit.SessionStartEvent;
+import pl.szelagi.event.bukkit.SessionStopEvent;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;

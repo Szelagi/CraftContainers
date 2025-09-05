@@ -10,6 +10,7 @@ package pl.szelagi.relative;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
+@Deprecated
 public class RelativeLocation extends Location {
     private double xRelative;
     private double yRelative;

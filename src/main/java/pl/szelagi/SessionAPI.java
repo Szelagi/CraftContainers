@@ -15,8 +15,8 @@ import pl.szelagi.manager.ControllerManager;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.VersionManager;
 import pl.szelagi.recovery.RecoveryManager;
-import pl.szelagi.space.Allocators;
-import pl.szelagi.space.TemporaryWorld;
+import pl.szelagi.allocator.Allocators;
+import pl.szelagi.allocator.TemporaryWorld;
 import pl.szelagi.util.CooldownVolatile;
 import pl.szelagi.util.Debug;
 

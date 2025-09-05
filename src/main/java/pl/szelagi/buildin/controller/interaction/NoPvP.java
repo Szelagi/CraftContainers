@@ -12,7 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Controller;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;

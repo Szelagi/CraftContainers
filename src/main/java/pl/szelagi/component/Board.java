@@ -1,0 +1,203 @@
+/*
+ * SessionAPI - A framework for game containerization on Minecraft servers
+ * Copyright (C) 2025 Szelagi (https://github.com/Szelagi/SessionAPI)
+ * Licensed under the GNU General Public License v3.0.
+ * For more details, visit <https://www.gnu.org/licenses/>.
+ */
+
+package pl.szelagi.component;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.WeatherType;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.szelagi.Scheduler;
+import pl.szelagi.SessionAPI;
+import pl.szelagi.buildin.system.BoardWatchDog;
+import pl.szelagi.buildin.system.SecureZone;
+import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.baseComponent.StartException;
+import pl.szelagi.component.baseComponent.StopException;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.player.PlayerConstructor;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.event.bukkit.BoardStartEvent;
+import pl.szelagi.event.bukkit.BoardStopEvent;
+import pl.szelagi.component.session.Session;
+import pl.szelagi.allocator.*;
+import pl.szelagi.spatial.ISpatial;
+import pl.szelagi.tag.TagQuery;
+import pl.szelagi.tag.TagResolve;
+
+import java.util.List;
+
+public abstract class Board extends BaseComponent {
+    public final static String CONSTRUCTOR_FILE_NAME = "constructor";
+    public final static String DESTRUCTOR_FILE_NAME = "destructor";
+    public final static String TAG_FILE_NAME = "tag";
+
+    private final Session session;
+    private final ISpaceAllocator allocator;
+    private final boolean isUsed;
+    private IAllocate space;
+    private BukkitTask generateTask;
+
+    @Deprecated
+    public Board(@NotNull Session session) {
+        this(session, Allocators.productionAllocator());
+    }
+
+    public Board(@NotNull Session session, ISpaceAllocator allocator) {
+        super(session);
+        this.session = session;
+        this.allocator = allocator;
+        this.isUsed = false;
+    }
+
+    @Override
+    public final void start() throws StartException {
+        start(true, null);
+    }
+
+    public final void start(boolean isAsync, @Nullable Runnable thenGenerate) {
+        // Zasada działania: mapa musi być załadowana przed eventem ComponentConstructor oraz PlayerConstructor
+
+        // Sprawdzanie, czy mapa nie została wcześniej użyta
+        if (isUsed) {
+            throw new StartException("Board is already used");
+        }
+
+        // Ten kod jest wykonywany na samym końcu po wykonaniu generowania
+        Runnable lastAction = () -> {
+            // Then generate zostaje uruchomiony przed uruchomieniem komponentu
+            if (thenGenerate != null) {
+                thenGenerate.run();
+            }
+
+            // Uruchamiamy komponent
+            super.start();
+
+            // Wywołaj event o uruchomieniu mapy
+            var event = new BoardStartEvent(this);
+            callBukkit(event);
+        };
+
+        // Przed uruchomieniem komponentu prosimy o przydzielenie przestrzeni
+        space = allocator.allocate();
+
+        // Tagi nie są domyślnie wspieranie przez mapę
+        // Ładowanie tagów musi zostać wykonane przed eventem generate, ComponentConstructor oraz PlayerConstructor, ponieważ one mogą korzystać z tagów
+        // tagResolve = defineTags();
+
+        // Ustawiamy bezpieczną przestrzeń, gdzie można edytować teren.
+        // Teren, który obejmuje degenerate()
+//        try {
+//            secureZone = defineSecureZone();
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Failed to define a secure zone for board: " + name(), e);
+//        }
+//        if (secureZone == null) {
+//            throw new IllegalStateException("Board " + name() + " does not define a secure zone.");
+//        }
+
+        // Generujemy mapę na przestrzeni
+        if (isAsync) {
+            generateTask = Scheduler.runTaskAsync(() -> {
+                generate();
+                Scheduler.runAndWait(lastAction);
+            });
+        } else {
+            generate();
+            lastAction.run();
+        }
+    }
+
+    @Override
+    public final void stop() throws StopException {
+        stop(true);
+    }
+
+    public final void stop(boolean isAsync) {
+        // Zasada działania: ComponentDestructor oraz PlayerDestructor musi być wykonane przed zniczeniem mapy
+
+        // jeżeli istnieje generowanie mapy zakańczamy je
+        if (generateTask != null) {
+            generateTask.cancel();
+            generateTask = null;
+        }
+
+        // Wyłączamy komponent
+        super.stop();
+
+        // Wykonujemy event o zakończeniu mapy
+        var event = new BoardStopEvent(this);
+        callBukkit(event);
+
+        // Czyszczenie mapy
+
+        // Wykonywane na końcu
+        Runnable lastAction = () -> {
+            // Niszczmy pozostałości mapy
+            degenerate();
+            // Zwalniamy przydzieloną przestrzeń
+            allocator.deallocate(space);
+        };
+
+        if (isAsync) {
+            // Nie możemy używać wewnętrzengo scheduler, ponieważ komponent jest wyłączony
+            // Rejestrowanie zdarzeń, kiedy plugin się wyłącza, powoduje błąd Paper/Spigot
+            Scheduler.runTaskAsync(lastAction);
+        } else {
+            lastAction.run();
+        }
+    }
+
+    protected abstract void generate();
+    protected abstract void degenerate();
+
+    public final Location center() {
+        var space = space();
+        return space.getCenter();
+    }
+
+    public final IAllocate space() {
+        if (space == null) throw new IllegalStateException("Space not set");
+        return space;
+    }
+
+    protected @NotNull Location spawnLocation() {
+        return space().getAbove(space().getCenter());
+    }
+
+
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        super.onComponentInit(event);
+        new BoardWatchDog(this).start();
+    }
+
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        var player = event.player();
+        player.teleport(spawnLocation());
+    }
+
+    @Override
+    public final @NotNull List<Player> players() {
+        return session.players();
+    }
+
+    @Override
+    public @NotNull Session session() {
+        return session;
+    }
+
+    @Override
+    public @Nullable Board board() {
+        return session.board();
+    }
+}

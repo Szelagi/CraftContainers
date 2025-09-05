@@ -14,9 +14,14 @@ import pl.szelagi.buildin.editor.BlueprintSession;
 import pl.szelagi.command.SubCommand;
 import pl.szelagi.component.baseComponent.StartException;
 import pl.szelagi.component.session.PlayerJoinException;
+import pl.szelagi.fawe.ISchematic;
 import pl.szelagi.manager.SessionManager;
+import pl.szelagi.marker.IMarkers;
 
 import java.io.File;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
@@ -49,10 +54,9 @@ public class BlueprintEditCommand implements SubCommand {
             player.sendMessage(PREFIX + "§cYou are already in a session.");
         }
 
-        var directoryName = args[0];
-        var sapi = SessionAPI.instance();
-        var schematicFile = new File(sapi.getDataFolder(), directoryName + ".schem");
-        var markersFile = new File(sapi.getDataFolder(), directoryName + ".mrks");
+        var name = args[0];
+        var schematicFile = ISchematic.getFile(name);
+        var markersFile = IMarkers.getFile(name);
 
         var editor = new BlueprintSession(SessionAPI.instance(), schematicFile, markersFile);
         try {
@@ -63,5 +67,20 @@ public class BlueprintEditCommand implements SubCommand {
                 StartException | PlayerJoinException e) {
             player.sendMessage(PREFIX + "§cError starting editor: §f" + e.getMessage());
         }
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        var files = ISchematic.getDataFolder().listFiles();
+        if (files == null)
+            return Collections.emptyList();
+
+        return Stream.of(files).filter(file -> {
+            var name = file.getName();
+            return name.endsWith(ISchematic.EXTENSION_NAME) || name.endsWith(IMarkers.EXTENSION_NAME);
+        }).map(file -> {
+            var name = file.getName();
+            return name.replace("." + ISchematic.EXTENSION_NAME, "").replace("." + IMarkers.EXTENSION_NAME, "");
+        }).collect(Collectors.toCollection(TreeSet::new)).stream().toList();
     }
 }

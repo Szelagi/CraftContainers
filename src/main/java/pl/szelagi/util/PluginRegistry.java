@@ -15,11 +15,22 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.HashMap;
 
+/**
+ * A registry for mapping plugin name to their corresponding {@link JavaPlugin} instances.
+ */
 public class PluginRegistry {
+    /**
+     * Internal map storing plugin name and their associated JavaPlugin instances.
+     */
     private final static HashMap<String, JavaPlugin> REGISTRY = new HashMap<>();
 
+    /**
+     * Updates the registry by scanning all loaded plugins from the Bukkit server
+     * and mapping their JAR file names to their {@link JavaPlugin} instances.
+     */
     private static void updateRegistry() {
         Plugin[] plugins = Bukkit.getServer().getPluginManager().getPlugins();
         for (Plugin plugin : plugins) {
@@ -36,11 +47,16 @@ public class PluginRegistry {
         }
     }
 
-    public static @Nullable JavaPlugin getPlugin(String pluginFileName) {
-        var plugin = REGISTRY.get(pluginFileName);
+    /**
+     * Retrieves a plugin instance based on its plugin name.
+     * @param pluginName the file name of the plugin's JAR file
+     * @return the corresponding {@link JavaPlugin} instance, or {@code null} if not found
+     */
+    public static @Nullable JavaPlugin getPlugin(String pluginName) {
+        var plugin = REGISTRY.get(pluginName);
         if (plugin == null) {
             updateRegistry();
-            plugin = REGISTRY.get(pluginFileName);
+            return REGISTRY.get(pluginName);
         }
         return plugin;
     }

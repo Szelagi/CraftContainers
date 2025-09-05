@@ -10,7 +10,7 @@ package pl.szelagi.manager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Controller;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.util.TreeAnalyzer;
 

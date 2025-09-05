@@ -10,8 +10,15 @@ package pl.szelagi.util;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Utility for reversing a Java Stream.
+ * Consumes the stream and returns elements in reverse order.
+ */
 public class ReverseStream {
-    // method from https://stackoverflow.com/questions/24010109/how-can-i-reverse-a-java-8-stream-and-generate-a-decrementing-intstream-of-value
+    /**
+     * Reverses the given stream.
+     * method from <a href="https://stackoverflow.com/questions/24010109/how-can-i-reverse-a-java-8-stream-and-generate-a-decrementing-intstream-of-value">...</a>
+     */
     @SuppressWarnings("unchecked")
     public static <T> Stream<T> reverse(Stream<T> input) {
         Object[] temp = input.toArray();

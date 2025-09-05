@@ -16,17 +16,31 @@ import pl.szelagi.util.timespigot.TimeUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class for managing volatile player cooldowns.
+ * <p>
+ * Stores cooldowns in memory and provides methods to start, check, delete,
+ * and retrieve remaining cooldown times. Automatically optimizes expired cooldowns.
+ */
 public class CooldownVolatile {
     private static final int OPTIMIZE_TIMER_TICKS = 60 * 20 * 2;
     private static JavaPlugin plugin;
     private static final Map<Player, Map<NamespacedKey, Long>> map = new HashMap<>();
 
+    /** Initializes the cooldown system and schedules periodic cleanup. */
     public static void initialize(JavaPlugin p) {
         plugin = p;
         plugin.getServer().getScheduler()
                 .runTaskTimer(plugin, CooldownVolatile::optimize, OPTIMIZE_TIMER_TICKS, OPTIMIZE_TIMER_TICKS);
     }
 
+    /**
+     * Starts a cooldown for a player with the given key and duration.
+     *
+     * @param player the player to apply the cooldown
+     * @param key    the unique key identifying the cooldown
+     * @param span   the duration of the cooldown
+     */
     public static void startCooldown(Player player, NamespacedKey key, Time span) {
         var playerCooldownMap = map.computeIfAbsent(player, k -> new HashMap<>());
         var millisEnd = System.currentTimeMillis() + span.toMillis();
@@ -38,6 +52,13 @@ public class CooldownVolatile {
         startCooldown(player, NamespacedKey.minecraft(name), span);
     }
 
+    /**
+     * Checks if a player can use a something identified by the key.
+     *
+     * @param player the player to check
+     * @param key    the cooldown key
+     * @return true if the player can use it, false if still on cooldown
+     */
     public static boolean canUse(Player player, NamespacedKey key) {
         var playerCooldownMap = map.get(player);
         if (playerCooldownMap == null) return true;
@@ -51,16 +72,26 @@ public class CooldownVolatile {
         return canUse(player, NamespacedKey.minecraft(name));
     }
 
+    /** Deletes a specific cooldown for a player. */
     public static void deleteCooldown(Player player, NamespacedKey key) {
         var playerCooldownMap = map.get(player);
         if (playerCooldownMap == null) return;
         playerCooldownMap.remove(key);
     }
 
+    @Deprecated
     public static void deleteCooldown(Player player, String name) {
         deleteCooldown(player, NamespacedKey.minecraft(name));
     }
 
+    /**
+     * Checks if a player can use a something and starts the cooldown if possible.
+     *
+     * @param player the player to check
+     * @param key    the cooldown key
+     * @param span   the duration of the cooldown
+     * @return true if the cooldown was successfully started, false if still on cooldown
+     */
     public static boolean canUseAndStart(Player player, NamespacedKey key, Time span) {
         if (!canUse(player, key)) return false;
         startCooldown(player, key, span);
@@ -72,6 +103,13 @@ public class CooldownVolatile {
         return canUseAndStart(player, NamespacedKey.minecraft(name), span);
     }
 
+    /**
+     * Returns the remaining time before a player can use something again.
+     *
+     * @param player the player to check
+     * @param key    the cooldown key
+     * @return the remaining {@link Time} span (0 if cooldown expired)
+     */
     public static Time getTimeSpanToUse(Player player, NamespacedKey key) {
         var playerCooldownMap = map.get(player);
         if (playerCooldownMap == null)
@@ -93,6 +131,7 @@ public class CooldownVolatile {
         return getTimeSpanToUse(player, NamespacedKey.minecraft(name));
     }
 
+    /** Cleans up expired cooldowns from memory. Called periodically. */
     private static void optimize() {
         Player player;
         Map<NamespacedKey, Long> playerCooldownMap;

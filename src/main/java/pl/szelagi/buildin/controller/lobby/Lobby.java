@@ -12,14 +12,14 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Location;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
-import pl.szelagi.component.baseComponent.internalEvent.playerRequest.Reason;
-import pl.szelagi.component.controller.Controller;
-import pl.szelagi.event.handler.HandlerEvent;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.component.ComponentDestructor;
+import pl.szelagi.event.internal.player.PlayerConstructor;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.event.internal.playerRequest.PlayerJoinRequest;
+import pl.szelagi.event.internal.playerRequest.Reason;
+import pl.szelagi.component.Controller;
+import pl.szelagi.event.EventDispatcher;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.util.timespigot.Time;
 
@@ -30,7 +30,7 @@ public class Lobby extends Controller {
     private final int maxSlots;
     private final int minSlots;
     private final Time waitTime;
-    private final HandlerEvent<Void> finalizeHandlerEvent = new HandlerEvent<>();
+    private final EventDispatcher<Void> finalizeEventDispatcher = new EventDispatcher<>();
     private MessageTimer messageTimer;
 
     public Lobby(BaseComponent baseComponent, Time waitTime, Location lobby, int maxSlots, int minSlots) {
@@ -62,7 +62,7 @@ public class Lobby extends Controller {
 
         messageTimer.setBreakCountMessage("§cWe don't have enough players! Start cancelled.");
         messageTimer.getFinalizeEvent()
-                .bind(this::lobbyFinalize);
+                .register(this::lobbyFinalize);
     }
 
     @Override
@@ -128,8 +128,8 @@ public class Lobby extends Controller {
         return messageTimer.isCounting();
     }
 
-    public HandlerEvent<Void> getFinalizeEvent() {
-        return finalizeHandlerEvent;
+    public EventDispatcher<Void> getFinalizeEvent() {
+        return finalizeEventDispatcher;
     }
 
     private void broadcast(String message) {
@@ -144,7 +144,7 @@ public class Lobby extends Controller {
 
     private void lobbyFinalize() {
         isLobby = false;
-        finalizeHandlerEvent.call(null);
+        finalizeEventDispatcher.dispatch(null);
     }
 
     private void broadcastSound(Sound sound) {

@@ -10,9 +10,25 @@ package pl.szelagi.util;
 import java.io.Serializable;
 
 public class IncrementalGenerator implements Serializable {
-    private long currentId = 0;
+    private long nextId;
+
+    public IncrementalGenerator() {
+        this(0);
+    }
+
+    public IncrementalGenerator(long nextId) {
+        this.nextId = nextId;
+    }
 
     public long next() {
-        return currentId++;
+        return nextId++;
+    }
+
+    public long peekNext() {
+        return nextId;
+    }
+
+    public long peekCurrent() {
+        return nextId - 1;
     }
 }

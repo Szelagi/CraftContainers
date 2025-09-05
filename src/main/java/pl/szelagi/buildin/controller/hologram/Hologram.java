@@ -3,8 +3,8 @@ package pl.szelagi.buildin.controller.hologram;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Controller;
 import pl.szelagi.manager.VersionManager;
 
 public class Hologram extends Controller {

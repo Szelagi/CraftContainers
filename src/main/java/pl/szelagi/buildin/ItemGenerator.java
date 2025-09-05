@@ -8,8 +8,8 @@ import org.bukkit.util.Vector;
 import pl.szelagi.buildin.controller.hologram.Hologram;
 import pl.szelagi.buildin.controller.rotBlockHologram.RotHologramBlock;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Controller;
 import pl.szelagi.util.timespigot.Time;
 
 public class ItemGenerator extends Controller {

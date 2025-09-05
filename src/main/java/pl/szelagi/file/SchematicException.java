@@ -9,6 +9,7 @@ package pl.szelagi.file;
 
 import pl.szelagi.util.ServerRuntimeException;
 
+@Deprecated
 public class SchematicException extends ServerRuntimeException {
     public SchematicException(String message) {
         super(message);

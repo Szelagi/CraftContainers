@@ -20,12 +20,12 @@ public class Spatial implements ISpatial {
     }
 
     @Override
-    public @NotNull Location getFirstPoint() {
+    public @NotNull Location getMin() {
         return first;
     }
 
     @Override
-    public @NotNull Location getSecondPoint() {
+    public @NotNull Location getMax() {
         return second;
     }
 

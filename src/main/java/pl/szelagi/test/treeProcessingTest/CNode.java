@@ -9,12 +9,12 @@ package pl.szelagi.test.treeProcessingTest;
 
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.component.ComponentDestructor;
+import pl.szelagi.event.internal.player.PlayerConstructor;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.event.internal.playerRequest.PlayerJoinRequest;
+import pl.szelagi.component.Controller;
 
 abstract class CNode extends Controller {
     private final String id;

@@ -10,12 +10,12 @@ package pl.szelagi.manager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.board.Board;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Board;
+import pl.szelagi.component.Controller;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.event.sapi.SAPIEvent;
 import pl.szelagi.event.sapi.SAPIListener;
-import pl.szelagi.util.DepthFirstSearch;
+import pl.szelagi.tree.DepthFirstSearch;
 import pl.szelagi.util.PluginRegistry;
 import pl.szelagi.util.ReflectionRecursive;
 
@@ -81,7 +81,7 @@ public class ComponentManager {
     }
 
     public static @NotNull <T extends Controller> List<T> components(@Nullable Session session, @NotNull Class<T> clazz) {
-        var iterator = new DepthFirstSearch(session, true);
+        var iterator = new DepthFirstSearch<>(session, true);
         var stream = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false
         );
@@ -89,7 +89,7 @@ public class ComponentManager {
     }
 
     public static @Nullable <T extends Controller> T firstComponent(@Nullable Session session, @NotNull Class<T> clazz) {
-        var iterator = new DepthFirstSearch(session, true);
+        var iterator = new DepthFirstSearch<>(session, true);
         while (iterator.hasNext()) {
             var component = iterator.next();
             if (!clazz.isInstance(component)) continue;

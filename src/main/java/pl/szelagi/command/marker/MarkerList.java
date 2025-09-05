@@ -12,7 +12,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import pl.szelagi.buildin.schematic.Marker;
+import pl.szelagi.marker.Marker;
 import pl.szelagi.command.SubCommand;
 
 import java.util.HashMap;

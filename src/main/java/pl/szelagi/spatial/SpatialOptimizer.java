@@ -25,18 +25,18 @@ public class SpatialOptimizer implements ISpatial {
     }
 
     @Override
-    public @NotNull Location getFirstPoint() {
+    public @NotNull Location getMin() {
         return first;
     }
 
     @Override
-    public @NotNull Location getSecondPoint() {
+    public @NotNull Location getMax() {
         return second;
     }
 
     public SpatialOptimizer optimize() {
-        var a = getFirstPoint();
-        var b = getSecondPoint();
+        var a = getMin();
+        var b = getMax();
         var minX = (int) Math.min(a.getX(), b.getX());
         var minY = (int) Math.min(a.getY(), b.getY());
         var minZ = (int) Math.min(a.getZ(), b.getZ());

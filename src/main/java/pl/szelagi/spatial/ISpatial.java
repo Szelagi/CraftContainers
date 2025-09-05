@@ -12,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,43 +24,43 @@ import java.util.stream.Collectors;
 public interface ISpatial extends Cloneable {
 
     static ISpatial clone(ISpatial spatial) {
-        return new Spatial(spatial.getFirstPoint().clone(), spatial.getSecondPoint().clone());
+        return new Spatial(spatial.getMin().clone(), spatial.getMax().clone());
     }
 
     static ISpatial from(Block block) {
         return new Spatial(block.getLocation().clone(), block.getLocation().clone());
     }
 
-    @NotNull Location getFirstPoint();
+    @NotNull Location getMin();
 
-    @NotNull Location getSecondPoint();
+    @NotNull Location getMax();
 
     @NotNull
     default List<Block> getBlocksIn() {
-        return BlockMethods.getBlocksIn(getFirstPoint(), getSecondPoint());
+        return BlockMethods.getBlocksIn(getMin(), getMax());
     }
 
     default void eachBlocks(Consumer<Block> predicate) {
-        BlockMethods.eachBlocks(getFirstPoint(), getSecondPoint(), predicate);
+        BlockMethods.eachBlocks(getMin(), getMax(), predicate);
     }
 
     default boolean isLocationIn(Location location) {
-        var l1 = this.getFirstPoint();
-        var l2 = this.getSecondPoint();
+        var l1 = this.getMin();
+        var l2 = this.getMax();
         boolean isXZ = isLocationInXZ(location);
-        boolean isZ = MathMethods.isBetween(location.getBlockZ(), l1.getBlockZ(), l2.getBlockZ());
+        boolean isZ = isBetween(location.getBlockZ(), l1.getBlockZ(), l2.getBlockZ());
         return isXZ && isZ;
     }
 
     default boolean isLocationInXZ(Location location) {
-        var l1 = this.getFirstPoint();
-        var l2 = this.getSecondPoint();
+        var l1 = this.getMin();
+        var l2 = this.getMax();
         if (!isSameWorld(l1, l2))
             return false;
         if (!isSameWorld(location, l1))
             return false;
-        boolean isX = MathMethods.isBetween(location.getBlockX(), l1.getBlockX(), l2.getBlockX());
-        boolean isZ = MathMethods.isBetween(location.getBlockZ(), l1.getBlockZ(), l2.getBlockZ());
+        boolean isX = isBetween(location.getBlockX(), l1.getBlockX(), l2.getBlockX());
+        boolean isZ = isBetween(location.getBlockZ(), l1.getBlockZ(), l2.getBlockZ());
         return isX && isZ;
     }
 
@@ -67,7 +68,7 @@ public interface ISpatial extends Cloneable {
         var x = getAxiAverage(Location::getBlockX);
         var y = getAxiAverage(Location::getBlockY);
         var z = getAxiAverage(Location::getBlockZ);
-        var location = new Location(getFirstPoint().getWorld(), x, y, z);
+        var location = new Location(getMin().getWorld(), x, y, z);
         return location.add(0.5, 0, 0.5);
     }
 
@@ -76,8 +77,8 @@ public interface ISpatial extends Cloneable {
     }
 
     default int getAxiAverage(AxiGetter<Integer> getter) {
-        var a = getter.get(getFirstPoint());
-        var b = getter.get(getSecondPoint());
+        var a = getter.get(getMin());
+        var b = getter.get(getMax());
         return (a + b) / 2;
     }
 
@@ -90,38 +91,54 @@ public interface ISpatial extends Cloneable {
     }
 
     private double getRadius(AxiGetter<Integer> axiGetter) {
-        return Math.abs(axiGetter.get(getFirstPoint()) - axiGetter.get(getSecondPoint())) / 2d + 1;
+        return Math.abs(axiGetter.get(getMin()) - axiGetter.get(getMax())) / 2d + 1;
     }
 
     // Size operations
     default int sizeX() {
-        return distanceBlock(getFirstPoint().getBlockX(), getSecondPoint().getBlockX());
+        return distanceBlock(getMin().getBlockX(), getMax().getBlockX());
     }
 
     default int sizeY() {
-        return distanceBlock(getFirstPoint().getBlockY(), getSecondPoint().getBlockY());
+        return distanceBlock(getMin().getBlockY(), getMax().getBlockY());
     }
 
     default int sizeZ() {
-        return distanceBlock(getFirstPoint().getBlockZ(), getSecondPoint().getBlockZ());
+        return distanceBlock(getMin().getBlockZ(), getMax().getBlockZ());
     }
 
-    default int size() {
+    default int minSize() {
+        return Math.min(sizeX(), Math.min(sizeY(), sizeZ()));
+    }
+
+    default int maxSize() {
+        return Math.max(sizeX(), Math.max(sizeY(), sizeZ()));
+    }
+
+    default int minSizeXZ() {
+        return Math.min(sizeX(), sizeZ());
+    }
+
+    default int maxSizeXZ() {
+        return Math.max(sizeX(), sizeZ());
+    }
+
+    default int volume() {
         return sizeX() * sizeY() * sizeZ();
     }
 
     // Radius operations
-    default ImmutableRadius3D<Double> getRadiusInscribed() {
+    default Vector3d getRadiusInscribed() {
         var radiusX = getRadius(Location::getBlockX);
         var radiusY = getRadius(Location::getBlockY);
         var radiusZ = getRadius(Location::getBlockZ);
-        return new ImmutableRadius3D<>(radiusX, radiusY, radiusZ);
+        return new Vector3d(radiusX, radiusY, radiusZ);
     }
 
-    default ImmutableRadius3D<Double> getRadiusCircumscribed() {
+    default Vector3d getRadiusCircumscribed() {
         final var sqrt2 = Math.sqrt(2);
         var inscribed = getRadiusInscribed();
-        return new ImmutableRadius3D<>(inscribed.x() * sqrt2, inscribed.y() * sqrt2, inscribed.z() * sqrt2);
+        return new Vector3d(inscribed.x() * sqrt2, inscribed.y() * sqrt2, inscribed.z() * sqrt2);
     }
 
     // Partition operations
@@ -132,7 +149,7 @@ public interface ISpatial extends Cloneable {
     // Minimalize operations
     @Deprecated
     default ISpatial toOptimized() {
-        return new SpatialOptimizer(getFirstPoint(), getSecondPoint()).optimize();
+        return new SpatialOptimizer(getMin(), getMax()).optimize();
     }
 
     default void minimalizeAsync(Consumer<ISpatial> callback) {
@@ -176,6 +193,12 @@ public interface ISpatial extends Cloneable {
 
     interface AxiSetter<T> {
         void set(Location location, T value);
+    }
+
+    static boolean isBetween(double p, double a, double b) {
+        double min = Math.min(a, b);
+        double max = Math.max(a, b);
+        return p >= min && p <= max;
     }
 
 }

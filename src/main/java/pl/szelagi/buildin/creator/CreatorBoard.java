@@ -22,12 +22,12 @@ import pl.szelagi.SessionAPI;
 import pl.szelagi.buildin.controller.environment.NoCreatureNaturalSpawn;
 import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
 import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.file.FileManager;
-import pl.szelagi.spatial.ISpatial;
 
+@Deprecated
 public class CreatorBoard extends Board {
     private final String editName;
     private FileManager creatorFileManager;
@@ -53,15 +53,10 @@ public class CreatorBoard extends Board {
     }
 
     @Override
-    public ISpatial defineSecureZone() {
-        return ISpatial.clone(space());
-    }
-
-    @Override
     protected void degenerate() {
         var space = space().minimalizeSync();
-        var pointA = space.getFirstPoint();
-        var pointB = space.getSecondPoint();
+        var pointA = space.getMin();
+        var pointB = space.getMax();
         BlockVector3 vecA = BlockVector3.at(pointA.getBlockX(), pointA.getBlockY(), pointA.getBlockZ());
         BlockVector3 vecB = BlockVector3.at(pointB.getBlockX(), pointB.getBlockY(), pointB.getBlockZ());
 

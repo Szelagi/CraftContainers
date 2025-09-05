@@ -13,10 +13,11 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated
 public class SpatialPartition {
     public static Set<ISpatial> partition(ISpatial spatial, int length) {
-        var first = spatial.getFirstPoint();
-        var second = spatial.getSecondPoint();
+        var first = spatial.getMin();
+        var second = spatial.getMax();
         var parts = new HashSet<ISpatial>();
         var xParts = (int) Math.ceil(spatial.sizeX() / (double) length);
         var zParts = (int) Math.ceil(spatial.sizeZ() / (double) length);
@@ -51,8 +52,8 @@ public class SpatialPartition {
 
     @TestOnly
     public static boolean testPartition(ISpatial spatial, Set<ISpatial> parts) {
-        var first = spatial.getFirstPoint();
-        var second = spatial.getSecondPoint();
+        var first = spatial.getMin();
+        var second = spatial.getMax();
         var minX = (int) Math.min(first.getX(), second.getX());
         var minZ = (int) Math.min(first.getZ(), second.getZ());
         var maxX = (int) Math.max(first.getX(), second.getX());
@@ -60,10 +61,10 @@ public class SpatialPartition {
 
         boolean[][] covered = new boolean[maxX - minX + 1][maxZ - minZ + 1];
         for (var part : parts) {
-            int startX = (int) part.getFirstPoint().getX();
-            int endX = (int) part.getSecondPoint().getX();
-            int startZ = (int) part.getFirstPoint().getZ();
-            int endZ = (int) part.getSecondPoint().getZ();
+            int startX = (int) part.getMin().getX();
+            int endX = (int) part.getMax().getX();
+            int startZ = (int) part.getMin().getZ();
+            int endZ = (int) part.getMax().getZ();
 
             for (int x = startX; x <= endX; x++) {
                 for (int z = startZ; z <= endZ; z++) {

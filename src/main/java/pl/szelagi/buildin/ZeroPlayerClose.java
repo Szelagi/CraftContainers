@@ -9,9 +9,9 @@ package pl.szelagi.buildin;
 
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestroyCause;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.player.PlayerDestroyCause;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.component.Controller;
 
 public class ZeroPlayerClose extends Controller {
     public ZeroPlayerClose(@NotNull BaseComponent parent) {

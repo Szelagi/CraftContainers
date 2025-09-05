@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class TagResolve implements Serializable {
     private final Map<String, List<Tag>> map = new HashMap<>();
 

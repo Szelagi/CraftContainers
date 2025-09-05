@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class BlockFaceMapper {
     private static final Map<BlockFace, Float> FACE_TO_YAW = new HashMap<>();
 

@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class TagResolveStorage implements Serializable {
     private final List<TagStorage> tagStorages = new ArrayList<>();
 

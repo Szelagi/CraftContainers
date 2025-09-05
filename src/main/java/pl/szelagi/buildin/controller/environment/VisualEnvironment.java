@@ -9,9 +9,9 @@ package pl.szelagi.buildin.controller.environment;
 
 import org.bukkit.WeatherType;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.player.PlayerConstructor;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.component.Controller;
 
 public class VisualEnvironment extends Controller {
     public static final Class<TimeType> TIME_TYPE = TimeType.class;

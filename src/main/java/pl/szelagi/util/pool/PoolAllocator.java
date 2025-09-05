@@ -7,8 +7,8 @@
 
 package pl.szelagi.util.pool;
 
-import pl.szelagi.space.IAllocate;
-import pl.szelagi.space.ISpaceAllocator;
+import pl.szelagi.allocator.IAllocate;
+import pl.szelagi.allocator.ISpaceAllocator;
 
 import java.util.Set;
 

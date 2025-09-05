@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Controller;
 import pl.szelagi.manager.BoardManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;

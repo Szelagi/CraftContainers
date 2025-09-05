@@ -18,6 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+@Deprecated
 public class TagQuery extends ArrayList<Tag> implements Serializable {
     @NotNull
     private final String tag;

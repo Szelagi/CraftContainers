@@ -14,15 +14,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestroyCause;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerDestructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.PlayerInitCause;
-import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
-import pl.szelagi.component.board.Board;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Board;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.component.ComponentDestructor;
+import pl.szelagi.event.internal.player.PlayerConstructor;
+import pl.szelagi.event.internal.player.PlayerDestroyCause;
+import pl.szelagi.event.internal.player.PlayerDestructor;
+import pl.szelagi.event.internal.player.PlayerInitCause;
+import pl.szelagi.event.internal.playerRequest.PlayerJoinRequest;
+import pl.szelagi.component.Controller;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.event.internal.InternalEvent;
 import pl.szelagi.event.sapi.SAPIEvent;
@@ -36,34 +36,42 @@ import pl.szelagi.recovery.internalEvent.ComponentRecovery;
 import pl.szelagi.recovery.internalEvent.ComponentRecoveryCause;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecoveryCause;
+import pl.szelagi.tree.IHierarchical;
 import pl.szelagi.util.Debug;
-import pl.szelagi.util.DepthFirstSearch;
+import pl.szelagi.tree.DepthFirstSearch;
 import pl.szelagi.util.IncrementalGenerator;
-import pl.szelagi.util.ReverseDepthFirstSearch;
+import pl.szelagi.tree.ReverseDepthFirstSearch;
 import pl.szelagi.util.timespigot.Time;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
-public abstract class BaseComponent implements SAPIListener {
+public abstract class BaseComponent implements SAPIListener, IHierarchical<BaseComponent> {
+    // Unique ID generator shared by all components.
     private static final IncrementalGenerator incrementalGenerator = new IncrementalGenerator();
 
-    private final @NotNull JavaPlugin plugin;
+    // Internal event handlers mapping each event type to a Consumer.
     private final Map<Class<? extends InternalEvent>, Consumer<InternalEvent>> eventHandlers = new HashMap<>();
 
+    private final @NotNull JavaPlugin plugin;
     private final UUID uuid;
     private final long id;
     private final String name;
     private final String identifier;
 
-    private FileManager cachedFileManager = null;
     private Listeners cachedListeners = null;
 
-    // testowy system śledzenie, jakie player init/destroy zostały wykonane, aby nie wykonywać wielokrotnie
+    /**
+     * Tracks players whose initialization or destruction events have been processed.
+     *
+     * <p>This set is used by the watchdog methods (`watchdogPlayerInit` and
+     * `watchdogPlayerDestroy`) to prevent multiple executions of the same event
+     * for a given player.</p>
+     */
     private final Set<Player> constructedPlayers = new HashSet<>();
 
-    // potrzebna do rozwiązania problemu "Recursive Flow Inversion"
+    // Flag used to prevent "Recursive Flow Inversion" during player initialization.
     private boolean isInvokePlayersConstructor = false;
 
     private ComponentStatus status = ComponentStatus.NOT_INITIALIZED;
@@ -83,61 +91,111 @@ public abstract class BaseComponent implements SAPIListener {
 
     public BaseComponent(@NotNull JavaPlugin plugin, @Nullable BaseComponent parent) {
         this.plugin = plugin;
-
-        // Internal events
-        eventHandlers.put(ComponentConstructor.class, e -> onComponentInit((ComponentConstructor) e));
-        eventHandlers.put(ComponentDestructor.class, e -> onComponentDestroy((ComponentDestructor) e));
-        eventHandlers.put(PlayerConstructor.class, e -> watchdogPlayerInit((PlayerConstructor) e));
-        eventHandlers.put(PlayerDestructor.class, e -> watchdogPlayerDestroy((PlayerDestructor) e));
-        eventHandlers.put(PlayerJoinRequest.class, e -> onPlayerJoinRequest((PlayerJoinRequest) e));
-        eventHandlers.put(ComponentRecovery.class, e -> onComponentRecovery((ComponentRecovery) e));
-        eventHandlers.put(PlayerRecovery.class, e -> onPlayerRecovery((PlayerRecovery) e));
+        registerInternalEventHandlers();
 
         this.parent = parent;
         this.children = new LinkedList<>();
 
+        // Generate unique identity
         uuid = UUID.randomUUID();
         id = incrementalGenerator.next();
-        name = ComponentManager.componentName(this.getClass());
-        // identifier wymaga zdefiniowanego: name & id
+        name = ComponentManager.componentName(getClass());
+        // requires defined: name & id
         identifier = ComponentManager.componentIdentifier(this);
     }
 
+    /**
+     * Registers internal event handlers to avoid the overhead of reflection.
+     *
+     * <p>This method maps specific internal event classes to their corresponding
+     * handler methods using a HashMap. When an event of a given type is triggered,
+     * the associated handler is executed.</p>
+     */
+    private void registerInternalEventHandlers() {
+        eventHandlers.put(PlayerConstructor.class, e -> watchdogPlayerInit((PlayerConstructor) e));
+        eventHandlers.put(PlayerDestructor.class, e -> watchdogPlayerDestroy((PlayerDestructor) e));
+
+        eventHandlers.put(ComponentConstructor.class, e -> {
+            Debug.send(this, "init");
+            onComponentInit((ComponentConstructor) e);
+        });
+
+        eventHandlers.put(ComponentDestructor.class, e -> {
+            Debug.send(this, "destroy");
+            onComponentDestroy((ComponentDestructor) e);
+        });
+
+        eventHandlers.put(PlayerJoinRequest.class, e -> {
+            var event = (PlayerJoinRequest) e;
+            Debug.send(this, "player join request: (" + event.getPlayer().getName() + ")");
+            onPlayerJoinRequest(event);
+        });
+
+        eventHandlers.put(ComponentRecovery.class, e -> {
+            Debug.send(this, "recovery");
+            onComponentRecovery((ComponentRecovery) e);
+        });
+        eventHandlers.put(PlayerRecovery.class, e -> {
+            var event = (PlayerRecovery) e;
+            Debug.send(this, "player recovery: (" + event.owner().getName() + ")");
+            onPlayerRecovery(event);
+        });
+
+    }
+
+    /**
+     * Handles the PlayerConstructor internal event with a safeguard to prevent
+     * multiple executions for the same player.
+     */
     private void watchdogPlayerInit(PlayerConstructor event) {
         var player = event.player();
         // odrzuć, jeżeli ten event został wykonany już dla tego gracza
         if (constructedPlayers.contains(player)) return;
 
         constructedPlayers.add(player);
+
+        Debug.send(this, "player init: (" + event.player().getName() + ")");
         onPlayerInit(event);
     }
 
+
+    /**
+     * Handles the PlayerDestructor internal event with a safeguard to ensure
+     * the player is only destroyed if previously initialized.
+     */
     private void watchdogPlayerDestroy(PlayerDestructor event) {
         var player = event.player();
         if (!constructedPlayers.contains(player)) return;
 
         constructedPlayers.remove(player);
+
+        Debug.send(this, "player destroy: (" + event.player().getName() + ")");
         onPlayerDestroy(event);
     }
 
+    /**
+     * Performs internal startup routines for the component.
+     */
     private void internalOnStart() {
         CardinalityManager.baseComponentStart(this);
 
-        // Wymaga najpierw CardinalityManager.baseComponentStart(this);
+        // Requires CardinalityManager.baseComponentStart to run first
         SingletonManager.check(this);
-        // Wymaga najpierw CardinalityManager.baseComponentStart(this);
+        // Requires CardinalityManager.baseComponentStart to run first
         DependencyManager.componentStart(this);
     }
 
+    /**
+     * Performs internal shutdown routines for the component.
+     */
     private void internalOnStop() {
         CardinalityManager.baseComponentStop(this);
         DependencyManager.componentStop(this);
     }
 
-
     // LIFE CYCLES
     @MustBeInvokedByOverriders
-    public void start() throws StartException {
+    public void start() {
         // Nie można włączyć komponentu, który nie jest w stanie NOT_INITIALIZED lub SHUTDOWN.
         if (status != ComponentStatus.NOT_INITIALIZED && status != ComponentStatus.SHUTDOWN) {
             throw new StartException("Component already started");
@@ -166,7 +224,7 @@ public abstract class BaseComponent implements SAPIListener {
         internalOnStart();
 
         // wywołaj event o konstruktorze komponentu
-        call(new ComponentConstructor(this));
+        callSelf(new ComponentConstructor(this));
 
         // Wywołaj event o konstruktorze gracza dla każdego gracza w sesji.
         // Klonujemy listę, aby zapobiec błędu wynikającego z modyfikacji graczy w trakcie przechodzenia przez listę.
@@ -187,7 +245,7 @@ public abstract class BaseComponent implements SAPIListener {
             var playersClone = new ArrayList<>(players());
             for (var player : playersClone) {
                 component.isInvokePlayersConstructor = true; // Nakładamy flagę że event został użyty, aby algorytm unikał tego komponentu
-                component.call(new PlayerConstructor(player, players(), PlayerInitCause.COMPONENT_INIT, null));
+                component.callSelf(new PlayerConstructor(player, players(), PlayerInitCause.COMPONENT_INIT, null));
 
                 // recovery player
                 component.backupPlayerOnFailure(player, PlayerRecoveryCause.COMPONENT_INIT);
@@ -197,9 +255,9 @@ public abstract class BaseComponent implements SAPIListener {
     }
 
     @MustBeInvokedByOverriders
-    public void stop() throws StopException {
+    public void stop() {
         // wyłącz najpierw dzieci
-        var childrenIterator = new ReverseDepthFirstSearch(this, false);
+        var childrenIterator = new ReverseDepthFirstSearch<>(this, false);
         childrenIterator.forEachRemaining(BaseComponent::stop);
 
         // nie można wyłączyć komponentu, który nie jest uruchomiony
@@ -226,11 +284,11 @@ public abstract class BaseComponent implements SAPIListener {
         // InvokeType wynosi SELF, ponieważ event jest wywoływane bez zmiany ilości graczy w sesji.
         var playersClone = new ArrayList<>(players());
         for (var player : playersClone) {
-            call(new PlayerDestructor(player, players(), PlayerDestroyCause.COMPONENT_DESTROY, null));
+            callSelf(new PlayerDestructor(player, players(), PlayerDestroyCause.COMPONENT_DESTROY, null));
         }
 
         // wywołaj event o destruktorze komponentu
-        call(new ComponentDestructor(this));
+        callSelf(new ComponentDestructor(this));
 
         // wyrejestruj komponent z recovery
         session().recovery().destroyComponent(this);
@@ -247,11 +305,12 @@ public abstract class BaseComponent implements SAPIListener {
     }
 
     // GETTERS
-
+    @Override
     public final @Nullable BaseComponent parent() {
         return parent;
     }
 
+    @Override
     public final List<BaseComponent> children() {
         return children;
     }
@@ -271,20 +330,6 @@ public abstract class BaseComponent implements SAPIListener {
     public abstract @NotNull Session session();
 
     public abstract @Nullable Board board();
-
-    // Domyślnym folderem, z którego są ładowane pliki mapy jest folder o nazwie mapy
-    public String defineDirectoryPath() {
-        return "component/" + name();
-    }
-
-    // Główny folder do plików komponentu
-    public final @NotNull FileManager fileManager() {
-        if (cachedFileManager == null) {
-            var path = defineDirectoryPath();
-            cachedFileManager = new FileManager(path);
-        }
-        return cachedFileManager;
-    }
 
     protected final void callBukkit(Event event) {
         plugin().getServer().getScheduler()
@@ -309,37 +354,17 @@ public abstract class BaseComponent implements SAPIListener {
         });
     }
 
-
-    // SAPI EVENT (reflection)
-    // wywołuje event tylko na tym elemencie
-    @Deprecated
-    public final void call(SAPIEvent event) {
-        callSelf(event);
-    }
-
     public final void callSelf(SAPIEvent event) {
         call(List.of(this).iterator(), event);
     }
 
-    // wywołuje event na wskazanym liściu oraz na wszystkich dzieciach dzieci od najstarszego do najmłodszego
-    @Deprecated
-    public final void callOldToYoung(SAPIEvent event) {
-       callSpecialization(event);
-    }
-
     public final void callSpecialization(SAPIEvent event) {
-        var iterator = new DepthFirstSearch(this, true);
+        var iterator = new DepthFirstSearch<>(this, true);
         call(iterator, event);
     }
 
-    // wywołuje event na wskazanym liściu oraz na wszystkich dzieciach dzieci od młodszego do najstarszego
-    @Deprecated
-    public final void callYoungToOld(SAPIEvent event) {
-        callGeneralization(event);
-    }
-
     public final void callGeneralization(SAPIEvent event) {
-        var iterator = new ReverseDepthFirstSearch(this, true);
+        var iterator = new ReverseDepthFirstSearch<>(this, true);
         call(iterator, event);
     }
 
@@ -359,70 +384,29 @@ public abstract class BaseComponent implements SAPIListener {
         }
     }
 
-    @Deprecated
-    public final void call(InternalEvent event) {
-        callSelf(event);
-    }
 
     public final void callSelf(InternalEvent event) {
         call(List.of(this).iterator(), event);
     }
 
-    @Deprecated
-    public final void callOldToYoung(InternalEvent event) {
-        callSpecialization(event);
-    }
-
     public final void callSpecialization(InternalEvent event) {
-        var iterator = new DepthFirstSearch(this, true);
+        var iterator = new DepthFirstSearch<>(this, true);
         call(iterator, event);
     }
 
-    @Deprecated
-    public final void callYoungToOld(InternalEvent event) {
-       callGeneralization(event);
-    }
-
     public final void callGeneralization(InternalEvent event) {
-        var iterator = new ReverseDepthFirstSearch(this, true);
+        var iterator = new ReverseDepthFirstSearch<>(this, true);
         call(iterator, event);
     }
 
     // INTERNAL EVENTS (methods)
-    @MustBeInvokedByOverriders
-    public void onComponentInit(ComponentConstructor event) {
-        Debug.send(this, "init");
-    }
-
-    @MustBeInvokedByOverriders
-    public void onComponentDestroy(ComponentDestructor event) {
-        Debug.send(this, "destroy");
-    }
-
-    @MustBeInvokedByOverriders
-    public void onPlayerInit(PlayerConstructor event) {
-        Debug.send(this, "player init: (" + event.player().getName() + ")");
-    }
-
-    @MustBeInvokedByOverriders
-    public void onPlayerDestroy(PlayerDestructor event) {
-        Debug.send(this, "player destroy: (" + event.player().getName() + ")");
-    }
-
-    @MustBeInvokedByOverriders
-    public void onPlayerJoinRequest(PlayerJoinRequest event) {
-        Debug.send(this, "player join request: (" + event.getPlayer().getName() + ")");
-    }
-
-    @MustBeInvokedByOverriders
-    public void onComponentRecovery(ComponentRecovery event) {
-        Debug.send(this, "recovery");
-    }
-
-    @MustBeInvokedByOverriders
-    public void onPlayerRecovery(PlayerRecovery event) {
-        Debug.send(this, "player recovery: (" + event.owner().getName() + ")");
-    }
+    public void onComponentInit(ComponentConstructor event) {}
+    public void onComponentDestroy(ComponentDestructor event) {}
+    public void onPlayerInit(PlayerConstructor event) {}
+    public void onPlayerDestroy(PlayerDestructor event) {}
+    public void onPlayerJoinRequest(PlayerJoinRequest event) {}
+    public void onComponentRecovery(ComponentRecovery event) {}
+    public void onPlayerRecovery(PlayerRecovery event) {}
 
     // TASK SYSTEM
     public final @NotNull SAPITask runTask(@NotNull Runnable runnable) {
@@ -451,15 +435,14 @@ public abstract class BaseComponent implements SAPIListener {
 
     // EQUALS & HASH CODE & TO STRING
     @Override
-    public final boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        BaseComponent that = (BaseComponent) o;
+    public boolean equals(Object o) {
+        if (!(o instanceof BaseComponent that)) return false;
         return id == that.id;
     }
 
     @Override
-    public final int hashCode() {
-        return Objects.hashCode(id);
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 
     @Override
@@ -522,7 +505,7 @@ public abstract class BaseComponent implements SAPIListener {
     private void backupComponentOnFailure(ComponentRecoveryCause cause) {
         var recovery = session().recovery();
         var event = new ComponentRecovery(cause);
-        call(event);
+        callSelf(event);
         recovery.updateComponent(event);
     }
 
@@ -540,7 +523,7 @@ public abstract class BaseComponent implements SAPIListener {
     private void backupPlayerOnFailure(Player player, PlayerRecoveryCause cause) {
         var recovery = session().recovery();
         var event = new PlayerRecovery(player, cause);
-        call(event);
+        callSelf(event);
         recovery.updatePlayer(event);
     }
 

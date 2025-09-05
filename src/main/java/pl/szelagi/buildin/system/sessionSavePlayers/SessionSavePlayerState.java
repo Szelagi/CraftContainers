@@ -9,7 +9,7 @@ package pl.szelagi.buildin.system.sessionSavePlayers;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import pl.szelagi.bukkitadapted.LocationAdapted;
+import pl.szelagi.bukkitAdapted.LocationAdapted;
 import pl.szelagi.state.PlayerState;
 
 import java.io.Serializable;

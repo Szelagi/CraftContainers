@@ -12,18 +12,20 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.Scheduler;
+import pl.szelagi.fawe.ISchematic;
+import pl.szelagi.fawe.Schematics;
+import pl.szelagi.fawe.massive.FlexSchematic;
+import pl.szelagi.marker.DisplayableMarkers;
 import pl.szelagi.buildin.controller.FakeWorldBorder;
 import pl.szelagi.buildin.controller.MarkerHologram;
-import pl.szelagi.buildin.schematic.*;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.board.Board;
-import pl.szelagi.file.FAWESchematicLoader;
-import pl.szelagi.space.Allocators;
-import pl.szelagi.spatial.ISpatial;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Board;
+import pl.szelagi.allocator.Allocators;
+import pl.szelagi.fawe.FaweOperations;
 
 public class BlueprintBoard extends Board {
     private int radius = 50;
-    private @Nullable Schematic schematic;
+    private @Nullable ISchematic<?> schematic;
 
     private FakeWorldBorder worldBorder;
     private DisplayableMarkers markers;
@@ -54,7 +56,7 @@ public class BlueprintBoard extends Board {
         if (markersFile.exists()) {
             markers = DisplayableMarkers.from(this, markersFile, center());
         } else {
-            markers = DisplayableMarkers.empty(this);
+            markers = DisplayableMarkers.empty(this, center());
         }
         markers.start();
 
@@ -62,17 +64,12 @@ public class BlueprintBoard extends Board {
     }
 
     @Override
-    public ISpatial defineSecureZone() {
-        return ISpatial.clone(space());
-    }
-
-    @Override
     protected void generate() {
         var session = session();
         var schematicFile = session.getSchematicFile();
         if (schematicFile.exists()) {
-            schematic = new Schematic(schematicFile, space(), center());
-            radius = schematic.size();
+            schematic = Schematics.newMassive(schematicFile, space(), center());
+            radius = (schematic.maxSizeXZ() + 1) / 2;
         }
 
         if (schematic != null) {
@@ -88,12 +85,12 @@ public class BlueprintBoard extends Board {
     @Override
     protected void degenerate() {
         if (schematic != null) {
-            schematic.unload();
+            schematic.clean();
         }
 
-        var min = space().getFirstPoint();
-        var max = space().getSecondPoint();
-        FAWESchematicLoader.clearRegion(min, max);
+        var min = space().getMin();
+        var max = space().getMax();
+        FaweOperations.massiveClearRegion(min, max);
     }
 
     private Location minLocation() {
@@ -125,8 +122,8 @@ public class BlueprintBoard extends Board {
         var min = minLocation();
         var max = maxLocation();
         var schematicFile = session().getSchematicFile();
-        try (var clipboard = FAWESchematicLoader.copy(min, max, center())) {
-            FAWESchematicLoader.save(schematicFile, clipboard);
+        try (var clipboard = FaweOperations.copy(min, max, center())) {
+            FaweOperations.save(schematicFile, clipboard);
         }
 
         var markersFile = session().getMarkersFile();

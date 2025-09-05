@@ -9,5 +9,6 @@ package pl.szelagi.spatial;
 
 import org.joml.Vector3i;
 
+@Deprecated
 public record SpatialResolve(boolean isValid, Vector3i min, Vector3i max) {
 }

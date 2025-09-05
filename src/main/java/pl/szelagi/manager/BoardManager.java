@@ -14,15 +14,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.board.Board;
-import pl.szelagi.component.board.bukkitEvent.BoardStartEvent;
-import pl.szelagi.component.board.bukkitEvent.BoardStopEvent;
+import pl.szelagi.component.Board;
+import pl.szelagi.event.bukkit.BoardStartEvent;
+import pl.szelagi.event.bukkit.BoardStopEvent;
 import pl.szelagi.component.session.Session;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BoardManager {
-    private static final ArrayList<Board> runningBoards = new ArrayList<>();
+    private static final List<Board> runningBoards = new ArrayList<>();
     private static JavaPlugin plugin;
 
     public static void initialize(JavaPlugin p) {

@@ -7,21 +7,12 @@
 
 package pl.szelagi.event.internal;
 
-// Odpowiada, za zdefiniowane systemowo wydarzenie
-// Nie używa refleksji
-// Przykłady to ComponentConstructor, PlayerDestructor
-
-import java.util.LinkedList;
-import java.util.List;
-
+/**
+ * Base class for internal events.
+ * <p>
+ * Used as a type token to uniquely identify event types in the system.
+ * Each subclass represents a specific internal event.
+ * For example: ComponentConstructor, PlayerDestructor
+ */
 public abstract class InternalEvent {
-    public List<Runnable> scheduled = new LinkedList<>();
-
-    public void safeSchedule(Runnable runnable) {
-        scheduled.add(runnable);
-    }
-
-    public List<Runnable> scheduled() {
-        return scheduled;
-    }
 }

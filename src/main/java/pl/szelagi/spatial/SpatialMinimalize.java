@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+@Deprecated
 public class SpatialMinimalize {
     private static final int PART_SIZE = 70;
 
@@ -35,7 +36,7 @@ public class SpatialMinimalize {
                 if (iterator.hasNext()) {
                     Bukkit.getScheduler().runTaskLater(instance, this, 1L);
                 } else {
-                    var minimalized = minimalize(spatial.getFirstPoint().getWorld(), resolves);
+                    var minimalized = minimalize(spatial.getMin().getWorld(), resolves);
                     callback.accept(minimalized);
                 }
             }
@@ -51,7 +52,7 @@ public class SpatialMinimalize {
             var resolved = resolve(part);
             resolves.add(resolved);
         }
-        return minimalize(spatial.getFirstPoint().getWorld(), resolves);
+        return minimalize(spatial.getMin().getWorld(), resolves);
     }
 
     private static ISpatial minimalize(World world, Collection<SpatialResolve> resolves) {

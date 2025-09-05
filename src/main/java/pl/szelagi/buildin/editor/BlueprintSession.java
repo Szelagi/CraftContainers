@@ -12,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
 import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
 
 import java.io.File;

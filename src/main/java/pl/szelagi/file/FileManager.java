@@ -15,6 +15,7 @@ import pl.szelagi.tag.exception.SignTagException;
 
 import java.io.File;
 
+@Deprecated
 public class FileManager {
     private static final String SCHEMATIC_EXTENSION = ".schem";
     private static final String TAG_EXTENSION = ".bin";

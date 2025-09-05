@@ -10,8 +10,8 @@ package pl.szelagi.buildin.system.testSession;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
 
 public class TestSession extends Session {

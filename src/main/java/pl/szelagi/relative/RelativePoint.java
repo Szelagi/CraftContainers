@@ -11,6 +11,7 @@ import org.bukkit.Location;
 
 import java.io.Serializable;
 
+@Deprecated
 public class RelativePoint implements Serializable {
     private final double xRelative;
     private final double yRelative;

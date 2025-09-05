@@ -14,6 +14,7 @@ import pl.szelagi.tag.serialization.TagResolveStorage;
 
 import java.io.*;
 
+@Deprecated
 public class TagLoader {
     public static boolean exists(String filePath) {
         var file = new File(filePath);

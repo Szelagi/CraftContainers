@@ -18,12 +18,12 @@ import pl.szelagi.buildin.system.sessionSavePlayers.SessionSavePlayers;
 import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.baseComponent.StartException;
 import pl.szelagi.component.baseComponent.StopException;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.player.*;
-import pl.szelagi.component.baseComponent.internalEvent.playerRequest.PlayerJoinRequest;
-import pl.szelagi.component.board.Board;
-import pl.szelagi.component.session.bukkitEvent.SessionStartEvent;
-import pl.szelagi.component.session.bukkitEvent.SessionStopEvent;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.playerRequest.PlayerJoinRequest;
+import pl.szelagi.component.Board;
+import pl.szelagi.event.bukkit.SessionStartEvent;
+import pl.szelagi.event.bukkit.SessionStopEvent;
+import pl.szelagi.event.internal.player.*;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.recovery.Recovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
@@ -85,7 +85,7 @@ public abstract class Session extends BaseComponent {
         }
 
         var joinRequestEvent = new PlayerJoinRequest(player, players);
-        callOldToYoung(joinRequestEvent);
+        callSpecialization(joinRequestEvent);
 
         if (joinRequestEvent.isCanceled()) {
             var cancelCause = joinRequestEvent.getCancelCause();
@@ -104,12 +104,12 @@ public abstract class Session extends BaseComponent {
         var newPlayers = players();
         var playerChange = new PlayerChange(prevPlayers, newPlayers);
         var playerConstructorEvent = new PlayerConstructor(player, newPlayers, PlayerInitCause.PLAYER_JOIN, playerChange);
-        callOldToYoung(playerConstructorEvent);
+        callSpecialization(playerConstructorEvent);
 
         // zarejestruj gracza w recovery (dla każdego komponentu)
         var recovery = session().recovery();
         var recoveryEvent = new PlayerRecovery(player, PlayerRecoveryCause.PLAYER_JOIN);
-        callOldToYoung(recoveryEvent);
+        callSpecialization(recoveryEvent);
         recovery.updatePlayer(recoveryEvent);
     }
 
@@ -133,7 +133,7 @@ public abstract class Session extends BaseComponent {
         var newPlayers = players.stream().filter(fp -> !fp.equals(player)).toList();
         var playerChange = new PlayerChange(prevPlayers, newPlayers);
         var event = new PlayerDestructor(player, prevPlayers, cause, playerChange);
-        callYoungToOld(event);
+        callGeneralization(event);
 
         // usuń relację o graczu w managerze
         SessionManager.removeRelation(player);
@@ -153,9 +153,7 @@ public abstract class Session extends BaseComponent {
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-//        new SessionWatchDog(this).start();
         new SessionSavePlayers(this).start();
-        new HideOtherPlayers(this).start();
     }
 
     protected abstract @NotNull Board defaultBoard();
@@ -173,11 +171,6 @@ public abstract class Session extends BaseComponent {
     @Override
     public final @Nullable Board board() {
         return currentBoard;
-    }
-
-    @Override
-    public String defineDirectoryPath() {
-        return "session/" + name();
     }
 
     public final Recovery recovery() {

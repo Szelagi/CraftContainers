@@ -25,6 +25,7 @@ import java.util.List;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
+@Deprecated
 public class EditBoardCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {

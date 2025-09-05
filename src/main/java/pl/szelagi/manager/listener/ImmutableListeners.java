@@ -9,8 +9,8 @@ package pl.szelagi.manager.listener;
 
 import org.bukkit.event.Listener;
 
-import java.util.HashSet;
+import java.util.Set;
 
 public interface ImmutableListeners {
-    HashSet<Class<? extends Listener>> set();
+    Set<Class<? extends Listener>> get();
 }

@@ -16,6 +16,7 @@ import pl.szelagi.relative.RelativeLocation;
 import java.io.Serializable;
 import java.util.List;
 
+@Deprecated
 public class Tag implements Serializable {
     @NotNull
     private final String name;

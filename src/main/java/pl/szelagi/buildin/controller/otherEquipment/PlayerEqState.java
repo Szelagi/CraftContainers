@@ -10,8 +10,8 @@ package pl.szelagi.buildin.controller.otherEquipment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import pl.szelagi.bukkitadapted.ItemStackArrayAdapted;
-import pl.szelagi.bukkitadapted.PotionEffectArrayAdapted;
+import pl.szelagi.bukkitAdapted.ItemStackArrayAdapted;
+import pl.szelagi.bukkitAdapted.PotionEffectArrayAdapted;
 import pl.szelagi.state.PlayerState;
 
 import java.io.Serializable;

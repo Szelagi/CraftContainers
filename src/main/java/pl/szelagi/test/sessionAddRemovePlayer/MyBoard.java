@@ -8,7 +8,7 @@
 package pl.szelagi.test.sessionAddRemovePlayer;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.spatial.Spatial;
@@ -19,7 +19,12 @@ class MyBoard extends Board {
     }
 
     @Override
-    public ISpatial defineSecureZone() {
-        return new Spatial(space().getFirstPoint(), space().getSecondPoint());
+    protected void generate() {
+
+    }
+
+    @Override
+    protected void degenerate() {
+
     }
 }

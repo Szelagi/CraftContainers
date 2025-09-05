@@ -18,7 +18,7 @@ import pl.szelagi.SessionAPI;
 import pl.szelagi.annotation.SingletonComponent;
 import pl.szelagi.command.marker.MarkerAddHere;
 import pl.szelagi.command.marker.MarkerRemoveId;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.component.Controller;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;

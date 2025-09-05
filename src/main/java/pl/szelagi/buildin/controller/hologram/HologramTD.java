@@ -5,9 +5,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.TextDisplay;
 import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.controller.Controller;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.component.ComponentDestructor;
+import pl.szelagi.component.Controller;
 
 public class HologramTD extends Controller {
     private final Component text;

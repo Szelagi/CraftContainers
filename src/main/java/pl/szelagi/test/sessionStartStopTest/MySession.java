@@ -9,7 +9,7 @@ package pl.szelagi.test.sessionStartStopTest;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.component.Board;
 import pl.szelagi.component.session.Session;
 
 class MySession extends Session {

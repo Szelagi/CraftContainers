@@ -8,7 +8,7 @@
 package pl.szelagi.test.treeProcessingTest;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.component.Board;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.spatial.Spatial;
 
@@ -18,8 +18,12 @@ class B extends Board {
     }
 
     @Override
-    public ISpatial defineSecureZone() {
-        return new Spatial(space().getFirstPoint(), space().getSecondPoint());
+    protected void generate() {
+
     }
 
+    @Override
+    protected void degenerate() {
+
+    }
 }

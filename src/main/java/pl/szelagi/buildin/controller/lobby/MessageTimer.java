@@ -13,10 +13,10 @@ import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.baseComponent.BaseComponent;
 import pl.szelagi.component.baseComponent.SAPITask;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentConstructor;
-import pl.szelagi.component.baseComponent.internalEvent.component.ComponentDestructor;
-import pl.szelagi.component.controller.Controller;
-import pl.szelagi.event.handler.HandlerEvent;
+import pl.szelagi.event.internal.component.ComponentConstructor;
+import pl.szelagi.event.internal.component.ComponentDestructor;
+import pl.szelagi.component.Controller;
+import pl.szelagi.event.EventDispatcher;
 import pl.szelagi.util.timespigot.Time;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class MessageTimer extends Controller {
     private @Nullable String startCountMessage = null;
     private @Nullable String breakCountMessage = null;
     private SAPITask mainTask = null;
-    private final HandlerEvent<Void> finalizeHandlerEvent = new HandlerEvent<>();
+    private final EventDispatcher<Void> finalizeEventDispatcher = new EventDispatcher<>();
     private final HashSet<Integer> busySeconds = new HashSet<>();
 
     public MessageTimer(BaseComponent baseComponent, Time waitTime) {
@@ -98,8 +98,8 @@ public class MessageTimer extends Controller {
         registerMessage(timeBefore, message);
     }
 
-    public HandlerEvent<Void> getFinalizeEvent() {
-        return finalizeHandlerEvent;
+    public EventDispatcher<Void> getFinalizeEvent() {
+        return finalizeEventDispatcher;
     }
 
     public void setStartCountMessage(@Nullable String message) {
@@ -124,7 +124,7 @@ public class MessageTimer extends Controller {
     private void countdown() {
         isCounting = false;
         clearData();
-        finalizeHandlerEvent.call(null);
+        finalizeEventDispatcher.dispatch(null);
         stop();
     }
 }

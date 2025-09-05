@@ -10,8 +10,8 @@ package pl.szelagi.util.pool;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.space.IAllocate;
-import pl.szelagi.space.ISpaceAllocator;
+import pl.szelagi.allocator.IAllocate;
+import pl.szelagi.allocator.ISpaceAllocator;
 
 import java.util.Set;
 

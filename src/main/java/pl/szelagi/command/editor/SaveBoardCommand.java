@@ -14,13 +14,14 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.creator.Creator;
 import pl.szelagi.buildin.creator.CreatorBoard;
-import pl.szelagi.component.board.Board;
+import pl.szelagi.component.Board;
 import pl.szelagi.manager.SessionManager;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.tag.TagAnalyzer;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
+@Deprecated
 public class SaveBoardCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
@@ -59,7 +60,7 @@ public class SaveBoardCommand implements CommandExecutor {
 
                     tag(creatorBoard, optimized, player, () -> {
                         long deltaTotalMillis = System.currentTimeMillis() - millis;
-                        player.sendMessage(PREFIX + "§7Board size: §f" + optimized.size() + "§7, size-x: §f" + optimized.sizeX() + "§7, size-y: §f" + optimized.sizeY() + "§7, size-z: §f" + optimized.sizeZ() + "§7!");
+                        player.sendMessage(PREFIX + "§7Board size: §f" + optimized.volume() + "§7, size-x: §f" + optimized.sizeX() + "§7, size-y: §f" + optimized.sizeY() + "§7, size-z: §f" + optimized.sizeZ() + "§7!");
                         player.sendMessage(PREFIX + "§aBoard saved successfully! §f(" + deltaTotalMillis + "ms)");
                         creator.setRecording(false);
                     });
@@ -72,9 +73,9 @@ public class SaveBoardCommand implements CommandExecutor {
         long millis = System.currentTimeMillis();
 
         creator.creatorFileManager()
-                .saveSchematic(Board.CONSTRUCTOR_FILE_NAME, optimized.getFirstPoint(), optimized.getSecondPoint(), optimized.getCenter());
+                .saveSchematic(Board.CONSTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
         creator.creatorFileManager()
-                .saveEmptySchematic(Board.DESTRUCTOR_FILE_NAME, optimized.getFirstPoint(), optimized.getSecondPoint(), optimized.getCenter());
+                .saveEmptySchematic(Board.DESTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
 
         long delta = System.currentTimeMillis() - millis;
         player.sendMessage(PREFIX + "§7Schematics save! §f(" + delta + "ms)");
