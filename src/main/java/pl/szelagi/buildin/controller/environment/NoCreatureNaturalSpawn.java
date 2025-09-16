@@ -10,15 +10,15 @@ package pl.szelagi.buildin.controller.environment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.BoardManager;
+import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class NoCreatureNaturalSpawn extends Controller {
-    public NoCreatureNaturalSpawn(BaseComponent baseComponent) {
-        super(baseComponent);
+    public NoCreatureNaturalSpawn(Component component) {
+        super(component);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class NoCreatureNaturalSpawn extends Controller {
         public void onCreatureSpawn(CreatureSpawnEvent event) {
             if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL)
                 return;
-            var session = BoardManager.session(event.getEntity());
+            var session = GameMapManager.container(event.getEntity());
             ListenerManager.first(session, getClass(), NoCreatureNaturalSpawn.class, noCreatureDrop -> {
                 event.setCancelled(true);
             });

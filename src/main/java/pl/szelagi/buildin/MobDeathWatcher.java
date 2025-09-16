@@ -15,7 +15,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.Controller;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.EventDispatcher;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
@@ -29,7 +29,7 @@ public class MobDeathWatcher extends Controller {
     private final EventDispatcher<Void> finishDispatcher;
     private final Set<LivingEntity> entities;
 
-    public MobDeathWatcher(@NotNull BaseComponent parent, Collection<LivingEntity> entities) {
+    public MobDeathWatcher(@NotNull Component parent, Collection<LivingEntity> entities) {
         super(parent);
         this.finishDispatcher = new EventDispatcher<>();
         this.entities = new HashSet<>(entities);

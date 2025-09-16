@@ -9,21 +9,21 @@ package pl.szelagi.buildin.system.sessionSavePlayers;
 
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
-import pl.szelagi.state.PlayerContainer;
+import pl.szelagi.state.PlayerStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SessionSavePlayers extends Controller {
     private static final ArrayList<PotionEffectType> NEGATIVE_POTION_TYPES = new ArrayList<>(List.of(PotionEffectType.POISON, PotionEffectType.WITHER, PotionEffectType.WEAKNESS, PotionEffectType.DARKNESS, PotionEffectType.BLINDNESS, PotionEffectType.SLOWNESS, PotionEffectType.MINING_FATIGUE, PotionEffectType.LEVITATION, PotionEffectType.NAUSEA, PotionEffectType.BAD_OMEN, PotionEffectType.HUNGER, PotionEffectType.GLOWING));
-    private final PlayerContainer<SessionSavePlayerState> playerContainer = new PlayerContainer<>(SessionSavePlayerState::new);
+    private final PlayerStorage<SessionSavePlayerState> playerContainer = new PlayerStorage<>(SessionSavePlayerState::new);
 
-    public SessionSavePlayers(@NotNull BaseComponent parent) {
+    public SessionSavePlayers(@NotNull Component parent) {
         super(parent);
     }
 

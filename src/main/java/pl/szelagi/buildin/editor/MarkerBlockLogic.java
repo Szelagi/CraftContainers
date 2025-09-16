@@ -19,7 +19,7 @@ import pl.szelagi.annotation.SingletonComponent;
 import pl.szelagi.command.marker.MarkerAddHere;
 import pl.szelagi.command.marker.MarkerRemoveId;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
@@ -30,7 +30,7 @@ public class MarkerBlockLogic extends Controller {
     public static final Material MARKER_MATERIAL = Material.REDSTONE_BLOCK;
     public static final Material MARKER_CLEAR_MATERIAL = Material.BARRIER;
 
-    public MarkerBlockLogic(@NotNull BlueprintBoard parent) {
+    public MarkerBlockLogic(@NotNull BlueprintGameMap parent) {
         super(parent);
     }
 
@@ -46,11 +46,11 @@ public class MarkerBlockLogic extends Controller {
             var player = event.getPlayer();
             if (type != MARKER_MATERIAL && type != MARKER_CLEAR_MATERIAL) return;
 
-            var session = SessionManager.session(event.getPlayer());
+            var session = ContainerManager.container(event.getPlayer());
             ListenerManager.first(session, getClass(), MarkerBlockLogic.class, markerBlockLogic -> {
-                var componentSession = markerBlockLogic.session();
-                var board = componentSession.board();
-                if (!(board instanceof BlueprintBoard blueprintBoard))
+                var componentSession = markerBlockLogic.container();
+                var board = componentSession.gameMap();
+                if (!(board instanceof BlueprintGameMap blueprintBoard))
                     throw new IllegalStateException("Board is not a blueprint board");
 
                 var item = event.getPlayer().getEquipment().getItemInMainHand();

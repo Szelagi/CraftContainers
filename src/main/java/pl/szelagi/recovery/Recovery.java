@@ -10,8 +10,8 @@ package pl.szelagi.recovery;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.SessionAPI;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.file.FileManager;
 import pl.szelagi.recovery.internalEvent.ComponentRecovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
@@ -31,16 +31,16 @@ import static pl.szelagi.recovery.RecoveryManager.*;
 public class Recovery {
     private static final Logger LOGGER = Logger.getLogger(Recovery.class.getName());
 
-    private final Session session;
+    private final Container container;
     private final FileManager fileManager = new FileManager(SessionAPI.RECOVERY_DIRNAME);
 
     // Przechowuje recepturę awaryjnego zakańczania komponentów,
-    private final HashMap<BaseComponent, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries = new HashMap<>();
+    private final HashMap<Component, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries = new HashMap<>();
     // Przechowuje recepturę awaryjnego zakańczania graczy
-    private final HashMap<Player, HashMap<BaseComponent, HashSet<PlayerRecoveryLambda>>> playerDestroyRecoveries = new HashMap<>();
+    private final HashMap<Player, HashMap<Component, HashSet<PlayerRecoveryLambda>>> playerDestroyRecoveries = new HashMap<>();
 
-    public Recovery(@NotNull Session session) {
-        this.session = session;
+    public Recovery(@NotNull Container container) {
+        this.container = container;
     }
 
     public void updateComponent(ComponentRecovery componentRecovery) {
@@ -82,7 +82,7 @@ public class Recovery {
 
     private void saveComponentsRecovery() throws IOException {
         var unix = System.currentTimeMillis();
-        var uuid = session.uuid().toString().replace("-", "");
+        var uuid = container.uuid().toString().replace("-", "");
         var name = COMPONENT_RECOVERY_PREFIX + SEPARATOR + uuid + SEPARATOR + unix + EXTENSION;
 
         var object = new HashSet<ComponentRecoveryLambda>();
@@ -128,10 +128,10 @@ public class Recovery {
     }
 
 
-    public void destroyComponent(BaseComponent component) {
+    public void destroyComponent(Component component) {
         componentDestroyRecoveries.remove(component);
         if (componentDestroyRecoveries.isEmpty()) {
-            var uuid = session.uuid().toString().replace("-", "");
+            var uuid = container.uuid().toString().replace("-", "");
             var prefix = COMPONENT_RECOVERY_PREFIX + SEPARATOR + uuid;
             RecoveryManager.findRecoveries(prefix).forEach(recovery -> {
                 recovery.file().delete();

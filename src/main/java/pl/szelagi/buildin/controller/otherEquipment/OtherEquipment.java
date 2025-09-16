@@ -7,24 +7,27 @@
 
 package pl.szelagi.buildin.controller.otherEquipment;
 
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.annotation.SingletonComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
+import pl.szelagi.event.tree.TreeEventHandler;
+import pl.szelagi.event.tree.tutorial.TeamEliminatedEvent;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
-import pl.szelagi.state.PlayerContainer;
+import pl.szelagi.state.PlayerStorage;
 
 public class OtherEquipment extends Controller {
     private final boolean isClearEquipment;
-    PlayerContainer<PlayerEqState> eqStatePlayerContainer = new PlayerContainer<>(PlayerEqState::new);
+    PlayerStorage<PlayerEqState> eqStatePlayerContainer = new PlayerStorage<>(PlayerEqState::new);
 
-    public OtherEquipment(BaseComponent baseComponent) {
-        super(baseComponent);
+    public OtherEquipment(Component component) {
+        super(component);
         this.isClearEquipment = true;
     }
 
-    public OtherEquipment(BaseComponent baseComponent, boolean cloneEquipment) {
-        super(baseComponent);
+    public OtherEquipment(Component component, boolean cloneEquipment) {
+        super(component);
         this.isClearEquipment = !cloneEquipment;
     }
 

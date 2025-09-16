@@ -9,11 +9,11 @@ package pl.szelagi.buildin.creator;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.Board;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.GameMap;
+import pl.szelagi.component.container.Container;
 
 @Deprecated
-public class Creator extends Session {
+public class Creator extends Container {
     private final String mainDirectory;
     private boolean isRecording = false;
 
@@ -24,8 +24,8 @@ public class Creator extends Session {
 
     @NotNull
     @Override
-    protected Board defaultBoard() {
-        return new CreatorBoard(this, mainDirectory);
+    protected GameMap defaultBoard() {
+        return new CreatorGameMap(this, mainDirectory);
     }
 
     public boolean isRecording() {

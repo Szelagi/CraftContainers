@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
@@ -22,7 +22,7 @@ public class FakeWorldBorder extends Controller {
     private WorldBorder border;
     private final double initialRadius;
 
-    public FakeWorldBorder(@NotNull BaseComponent parent, Location center, double initialRadius) {
+    public FakeWorldBorder(@NotNull Component parent, Location center, double initialRadius) {
         super(parent);
         this.center = center;
         this.initialRadius = initialRadius;

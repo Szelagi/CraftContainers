@@ -10,13 +10,13 @@ package pl.szelagi.test.treeProcessingTest;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.event.internal.component.ComponentConstructor;
-import pl.szelagi.component.Board;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.GameMap;
+import pl.szelagi.component.container.Container;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class S extends Session {
+class S extends Container {
     public final List<String> componentConstructors = new ArrayList<>();
     public final List<String> componentDestructors = new ArrayList<>();
     public final List<String> playerConstructors = new ArrayList<>();
@@ -28,7 +28,7 @@ class S extends Session {
     }
 
     @Override
-    protected @NotNull Board defaultBoard() {
+    protected @NotNull GameMap defaultBoard() {
         return new B(this);
     }
 

@@ -11,8 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.session.Session;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.component.container.Container;
+import pl.szelagi.manager.ContainerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class CommandHelper {
     public static final String PREFIX = "§6[§eSessionAPI§6] §r";
 
-    public static @Nullable Session sessionByNameId(String nameId) {
-        return SessionManager
-                .sessions().stream()
+    public static @Nullable Container sessionByNameId(String nameId) {
+        return ContainerManager
+                .containers().stream()
                 .filter(loopSession -> {
                     var name = loopSession.name() + ":" + loopSession.id();
                     return nameId.equals(name);
@@ -32,10 +32,10 @@ public class CommandHelper {
     }
 
     public static List<String> sessionsComplete(CommandSender commandSender) {
-        var sessions = SessionManager.sessions().stream().map(session -> session.name() + ":" + session.id()).collect(Collectors.toCollection(ArrayList::new));
+        var sessions = ContainerManager.containers().stream().map(session -> session.name() + ":" + session.id()).collect(Collectors.toCollection(ArrayList::new));
 
         if (commandSender instanceof Player player) {
-            var session = SessionManager.session(player);
+            var session = ContainerManager.container(player);
             if (session != null) {
                 sessions.addFirst("current");
             }
@@ -44,9 +44,9 @@ public class CommandHelper {
         return sessions;
     }
 
-    public static @Nullable Session selectSession(CommandSender commandSender, String sessionString) {
+    public static @Nullable Container selectSession(CommandSender commandSender, String sessionString) {
 
-        Session session;
+        Container container;
         if (sessionString.equals("current")) {
 
             if (!(commandSender instanceof Player player)) {
@@ -54,20 +54,20 @@ public class CommandHelper {
                 return null;
             }
 
-            session = SessionManager.session(player);
-            if (session == null) {
+            container = ContainerManager.container(player);
+            if (container == null) {
                 commandSender.sendMessage(PREFIX + "§cYou are not currently in any session!");
                 return null;
             }
-            return session;
+            return container;
         }
 
-        session = CommandHelper.sessionByNameId(sessionString);
-        if (session == null) {
+        container = CommandHelper.sessionByNameId(sessionString);
+        if (container == null) {
             commandSender.sendMessage(PREFIX + "§cNo session found with the identifier: '" + sessionString + "'!");
             return null;
         }
-        return session;
+        return container;
     }
 
     public static @Nullable Player selectPlayer(CommandSender commandSender, String playerString) {

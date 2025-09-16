@@ -11,8 +11,8 @@ import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.buildin.controller.MarkerHologram;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.ComponentStatus;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.base.ComponentStatus;
 import pl.szelagi.component.Controller;
 import pl.szelagi.transform.RotAxis;
 import pl.szelagi.transform.Degree;
@@ -57,7 +57,7 @@ public class DisplayableMarkers extends Controller implements IMarkers<AbstractM
         holograms.remove(marker.getId());
     }
 
-    protected DisplayableMarkers(@NotNull BaseComponent parent, AbstractMarkers markers) {
+    protected DisplayableMarkers(@NotNull Component parent, AbstractMarkers markers) {
         super(parent);
         this.markers = markers;
         refreshHolograms();
@@ -67,12 +67,12 @@ public class DisplayableMarkers extends Controller implements IMarkers<AbstractM
         AbstractMarkers.save(markers, file, base);
     }
 
-    public static DisplayableMarkers from(@NotNull BaseComponent parent, File file, Location base) {
+    public static DisplayableMarkers from(@NotNull Component parent, File file, Location base) {
         var markers = AbstractMarkers.read(file, base);
         return new DisplayableMarkers(parent, markers);
     }
 
-    public static DisplayableMarkers empty(@NotNull BaseComponent parent, Location base) {
+    public static DisplayableMarkers empty(@NotNull Component parent, Location base) {
         return new DisplayableMarkers(parent, new Markers(base));
     }
 

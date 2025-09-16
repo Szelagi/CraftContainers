@@ -8,10 +8,10 @@
 package pl.szelagi.test.treeProcessingTest;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 
 class C7 extends CNode {
-    public C7(@NotNull BaseComponent parent) {
+    public C7(@NotNull Component parent) {
         super(parent);
     }
 }

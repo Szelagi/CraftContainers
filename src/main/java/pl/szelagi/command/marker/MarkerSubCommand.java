@@ -10,24 +10,24 @@ package pl.szelagi.command.marker;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.buildin.editor.BlueprintBoard;
-import pl.szelagi.buildin.editor.BlueprintSession;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.buildin.editor.BlueprintGameMap;
+import pl.szelagi.buildin.editor.BlueprintContainer;
+import pl.szelagi.manager.ContainerManager;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
 public class MarkerSubCommand {
-    public @Nullable BlueprintBoard getBlueprintBoard(CommandSender sender) {
+    public @Nullable BlueprintGameMap getBlueprintBoard(CommandSender sender) {
         if (!(sender instanceof Player player)) return null;
 
-        var session = SessionManager.session(player);
-        if (!(session instanceof BlueprintSession blueprintSession)) {
+        var session = ContainerManager.container(player);
+        if (!(session instanceof BlueprintContainer blueprintSession)) {
             player.sendMessage(PREFIX + "§cYou are not in a blueprint editor.");
             return null;
         }
 
-        var board = blueprintSession.board();
-        if (!(board instanceof BlueprintBoard blueprintBoard)) {
+        var board = blueprintSession.gameMap();
+        if (!(board instanceof BlueprintGameMap blueprintBoard)) {
             player.sendMessage(PREFIX + "§cBoard is not loaded.");
             return null;
         }

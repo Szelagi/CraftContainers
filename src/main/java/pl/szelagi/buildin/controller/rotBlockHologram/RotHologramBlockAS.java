@@ -6,7 +6,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.component.Controller;
@@ -17,8 +17,8 @@ public class RotHologramBlockAS extends Controller {
     private final Location location;
     private final Material material;
     private ArmorStand armorStand;
-    public RotHologramBlockAS(BaseComponent baseComponent, Location location, Material material) {
-        super(baseComponent);
+    public RotHologramBlockAS(Component component, Location location, Material material) {
+        super(component);
         this.location = location.clone().add(new Vector(0, -1.7, 0));
         this.material = material;
     }

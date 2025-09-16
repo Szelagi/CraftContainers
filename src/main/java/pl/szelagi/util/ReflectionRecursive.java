@@ -9,8 +9,8 @@
 // Github: https://github.com/Szelagi
 package pl.szelagi.util;
 
-import pl.szelagi.event.sapi.SAPIEventHandler;
-import pl.szelagi.event.sapi.SAPIListener;
+import pl.szelagi.event.tree.TreeEventHandler;
+import pl.szelagi.event.tree.TreeListener;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -57,13 +57,13 @@ public class ReflectionRecursive {
         throw new NoSuchFieldException("ReflectionRecursive no such field  '" + name + "' in class " + classType.getName());
     }
 
-    public static Collection<Method> getSAPIHandlerMethods(Class<? extends SAPIListener> classType) {
+    public static Collection<Method> getSAPIHandlerMethods(Class<? extends TreeListener> classType) {
         var methodHashMap = new HashMap<String, Method>();
         Class<?> currentClass = classType;
 
         while (currentClass != null) {
             var annotatedMethods = Arrays.stream(currentClass.getDeclaredMethods())
-                    .filter(method -> method.isAnnotationPresent(SAPIEventHandler.class))
+                    .filter(method -> method.isAnnotationPresent(TreeEventHandler.class))
                     .filter(method -> method.getReturnType().equals(void.class))
                     .filter(method -> method.getParameterCount() == 1)
                     .toList();

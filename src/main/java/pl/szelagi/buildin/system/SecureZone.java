@@ -20,10 +20,10 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.BoardManager;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.GameMapManager;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.spatial.ISpatial;
@@ -35,7 +35,7 @@ import java.util.function.Function;
 public class SecureZone extends Controller {
     private final ISpatial zone;
 
-    public SecureZone(@NotNull BaseComponent parent, ISpatial zone) {
+    public SecureZone(@NotNull Component parent, ISpatial zone) {
         super(parent);
         this.zone = zone;
     }
@@ -51,7 +51,7 @@ public class SecureZone extends Controller {
 
     private static final class MyListener implements Listener {
         private boolean check(Player player, Block block) {
-            var session = SessionManager.session(player);
+            var session = ContainerManager.container(player);
             var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return false;
 
@@ -75,7 +75,7 @@ public class SecureZone extends Controller {
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-            var session = BoardManager.session(event.getBlock());
+            var session = GameMapManager.container(event.getBlock());
             var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return;
 
@@ -101,7 +101,7 @@ public class SecureZone extends Controller {
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-            var session = BoardManager.session(event.getBlock());
+            var session = GameMapManager.container(event.getBlock());
             var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return;
 
@@ -121,7 +121,7 @@ public class SecureZone extends Controller {
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onStructureGrow(StructureGrowEvent event) {
-            var session = BoardManager.session(event.getLocation());
+            var session = GameMapManager.container(event.getLocation());
             var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return;
 
@@ -148,7 +148,7 @@ public class SecureZone extends Controller {
                     .getLocation();
             var from = event.getBlock()
                     .getLocation();
-            var session = BoardManager.session(from);
+            var session = GameMapManager.container(from);
             var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return;
 
@@ -160,7 +160,7 @@ public class SecureZone extends Controller {
         }
 
         public boolean waterBucketCheck(Player player, Location location) {
-            var session = SessionManager.session(player);
+            var session = ContainerManager.container(player);
             var controller = ListenerManager.first(session, getClass(), SecureZone.class);
             if (controller == null) return false;
 

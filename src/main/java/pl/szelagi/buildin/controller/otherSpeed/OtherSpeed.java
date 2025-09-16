@@ -8,21 +8,21 @@
 package pl.szelagi.buildin.controller.otherSpeed;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
-import pl.szelagi.state.PlayerContainer;
+import pl.szelagi.state.PlayerStorage;
 
 public class OtherSpeed extends Controller {
-    private PlayerContainer<OtherSpeedState> playerContainer;
+    private PlayerStorage<OtherSpeedState> playerContainer;
     private final float walkSpeed;
     private final float flySpeed;
 
-    public OtherSpeed(@NotNull BaseComponent parent, float walkSpeed, float flySpeed) {
+    public OtherSpeed(@NotNull Component parent, float walkSpeed, float flySpeed) {
         super(parent);
         this.walkSpeed = walkSpeed;
         this.flySpeed = flySpeed;
@@ -31,7 +31,7 @@ public class OtherSpeed extends Controller {
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        playerContainer = new PlayerContainer<>(OtherSpeedState::new);
+        playerContainer = new PlayerStorage<>(OtherSpeedState::new);
     }
 
     @Override

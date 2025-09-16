@@ -8,27 +8,27 @@
 package pl.szelagi.buildin.controller.otherGameMode;
 
 import org.bukkit.GameMode;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
-import pl.szelagi.state.PlayerContainer;
+import pl.szelagi.state.PlayerStorage;
 
 public class OtherGameMode extends Controller {
-    private PlayerContainer<GameModeState> states;
+    private PlayerStorage<GameModeState> states;
     private final GameMode gameMode;
 
-    public OtherGameMode(BaseComponent baseComponent, GameMode gameMode) {
-        super(baseComponent);
+    public OtherGameMode(Component component, GameMode gameMode) {
+        super(component);
         this.gameMode = gameMode;
     }
 
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        states = new PlayerContainer<>(GameModeState::new);
+        states = new PlayerStorage<>(GameModeState::new);
     }
 
     @Override

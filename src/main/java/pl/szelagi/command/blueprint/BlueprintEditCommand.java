@@ -10,15 +10,14 @@ package pl.szelagi.command.blueprint;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import pl.szelagi.SessionAPI;
-import pl.szelagi.buildin.editor.BlueprintSession;
+import pl.szelagi.buildin.editor.BlueprintContainer;
 import pl.szelagi.command.SubCommand;
-import pl.szelagi.component.baseComponent.StartException;
-import pl.szelagi.component.session.PlayerJoinException;
+import pl.szelagi.component.base.StartException;
+import pl.szelagi.component.container.PlayerJoinException;
 import pl.szelagi.fawe.ISchematic;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.marker.IMarkers;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,7 +49,7 @@ public class BlueprintEditCommand implements SubCommand {
             return;
         }
 
-        if (SessionManager.session(player) != null) {
+        if (ContainerManager.container(player) != null) {
             player.sendMessage(PREFIX + "§cYou are already in a session.");
         }
 
@@ -58,7 +57,7 @@ public class BlueprintEditCommand implements SubCommand {
         var schematicFile = ISchematic.getFile(name);
         var markersFile = IMarkers.getFile(name);
 
-        var editor = new BlueprintSession(SessionAPI.instance(), schematicFile, markersFile);
+        var editor = new BlueprintContainer(SessionAPI.instance(), schematicFile, markersFile);
         try {
             editor.start();
             editor.addPlayer(player);

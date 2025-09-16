@@ -10,17 +10,17 @@ package pl.szelagi.buildin.controller;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class HideOtherPlayers extends Controller {
-    public HideOtherPlayers(BaseComponent baseComponent) {
-        super(baseComponent);
+    public HideOtherPlayers(Component component) {
+        super(component);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class HideOtherPlayers extends Controller {
     public static class MyListener implements Listener {
         @EventHandler(ignoreCancelled = true)
         public void onPlayerJoin(PlayerJoinEvent event) {
-            for (var session : SessionManager.sessions()) {
+            for (var session : ContainerManager.containers()) {
                 ListenerManager.first(session, getClass(), HideOtherPlayers.class, hideOtherPlayers -> {
                     for (var player : hideOtherPlayers.players())
                         player.hidePlayer(hideOtherPlayers.plugin(), event.getPlayer());

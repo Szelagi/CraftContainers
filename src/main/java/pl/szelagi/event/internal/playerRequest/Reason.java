@@ -8,10 +8,10 @@
 package pl.szelagi.event.internal.playerRequest;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 
 public record Reason(
-        @NotNull BaseComponent invokeComponent,
+        @NotNull Component invokeComponent,
         @NotNull String message) {
     @Override
     public String toString() {

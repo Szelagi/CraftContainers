@@ -8,13 +8,13 @@
 package pl.szelagi.buildin;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.player.PlayerDestroyCause;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
 
 public class ZeroPlayerClose extends Controller {
-    public ZeroPlayerClose(@NotNull BaseComponent parent) {
+    public ZeroPlayerClose(@NotNull Component parent) {
         super(parent);
     }
 
@@ -26,7 +26,7 @@ public class ZeroPlayerClose extends Controller {
         var playerChange = event.playerChange();
         assert playerChange != null;
         if (playerChange.newPlayers().isEmpty()) {
-            session().stop();
+            container().stop();
         }
     }
 }

@@ -8,11 +8,9 @@
 package pl.szelagi.test.treeProcessingTest;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.Board;
-import pl.szelagi.spatial.ISpatial;
-import pl.szelagi.spatial.Spatial;
+import pl.szelagi.component.GameMap;
 
-class B extends Board {
+class B extends GameMap {
     public B(@NotNull S session) {
         super(session);
     }

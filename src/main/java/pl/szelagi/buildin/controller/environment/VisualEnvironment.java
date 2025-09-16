@@ -8,7 +8,7 @@
 package pl.szelagi.buildin.controller.environment;
 
 import org.bukkit.WeatherType;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
@@ -18,14 +18,14 @@ public class VisualEnvironment extends Controller {
     private final long ticks;
     private final WeatherType weatherType;
 
-    public VisualEnvironment(BaseComponent baseComponent, WeatherType weatherType, long ticks) {
-        super(baseComponent);
+    public VisualEnvironment(Component component, WeatherType weatherType, long ticks) {
+        super(component);
         this.weatherType = weatherType;
         this.ticks = ticks;
     }
 
-    public VisualEnvironment(BaseComponent baseComponent, WeatherType weatherType, TimeType timeType) {
-        super(baseComponent);
+    public VisualEnvironment(Component component, WeatherType weatherType, TimeType timeType) {
+        super(component);
         this.weatherType = weatherType;
         this.ticks = timeType.getTicks();
     }

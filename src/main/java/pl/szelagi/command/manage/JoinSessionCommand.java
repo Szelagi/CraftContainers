@@ -15,8 +15,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.command.CommandHelper;
-import pl.szelagi.component.session.PlayerJoinException;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.component.container.PlayerJoinException;
+import pl.szelagi.manager.ContainerManager;
 
 import java.util.List;
 
@@ -51,6 +51,6 @@ public class JoinSessionCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return SessionManager.sessions().stream().map(session -> session.name() + ":" + session.id()).toList();
+        return ContainerManager.containers().stream().map(session -> session.name() + ":" + session.id()).toList();
     }
 }

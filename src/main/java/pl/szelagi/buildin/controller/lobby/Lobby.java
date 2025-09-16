@@ -11,7 +11,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Location;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.event.internal.player.PlayerConstructor;
@@ -33,8 +33,8 @@ public class Lobby extends Controller {
     private final EventDispatcher<Void> finalizeEventDispatcher = new EventDispatcher<>();
     private MessageTimer messageTimer;
 
-    public Lobby(BaseComponent baseComponent, Time waitTime, Location lobby, int maxSlots, int minSlots) {
-        super(baseComponent);
+    public Lobby(Component component, Time waitTime, Location lobby, int maxSlots, int minSlots) {
+        super(component);
         this.lobby = lobby;
         this.maxSlots = maxSlots;
         this.minSlots = minSlots;

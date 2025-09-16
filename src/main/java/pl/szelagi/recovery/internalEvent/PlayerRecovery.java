@@ -10,7 +10,7 @@ package pl.szelagi.recovery.internalEvent;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.InternalEvent;
 import pl.szelagi.recovery.PlayerRecoveryLambda;
 
@@ -20,7 +20,7 @@ import java.util.HashSet;
 public class PlayerRecovery extends InternalEvent {
     private final @NotNull PlayerRecoveryCause cause;
     private final @NotNull Player owner;
-    private final @NotNull HashMap<BaseComponent, HashSet<PlayerRecoveryLambda>> playersDestroyRecoveries;
+    private final @NotNull HashMap<Component, HashSet<PlayerRecoveryLambda>> playersDestroyRecoveries;
 
     public PlayerRecovery(@NotNull Player owner, @NotNull PlayerRecoveryCause cause) {
         this.owner = owner;
@@ -32,14 +32,14 @@ public class PlayerRecovery extends InternalEvent {
         return owner;
     }
 
-    public void register(@NotNull BaseComponent component, @NotNull PlayerRecoveryLambda lambda) {
+    public void register(@NotNull Component component, @NotNull PlayerRecoveryLambda lambda) {
         var recoveries = playersDestroyRecoveries.computeIfAbsent(component, k -> new HashSet<>());
         recoveries.add(lambda);
     }
 
     @Unmodifiable
     @NotNull
-    public HashMap<BaseComponent, HashSet<PlayerRecoveryLambda>> playersDestroyRecoveries() {
+    public HashMap<Component, HashSet<PlayerRecoveryLambda>> playersDestroyRecoveries() {
         return playersDestroyRecoveries;
     }
 

@@ -9,10 +9,10 @@ package pl.szelagi.command.blueprint;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import pl.szelagi.buildin.editor.BlueprintBoard;
-import pl.szelagi.buildin.editor.BlueprintSession;
+import pl.szelagi.buildin.editor.BlueprintGameMap;
+import pl.szelagi.buildin.editor.BlueprintContainer;
 import pl.szelagi.command.SubCommand;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
@@ -36,14 +36,14 @@ public class BlueprintSaveCommand implements SubCommand {
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) return;
 
-        var session = SessionManager.session(player);
-        if (!(session instanceof BlueprintSession blueprintSession)) {
+        var session = ContainerManager.container(player);
+        if (!(session instanceof BlueprintContainer blueprintSession)) {
             player.sendMessage(PREFIX + "§cYou are not in a blueprint editor.");
             return;
         }
 
-        var board = blueprintSession.board();
-        if (!(board instanceof BlueprintBoard blueprintBoard)) {
+        var board = blueprintSession.gameMap();
+        if (!(board instanceof BlueprintGameMap blueprintBoard)) {
             player.sendMessage(PREFIX + "§cBoard is not loaded.");
             return;
         }

@@ -13,8 +13,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.SessionAPI;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.container.Container;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -33,10 +33,10 @@ public class ListenerManager implements Listener {
     // Przechowuje jakie komponenty używają konkretnego Listener na konkretnej Session.
     // Używany, aby śledzić, które BaseComponent korzysta z konkretnego Listener na danej Session.
     // Dzięki temu nie musimy ciągle analizować drzewa sesji w poszukiwaniu odpowiadających BaseComponent.
-    private static final Map<Pair<Session, Class<? extends Listener>>, LinkedHashSet<BaseComponent>> SESSION_LISTENER_TO_COMPONENTS = new HashMap<>();
+    private static final Map<Pair<Container, Class<? extends Listener>>, LinkedHashSet<Component>> SESSION_LISTENER_TO_COMPONENTS = new HashMap<>();
 
     // BUKKIT LISTENER METHODS
-    public static void controllerStart(BaseComponent component) {
+    public static void controllerStart(Component component) {
         var listeners = component.listeners();
         for (var listener : listeners.get()) {
             trackingStart(component, listener);
@@ -44,7 +44,7 @@ public class ListenerManager implements Listener {
         }
     }
 
-    public static void controllerStop(BaseComponent component) {
+    public static void controllerStop(Component component) {
         var listeners = component.listeners();
         for (var listener : listeners.get()) {
             listenerStop(component, listener);
@@ -52,7 +52,7 @@ public class ListenerManager implements Listener {
         }
     }
 
-    private static void listenerStart(BaseComponent component, Class<? extends Listener> listener) {
+    private static void listenerStart(Component component, Class<? extends Listener> listener) {
         var ids = LISTENER_TO_COMPONENT_IDS.computeIfAbsent(listener, k -> new HashSet<>());
         ids.add(component.id());
 
@@ -70,7 +70,7 @@ public class ListenerManager implements Listener {
         });
     }
 
-    private static void listenerStop(BaseComponent component, Class<? extends Listener> listenerClass) {
+    private static void listenerStop(Component component, Class<? extends Listener> listenerClass) {
         var ids = LISTENER_TO_COMPONENT_IDS.get(listenerClass);
         if (ids == null) {
             throw new IllegalStateException("No component IDs found for listener class '" + listenerClass.getName() + "' while stopping '" + component.name() + "'. The listener may not be properly initialized.");
@@ -86,16 +86,16 @@ public class ListenerManager implements Listener {
         HandlerList.unregisterAll(listenerInstance);
     }
 
-    private static void trackingStart(BaseComponent component, Class<? extends Listener> listener) {
-        var pair = sessionListenerPair(component.session(), listener);
+    private static void trackingStart(Component component, Class<? extends Listener> listener) {
+        var pair = sessionListenerPair(component.container(), listener);
         var components = SESSION_LISTENER_TO_COMPONENTS.computeIfAbsent(pair, k -> {
             return new LinkedHashSet<>();
         });
         components.add(component);
     }
 
-    private static void trackingStop(BaseComponent component, Class<? extends Listener> listener) {
-        var session = component.session();
+    private static void trackingStop(Component component, Class<? extends Listener> listener) {
+        var session = component.container();
         var pair = sessionListenerPair(session, listener);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
         if (components == null) {
@@ -110,13 +110,13 @@ public class ListenerManager implements Listener {
 
     // OPERATE
 
-    private static Pair<Session, Class<? extends Listener>> sessionListenerPair(Session session, Class<? extends Listener> listenerClass) {
-        return Pair.of(session, listenerClass);
+    private static Pair<Container, Class<? extends Listener>> sessionListenerPair(Container container, Class<? extends Listener> listenerClass) {
+        return Pair.of(container, listenerClass);
     }
 
-    private static @Nullable LinkedHashSet<BaseComponent> findComponents(@Nullable Session session, Class<? extends Listener> listenerClass) {
-        if (session == null) return null;
-        var pair = sessionListenerPair(session, listenerClass);
+    private static @Nullable LinkedHashSet<Component> findComponents(@Nullable Container container, Class<? extends Listener> listenerClass) {
+        if (container == null) return null;
+        var pair = sessionListenerPair(container, listenerClass);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
         //        if (components == null) {
 //            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered correctly.");
@@ -124,8 +124,8 @@ public class ListenerManager implements Listener {
         return components;
     }
 
-    public static <T extends BaseComponent> void each(@Nullable Session session, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
-        var components = findComponents(session, listenerClass);
+    public static <T extends Component> void each(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
+        var components = findComponents(container, listenerClass);
         if (components == null) return;
         components.stream()
                 .filter(componentClass::isInstance)
@@ -133,15 +133,15 @@ public class ListenerManager implements Listener {
                 .forEach(action);
     }
 
-    public static void each(@Nullable Session session, Class<? extends Listener> listenerClass, Consumer<BaseComponent> action) {
-        var components = findComponents(session, listenerClass);
+    public static void each(@Nullable Container container, Class<? extends Listener> listenerClass, Consumer<Component> action) {
+        var components = findComponents(container, listenerClass);
         if (components == null) return;
         components.forEach(action);
     }
 
-    public static @Nullable BaseComponent findComponent(@Nullable Session session, Class<? extends Listener> listenerClass) {
-        if (session == null) return null;
-        var pair = sessionListenerPair(session, listenerClass);
+    public static @Nullable Component findComponent(@Nullable Container container, Class<? extends Listener> listenerClass) {
+        if (container == null) return null;
+        var pair = sessionListenerPair(container, listenerClass);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
         if (components == null) return null;
         if (components.isEmpty()) return null;
@@ -156,14 +156,14 @@ public class ListenerManager implements Listener {
         return components.getFirst();
     }
 
-    public static void first(@Nullable Session session, Class<? extends Listener> listenerClass, Consumer<BaseComponent> action) {
-        var component = findComponent(session, listenerClass);
+    public static void first(@Nullable Container container, Class<? extends Listener> listenerClass, Consumer<Component> action) {
+        var component = findComponent(container, listenerClass);
         if (component == null) return;
         action.accept(component);
     }
 
-    public static <T> void first(@Nullable Session session, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
-        var components = findComponents(session, listenerClass);
+    public static <T> void first(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
+        var components = findComponents(container, listenerClass);
         if (components == null) return;
 
         var typedComponent = components.stream()
@@ -176,8 +176,8 @@ public class ListenerManager implements Listener {
         action.accept(typedComponent);
     }
 
-    public static <T extends BaseComponent> List<T> components(@Nullable Session session, Class<? extends Listener> listenerClass, Class<T> componentClass) {
-        var components = findComponents(session, listenerClass);
+    public static <T extends Component> List<T> components(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass) {
+        var components = findComponents(container, listenerClass);
         if (components == null) return new ArrayList<>();
         return components.stream()
                 .filter(componentClass::isInstance)
@@ -185,8 +185,8 @@ public class ListenerManager implements Listener {
                 .toList();
     }
 
-    public static <T extends BaseComponent> @Nullable T first(@Nullable Session session, Class<? extends Listener> listenerClass, Class<T> componentClass) {
-        var components = findComponents(session, listenerClass);
+    public static <T extends Component> @Nullable T first(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass) {
+        var components = findComponents(container, listenerClass);
         if (components == null) return null;
 
         return components.stream()

@@ -9,7 +9,7 @@ package pl.szelagi.buildin;
 
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.component.Controller;
@@ -19,12 +19,12 @@ public class InactiveDelayClose extends Controller {
     private final Time delay;
     private BukkitTask closeTask;
 
-    public InactiveDelayClose(@NotNull BaseComponent parent, Time delay) {
+    public InactiveDelayClose(@NotNull Component parent, Time delay) {
         super(parent);
         this.delay = delay;
     }
 
-    public InactiveDelayClose(@NotNull BaseComponent parent) {
+    public InactiveDelayClose(@NotNull Component parent) {
         this(parent, Time.seconds(120));
     }
 
@@ -44,8 +44,8 @@ public class InactiveDelayClose extends Controller {
 
     private void check() {
         if (closeTask != null) return;
-        if (!session().players().isEmpty()) return;
-        closeTask = runTaskLater(() -> session().stop(), delay);
+        if (!container().players().isEmpty()) return;
+        closeTask = runTaskLater(() -> container().stop(), delay);
     }
 
 }

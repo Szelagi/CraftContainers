@@ -1,26 +1,25 @@
 package pl.szelagi.buildin;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import pl.szelagi.buildin.controller.hologram.Hologram;
 import pl.szelagi.buildin.controller.rotBlockHologram.RotHologramBlock;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.util.timespigot.Time;
 
 public class ItemGenerator extends Controller {
-    private final Component text;
+    private final net.kyori.adventure.text.Component text;
     private final Material visualMaterial;
     private final Material itemMaterial;
     private final Location location;
     private final Time spawnDelay;
 
-    public ItemGenerator(BaseComponent baseComponent, Component text, Location location, Material visualMaterial, Material itemMaterial, Time spawnDelay) {
-        super(baseComponent);
+    public ItemGenerator(Component component, net.kyori.adventure.text.Component text, Location location, Material visualMaterial, Material itemMaterial, Time spawnDelay) {
+        super(component);
         this.text = text;
         this.visualMaterial = visualMaterial;
         this.itemMaterial = itemMaterial;

@@ -11,8 +11,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.SAPITask;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.base.SAPITask;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.component.Controller;
@@ -34,8 +34,8 @@ public class MessageTimer extends Controller {
     private final EventDispatcher<Void> finalizeEventDispatcher = new EventDispatcher<>();
     private final HashSet<Integer> busySeconds = new HashSet<>();
 
-    public MessageTimer(BaseComponent baseComponent, Time waitTime) {
-        super(baseComponent);
+    public MessageTimer(Component component, Time waitTime) {
+        super(component);
         this.waitTime = waitTime;
     }
 

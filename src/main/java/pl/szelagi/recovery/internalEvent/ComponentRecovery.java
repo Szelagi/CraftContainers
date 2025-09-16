@@ -9,7 +9,7 @@ package pl.szelagi.recovery.internalEvent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.InternalEvent;
 import pl.szelagi.recovery.ComponentRecoveryLambda;
 
@@ -18,21 +18,21 @@ import java.util.HashSet;
 
 public class ComponentRecovery extends InternalEvent {
     private final @NotNull ComponentRecoveryCause cause;
-    private final @NotNull HashMap<BaseComponent, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries;
+    private final @NotNull HashMap<Component, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries;
 
     public ComponentRecovery(@NotNull ComponentRecoveryCause cause) {
         this.cause = cause;
         this.componentDestroyRecoveries = new HashMap<>();
     }
 
-    public void register(@NotNull BaseComponent component, @NotNull ComponentRecoveryLambda lambda) {
+    public void register(@NotNull Component component, @NotNull ComponentRecoveryLambda lambda) {
         var recoveries = componentDestroyRecoveries.computeIfAbsent(component, k -> new HashSet<>());
         recoveries.add(lambda);
     }
 
     @Unmodifiable
     @NotNull
-    public HashMap<BaseComponent, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries() {
+    public HashMap<Component, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries() {
         return componentDestroyRecoveries;
     }
 

@@ -15,7 +15,7 @@ import pl.szelagi.test.TestName;
 class SessionStartStopTest {
     @SAPITest(test = TestName.SESSION_START_STOP_WITH_PLAYER_TEST)
     public void sessionStartStopWithPlayerTest() {
-       var s = new MySession(SessionAPI.instance());
+       var s = new MyContainer(SessionAPI.instance());
        try {
            s.start();
            var p = Bukkit.getPlayer("TesterBot");

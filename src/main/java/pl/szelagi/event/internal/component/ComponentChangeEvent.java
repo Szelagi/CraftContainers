@@ -10,29 +10,29 @@ package pl.szelagi.event.internal.component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.InternalEvent;
 
 import java.util.Collection;
 
 public abstract class ComponentChangeEvent extends InternalEvent {
-    private final @NotNull BaseComponent component;
+    private final @NotNull Component component;
 
-    public ComponentChangeEvent(@NotNull BaseComponent component) {
+    public ComponentChangeEvent(@NotNull Component component) {
         this.component = component;
     }
 
-    public @NotNull BaseComponent component() {
+    public @NotNull Component component() {
         return component;
     }
 
     @Deprecated
-    public @NotNull BaseComponent getComponent() {
+    public @NotNull Component getComponent() {
         return component;
     }
 
     @Deprecated
-    public @Nullable BaseComponent getParentComponent() {
+    public @Nullable Component getParentComponent() {
         return component.parent();
     }
 

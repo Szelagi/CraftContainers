@@ -15,7 +15,7 @@ import pl.szelagi.test.TestName;
 class SessionAddRemovePlayerTest {
     @SAPITest(test = TestName.ADD_REMOVE_PLAYER)
     public void sessionAddRemovePlayerTest() {
-       var s = new MySession(SessionAPI.instance());
+       var s = new MyContainer(SessionAPI.instance());
        try {
            s.start();
            var p = Bukkit.getPlayer("TesterBot");

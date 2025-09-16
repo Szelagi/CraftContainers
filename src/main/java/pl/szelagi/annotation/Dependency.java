@@ -7,7 +7,7 @@
 
 package pl.szelagi.annotation;
 
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 
 import java.lang.annotation.*;
 
@@ -15,5 +15,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Dependency {
-    Class<? extends BaseComponent> component();
+    Class<? extends Component> component();
 }

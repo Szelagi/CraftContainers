@@ -9,7 +9,7 @@ package pl.szelagi.buildin.grouper;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.container.Container;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +28,9 @@ public class Group {
         return players;
     }
 
-    public @NotNull List<Player> inSessionPlayers(Session session) {
+    public @NotNull List<Player> inSessionPlayers(Container container) {
         return players.stream()
-                .filter(player -> session
+                .filter(player -> container
                         .players()
                         .contains(player))
                 .collect(Collectors.toList());
@@ -44,9 +44,9 @@ public class Group {
         return players.size();
     }
 
-    public int inSessionSize(Session session) {
+    public int inSessionSize(Container container) {
         return (int) players.stream()
-                .filter(player -> session
+                .filter(player -> container
                         .players()
                         .contains(player))
                 .count();

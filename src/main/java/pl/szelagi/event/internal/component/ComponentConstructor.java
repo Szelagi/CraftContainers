@@ -8,10 +8,10 @@
 package pl.szelagi.event.internal.component;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 
 public class ComponentConstructor extends ComponentChangeEvent {
-    public ComponentConstructor(@NotNull BaseComponent component) {
+    public ComponentConstructor(@NotNull Component component) {
         super(component);
     }
 }

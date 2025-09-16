@@ -7,7 +7,6 @@
 
 package pl.szelagi.test.sessionStartStopTest;
 
-import org.bukkit.Bukkit;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.test.SAPITest;
 import pl.szelagi.test.TestName;
@@ -15,7 +14,7 @@ import pl.szelagi.test.TestName;
 class SessionStartStopTest {
     @SAPITest(test = TestName.SESSION_START_STOP_TEST)
     public void sessionStartStopTest() {
-       var s = new MySession(SessionAPI.instance());
+       var s = new MyContainer(SessionAPI.instance());
        try {
            s.start();
        } finally {

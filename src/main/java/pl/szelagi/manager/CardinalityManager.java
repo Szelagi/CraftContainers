@@ -8,58 +8,58 @@
 package pl.szelagi.manager;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.container.Container;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CardinalityManager {
-    private static final Map<Session, Map<Class<? extends BaseComponent>, Integer>> components = new HashMap<>();
+    private static final Map<Container, Map<Class<? extends Component>, Integer>> components = new HashMap<>();
 
-    public static void baseComponentStart(@NotNull BaseComponent baseComponent) {
+    public static void baseComponentStart(@NotNull Component component) {
         // Utwórz dla każdej sesji instancję śledzącą ilość komponentów dla każdego typu komponentu
-        if (baseComponent instanceof Session session) {
-            if (components.containsKey(session)) throw new IllegalArgumentException("session already started");
-            components.put(session, new HashMap<>());
+        if (component instanceof Container container) {
+            if (components.containsKey(container)) throw new IllegalArgumentException("session already started");
+            components.put(container, new HashMap<>());
         }
 
         // Pobierz licznik dla sesji przypisanej do komponentu
-        var counter = components.get(baseComponent.session());
+        var counter = components.get(component.container());
         if (counter == null) throw new IllegalArgumentException("session does not have counter");
 
         // Zwiększ liczność dla konkretnego komponentu
-        var value = counter.get(baseComponent.getClass());
+        var value = counter.get(component.getClass());
         if (value == null) value = 0;
-        counter.put(baseComponent.getClass(), value + 1);
+        counter.put(component.getClass(), value + 1);
     }
 
-    public static void baseComponentStop(@NotNull BaseComponent baseComponent) {
+    public static void baseComponentStop(@NotNull Component component) {
         // Usuń wszystko, jeżeli jest to sesja
-        if (baseComponent instanceof Session) {
-            components.remove((Session) baseComponent);
+        if (component instanceof Container) {
+            components.remove((Container) component);
             return;
         }
 
         // Pobierz licznik dla sesji przypisanej do komponentu
-        var counter = components.get(baseComponent.session());
-        if (counter == null) throw new IllegalStateException("Session " + baseComponent.session() + " has not been started");
+        var counter = components.get(component.container());
+        if (counter == null) throw new IllegalStateException("Session " + component.container() + " has not been started");
 
         // Pobierz liczność dla konkretnego typu komponentu
-        var currentValue = counter.get(baseComponent.getClass());
+        var currentValue = counter.get(component.getClass());
         // Liczność musi istnieć, ponieważ podczas uruchomienia powinna być zarejestrowana
-        if (currentValue == null) throw new IllegalStateException("Session " + baseComponent.session() + " has not been started");
+        if (currentValue == null) throw new IllegalStateException("Session " + component.container() + " has not been started");
 
         var nextValue = currentValue - 1;
         // usuń klucz lub zmniejsz
         if (nextValue == 0)
-            counter.remove(baseComponent.getClass());
-        else counter.put(baseComponent.getClass(), nextValue);
+            counter.remove(component.getClass());
+        else counter.put(component.getClass(), nextValue);
     }
 
-    public static int cardinality(@NotNull Session session, @NotNull Class<? extends BaseComponent> componentClass) {
-        var counter = components.get(session);
-        if (counter == null) throw new IllegalStateException("Session " + session + " has not been registered");
+    public static int cardinality(@NotNull Container container, @NotNull Class<? extends Component> componentClass) {
+        var counter = components.get(container);
+        if (counter == null) throw new IllegalStateException("Session " + container + " has not been registered");
         var cardinality = counter.get(componentClass);
         return cardinality == null ? 0 : cardinality;
     }

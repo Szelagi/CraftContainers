@@ -9,9 +9,9 @@ package pl.szelagi.command.blueprint;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import pl.szelagi.buildin.editor.BlueprintSession;
+import pl.szelagi.buildin.editor.BlueprintContainer;
 import pl.szelagi.command.SubCommand;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
@@ -35,8 +35,8 @@ public class BlueprintExitCommand implements SubCommand {
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) return;
 
-        var session = SessionManager.session(player);
-        if (!(session instanceof BlueprintSession blueprintSession)) {
+        var session = ContainerManager.container(player);
+        if (!(session instanceof BlueprintContainer blueprintSession)) {
             player.sendMessage(PREFIX + "§cYou are not already in a blueprint editor.");
             return;
         }

@@ -30,8 +30,8 @@ We are creating a class responsible for the map within the container.
 
 ```java
 public class MyBoard extends Board {
-	public MyBoard(Session session) {
-		super(session);
+	public MyBoard(Session container) {
+		super(container);
 	}
 }
 ```
@@ -116,8 +116,8 @@ public class SneakListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
 		var player = event.getPlayer();
-		var session = SessionManager.getSession(player);
-		var sneakControllers = ControllerManager.getControllers(session, SneakController.class);
+		var container = SessionManager.getSession(player);
+		var sneakControllers = ControllerManager.getControllers(container, SneakController.class);
 		for (var controller : sneakControllers)
 			controller.toggleSneak();
 	}

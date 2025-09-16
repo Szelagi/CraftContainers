@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.manager.listener.ListenerManager;
 
 public class LobbyListener implements Listener {
@@ -44,7 +44,7 @@ public class LobbyListener implements Listener {
     }
 
     private boolean check(Player player) {
-        var session = SessionManager.session(player);
+        var session = ContainerManager.container(player);
         var lobby = ListenerManager.first(session, getClass(), Lobby.class);
         if (lobby == null)
             return false;

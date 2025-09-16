@@ -14,15 +14,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.BoardManager;
+import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 public class ProtectItemFrame extends Controller {
-    public ProtectItemFrame(BaseComponent baseComponent) {
-        super(baseComponent);
+    public ProtectItemFrame(Component component) {
+        super(component);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ProtectItemFrame extends Controller {
             var entityType = entity.getType();
             if (entityType != EntityType.ITEM_FRAME)
                 return false;
-            var session = BoardManager.session(entity.getLocation());
+            var session = GameMapManager.container(entity.getLocation());
             var component = ListenerManager.first(session, getClass(), ProtectItemFrame.class);
             return (component != null);
         }

@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.creator.Creator;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
@@ -23,7 +23,7 @@ public class ExitBoardCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) return false;
 
-        var session = SessionManager.session(player);
+        var session = ContainerManager.container(player);
         if (session == null) {
             player.sendMessage(PREFIX + "§cYou are not currently in a session.");
             return false;

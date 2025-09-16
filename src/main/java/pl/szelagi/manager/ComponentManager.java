@@ -9,12 +9,12 @@ package pl.szelagi.manager;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.Board;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.GameMap;
 import pl.szelagi.component.Controller;
-import pl.szelagi.component.session.Session;
-import pl.szelagi.event.sapi.SAPIEvent;
-import pl.szelagi.event.sapi.SAPIListener;
+import pl.szelagi.component.container.Container;
+import pl.szelagi.event.tree.TreeEvent;
+import pl.szelagi.event.tree.TreeListener;
 import pl.szelagi.tree.DepthFirstSearch;
 import pl.szelagi.util.PluginRegistry;
 import pl.szelagi.util.ReflectionRecursive;
@@ -27,16 +27,16 @@ import java.util.stream.StreamSupport;
 
 public class ComponentManager {
     // CACHE SAPI EVENT
-    private static final Map<Class<? extends SAPIListener>, Collection<Method>> CLASS_LISTENERS = new HashMap<>();
-    private static final Map<Class<? extends SAPIListener>, Map<Class<? extends SAPIEvent>, Collection<Method>>> CLASS_TYPED_LISTENERS = new HashMap<>();
-    public static Map<Class<? extends BaseComponent>, String> COMPONENT_TO_NAME = new HashMap<>();
+    private static final Map<Class<? extends TreeListener>, Collection<Method>> CLASS_LISTENERS = new HashMap<>();
+    private static final Map<Class<? extends TreeListener>, Map<Class<? extends TreeEvent>, Collection<Method>>> CLASS_TYPED_LISTENERS = new HashMap<>();
+    public static Map<Class<? extends Component>, String> COMPONENT_TO_NAME = new HashMap<>();
 
     // SAPI EVENT METHODS
-    private static Collection<Method> listeners(Class<? extends SAPIListener> listener) {
+    private static Collection<Method> listeners(Class<? extends TreeListener> listener) {
         return CLASS_LISTENERS.computeIfAbsent(listener, ReflectionRecursive::getSAPIHandlerMethods);
     }
 
-    public static Collection<Method> listeners(Class<? extends SAPIListener> listener, Class<? extends SAPIEvent> event) {
+    public static Collection<Method> listeners(Class<? extends TreeListener> listener, Class<? extends TreeEvent> event) {
         return CLASS_TYPED_LISTENERS
                 .computeIfAbsent(listener, k -> new ConcurrentHashMap<>())
                 .computeIfAbsent(event, e -> {
@@ -52,18 +52,18 @@ public class ComponentManager {
     }
 
     // IDENTIFICATION METHODS
-    private static char componentTypeChar(Class<? extends BaseComponent> component) {
+    private static char componentTypeChar(Class<? extends Component> component) {
         if (Controller.class.isAssignableFrom(component)) {
             return 'C';
-        } else if (Board.class.isAssignableFrom(component)) {
+        } else if (GameMap.class.isAssignableFrom(component)) {
             return 'B';
-        } else if (Session.class.isAssignableFrom(component)) {
+        } else if (Container.class.isAssignableFrom(component)) {
             return 'S';
         }
         return component.getSimpleName().charAt(0);
     }
 
-    public static String componentName(Class<? extends BaseComponent> component) {
+    public static String componentName(Class<? extends Component> component) {
         return COMPONENT_TO_NAME.computeIfAbsent(component, c -> {
             var currentJarFile = new File(component
                     .getProtectionDomain()
@@ -76,20 +76,20 @@ public class ComponentManager {
         });
     }
 
-    public static String componentIdentifier(BaseComponent component) {
+    public static String componentIdentifier(Component component) {
         return component.name() + ':' + component.id();
     }
 
-    public static @NotNull <T extends Controller> List<T> components(@Nullable Session session, @NotNull Class<T> clazz) {
-        var iterator = new DepthFirstSearch<>(session, true);
+    public static @NotNull <T extends Component> List<T> components(@Nullable Container container, @NotNull Class<T> clazz) {
+        var iterator = new DepthFirstSearch<>(container, true);
         var stream = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false
         );
         return stream.filter(clazz::isInstance).map(clazz::cast).toList();
     }
 
-    public static @Nullable <T extends Controller> T firstComponent(@Nullable Session session, @NotNull Class<T> clazz) {
-        var iterator = new DepthFirstSearch<>(session, true);
+    public static @Nullable <T extends Component> T firstComponent(@Nullable Container container, @NotNull Class<T> clazz) {
+        var iterator = new DepthFirstSearch<>(container, true);
         while (iterator.hasNext()) {
             var component = iterator.next();
             if (!clazz.isInstance(component)) continue;

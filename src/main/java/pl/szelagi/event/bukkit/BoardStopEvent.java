@@ -9,22 +9,22 @@ package pl.szelagi.event.bukkit;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import pl.szelagi.component.Board;
+import pl.szelagi.component.GameMap;
 
 public class BoardStopEvent extends Event {
     private static final HandlerList HANDLERS = new HandlerList();
-    private final Board board;
+    private final GameMap gameMap;
 
-    public BoardStopEvent(Board board) {
-        this.board = board;
+    public BoardStopEvent(GameMap gameMap) {
+        this.gameMap = gameMap;
     }
 
     public static HandlerList getHandlerList() {
         return HANDLERS;
     }
 
-    public Board getBoard() {
-        return board;
+    public GameMap getBoard() {
+        return gameMap;
     }
 
     @Override

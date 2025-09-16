@@ -10,8 +10,8 @@ package pl.szelagi.buildin.controller;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.ComponentStatus;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.base.ComponentStatus;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.util.timespigot.Time;
@@ -23,29 +23,29 @@ public class BarTimerController extends Controller {
     private final Runnable runnable;
     private int remainingTicks;
 
-    public BarTimerController(BaseComponent baseComponent, Time time, String template, @Nullable Runnable runnable) {
-        super(baseComponent);
+    public BarTimerController(Component component, Time time, String template, @Nullable Runnable runnable) {
+        super(component);
         this.ticks = time.toTicks();
         this.template = template;
         this.runnable = runnable;
     }
 
-    public BarTimerController(BaseComponent baseComponent, Time time, String template) {
-        super(baseComponent);
+    public BarTimerController(Component component, Time time, String template) {
+        super(component);
         this.ticks = time.toTicks();
         this.template = template;
         this.runnable = null;
     }
 
-    public BarTimerController(BaseComponent baseComponent, Time time, Runnable runnable) {
-        super(baseComponent);
+    public BarTimerController(Component component, Time time, Runnable runnable) {
+        super(component);
         this.ticks = time.toTicks();
         this.template = "Time remaining: %.2fs";
         this.runnable = runnable;
     }
 
-    public BarTimerController(BaseComponent baseComponent, Time time) {
-        super(baseComponent);
+    public BarTimerController(Component component, Time time) {
+        super(component);
         this.ticks = time.toTicks();
         this.template = "Time remaining: %.2fs";
         this.runnable = null;

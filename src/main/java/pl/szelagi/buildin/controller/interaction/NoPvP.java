@@ -11,17 +11,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.util.CooldownVolatile;
 import pl.szelagi.util.timespigot.Time;
 
 public class NoPvP extends Controller {
-    public NoPvP(BaseComponent baseComponent) {
-        super(baseComponent);
+    public NoPvP(Component component) {
+        super(component);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class NoPvP extends Controller {
                 return;
             if (!(event.getDamager() instanceof Player attacker))
                 return;
-            var session = SessionManager.session(victim);
+            var session = ContainerManager.container(victim);
             ListenerManager.first(session, getClass(), NoPvP.class, noPvP -> {
                 if (CooldownVolatile.canUseAndStart(attacker, noPvP.name(), Time.seconds(2)))
                     attacker.sendMessage("§cYou cannot attack a player because pvp is disabled!");

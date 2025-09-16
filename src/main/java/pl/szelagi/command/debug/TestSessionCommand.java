@@ -12,14 +12,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.SessionAPI;
-import pl.szelagi.buildin.system.testSession.TestSession;
+import pl.szelagi.buildin.system.testSession.TestContainer;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
 public class TestSessionCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        var session = new TestSession(SessionAPI.getInstance());
+        var session = new TestContainer(SessionAPI.getInstance());
         session.start();
         commandSender.sendMessage(PREFIX + "§aTest session has been successfully started.");
         return true;

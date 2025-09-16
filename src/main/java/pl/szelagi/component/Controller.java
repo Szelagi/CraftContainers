@@ -10,21 +10,21 @@ package pl.szelagi.component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.baseComponent.StartException;
-import pl.szelagi.component.baseComponent.StopException;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.base.StartException;
+import pl.szelagi.component.base.StopException;
 import pl.szelagi.event.bukkit.ControllerStartEvent;
 import pl.szelagi.event.bukkit.ControllerStopEvent;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.container.Container;
 
 import java.util.List;
 
-public abstract class Controller extends BaseComponent {
-    private final Session session;
+public abstract class Controller extends Component {
+    private final Container container;
 
-    public Controller(@NotNull BaseComponent parent) {
+    public Controller(@NotNull Component parent) {
         super(parent);
-        this.session = parent.session();
+        this.container = parent.container();
     }
 
     @Override
@@ -45,17 +45,17 @@ public abstract class Controller extends BaseComponent {
 
     @Override
     public final @NotNull List<Player> players() {
-        return session.players();
+        return container.players();
     }
 
     @Override
-    public @NotNull Session session() {
-        return session;
+    public @NotNull Container container() {
+        return container;
     }
 
     @Override
-    public final @Nullable Board board() {
-        return session.board();
+    public final @Nullable GameMap gameMap() {
+        return container.gameMap();
     }
 
 }

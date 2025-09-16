@@ -9,24 +9,24 @@ package pl.szelagi.manager;
 
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.annotation.SingletonComponent;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SingletonManager {
-    private static final Map<Class<? extends BaseComponent>, Boolean> IS_SINGLETON = new HashMap<>();
+    private static final Map<Class<? extends Component>, Boolean> IS_SINGLETON = new HashMap<>();
 
-    public static boolean isSingleton(Class<? extends BaseComponent> componentClass) {
+    public static boolean isSingleton(Class<? extends Component> componentClass) {
         return IS_SINGLETON.computeIfAbsent(
                 componentClass,
                 k -> componentClass.isAnnotationPresent(SingletonComponent.class));
     }
 
-    public static void check(@NotNull BaseComponent baseComponent) {
-        boolean isSingleton = isSingleton(baseComponent.getClass());
-        boolean cardinalityMoreThanOne = CardinalityManager.cardinality(baseComponent.session(), baseComponent.getClass()) > 1;
+    public static void check(@NotNull Component component) {
+        boolean isSingleton = isSingleton(component.getClass());
+        boolean cardinalityMoreThanOne = CardinalityManager.cardinality(component.container(), component.getClass()) > 1;
         if (isSingleton && cardinalityMoreThanOne)
-            throw new SingletonComponentException(baseComponent);
+            throw new SingletonComponentException(component);
     }
 }

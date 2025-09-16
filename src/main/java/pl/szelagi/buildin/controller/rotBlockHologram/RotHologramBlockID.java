@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.component.Controller;
@@ -19,8 +19,8 @@ public class RotHologramBlockID extends Controller {
     private final Location location;
     private final Material material;
     private ItemDisplay itemDisplay;
-    public RotHologramBlockID(BaseComponent baseComponent, Location location, Material material) {
-        super(baseComponent);
+    public RotHologramBlockID(Component component, Location location, Material material) {
+        super(component);
         this.location = location;
         this.material = material;
     }

@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.SessionAPI;
 import pl.szelagi.buildin.creator.Creator;
-import pl.szelagi.component.baseComponent.StartException;
-import pl.szelagi.component.session.PlayerJoinException;
+import pl.szelagi.component.base.StartException;
+import pl.szelagi.component.container.PlayerJoinException;
 
 import java.io.File;
 import java.util.ArrayList;

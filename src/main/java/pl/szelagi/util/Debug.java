@@ -8,8 +8,8 @@
 package pl.szelagi.util;
 
 import pl.szelagi.SessionAPI;
-import pl.szelagi.component.baseComponent.BaseComponent;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.base.Component;
+import pl.szelagi.component.container.Container;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -28,9 +28,9 @@ public class Debug {
         logger.info(message);
     }
 
-    public static void send(BaseComponent component, String message) {
+    public static void send(Component component, String message) {
         if (!enable) return;
-        if (component instanceof Session) {
+        if (component instanceof Container) {
             send(component.name() + ": " + message + " (" + component.uuid() + ")");
         } else {
             send(component.name() + ": " + message);

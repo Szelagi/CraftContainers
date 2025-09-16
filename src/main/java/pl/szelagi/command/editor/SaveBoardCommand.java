@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.creator.Creator;
-import pl.szelagi.buildin.creator.CreatorBoard;
-import pl.szelagi.component.Board;
-import pl.szelagi.manager.SessionManager;
+import pl.szelagi.buildin.creator.CreatorGameMap;
+import pl.szelagi.component.GameMap;
+import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.tag.TagAnalyzer;
 
@@ -27,7 +27,7 @@ public class SaveBoardCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) return false;
 
-        var session = SessionManager.session(player);
+        var session = ContainerManager.container(player);
         if (session == null) {
             player.sendMessage(PREFIX + "§cYou are not in a session.");
             return false;
@@ -36,7 +36,7 @@ public class SaveBoardCommand implements CommandExecutor {
             player.sendMessage(PREFIX + "§cYou are not in the editor.");
             return false;
         }
-        if (!(creator.board() instanceof CreatorBoard creatorBoard)) {
+        if (!(creator.gameMap() instanceof CreatorGameMap creatorBoard)) {
             player.sendMessage(PREFIX + "§cYou are not in an editor board.");
             return false;
         }
@@ -69,23 +69,23 @@ public class SaveBoardCommand implements CommandExecutor {
         return true;
     }
 
-    private void save(CreatorBoard creator, ISpatial optimized, Player player) {
+    private void save(CreatorGameMap creator, ISpatial optimized, Player player) {
         long millis = System.currentTimeMillis();
 
         creator.creatorFileManager()
-                .saveSchematic(Board.CONSTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
+                .saveSchematic(GameMap.CONSTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
         creator.creatorFileManager()
-                .saveEmptySchematic(Board.DESTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
+                .saveEmptySchematic(GameMap.DESTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
 
         long delta = System.currentTimeMillis() - millis;
         player.sendMessage(PREFIX + "§7Schematics save! §f(" + delta + "ms)");
     }
 
-    private void tag(CreatorBoard creator, ISpatial optimized, Player player, Runnable next) {
+    private void tag(CreatorGameMap creator, ISpatial optimized, Player player, Runnable next) {
         long millis = System.currentTimeMillis();
         TagAnalyzer.async(optimized, tagResolve -> {
             creator.creatorFileManager()
-                    .saveTag(Board.TAG_FILE_NAME, tagResolve);
+                    .saveTag(GameMap.TAG_FILE_NAME, tagResolve);
             long delta = System.currentTimeMillis() - millis;
             player.sendMessage(PREFIX + "§7Tag process! §f(" + delta + "ms)");
             next.run();

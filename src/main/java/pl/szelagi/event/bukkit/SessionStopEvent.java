@@ -9,22 +9,22 @@ package pl.szelagi.event.bukkit;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.container.Container;
 
 public class SessionStopEvent extends Event {
     private static final HandlerList HANDLERS = new HandlerList();
-    private final Session session;
+    private final Container container;
 
-    public SessionStopEvent(Session session) {
-        this.session = session;
+    public SessionStopEvent(Container container) {
+        this.container = container;
     }
 
     public static HandlerList getHandlerList() {
         return HANDLERS;
     }
 
-    public Session getSession() {
-        return session;
+    public Container getSession() {
+        return container;
     }
 
     @Override

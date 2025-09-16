@@ -12,9 +12,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
-import pl.szelagi.manager.BoardManager;
+import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
@@ -25,8 +25,8 @@ public class NoPlaceBreakExcept extends Controller {
     Set<Material> allowBreak = new HashSet<>();
     Set<Material> allowPlace = new HashSet<>();
 
-    public NoPlaceBreakExcept(BaseComponent baseComponent) {
-        super(baseComponent);
+    public NoPlaceBreakExcept(Component component) {
+        super(component);
     }
 
     public NoPlaceBreakExcept setPlaceFlag(Material material, boolean allow) {
@@ -74,7 +74,7 @@ public class NoPlaceBreakExcept extends Controller {
     private static class MyListener implements Listener {
         @EventHandler(ignoreCancelled = true)
         public void onBlockPlace(BlockPlaceEvent event) {
-            var session = BoardManager.session(event.getBlock());
+            var session = GameMapManager.container(event.getBlock());
             if (session == null)
                 return;
             var material = event.getBlock()
@@ -88,7 +88,7 @@ public class NoPlaceBreakExcept extends Controller {
 
         @EventHandler(ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
-            var session = BoardManager.session(event.getBlock());
+            var session = GameMapManager.container(event.getBlock());
             if (session == null)
                 return;
             var material = event.getBlock()

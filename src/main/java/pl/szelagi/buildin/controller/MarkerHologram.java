@@ -7,21 +7,20 @@
 
 package pl.szelagi.buildin.controller;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.buildin.controller.hologram.Hologram;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.component.Controller;
 
 public class MarkerHologram extends Controller {
-    private final Component name;
+    private final net.kyori.adventure.text.Component name;
     private final Location location;
 
-    public MarkerHologram(@NotNull BaseComponent parent, @NotNull String name, @NotNull Location location) {
+    public MarkerHologram(@NotNull Component parent, @NotNull String name, @NotNull Location location) {
         super(parent);
-        this.name = Component.text("§2" + name);
+        this.name = net.kyori.adventure.text.Component.text("§2" + name);
         this.location = location;
     }
 
@@ -34,18 +33,18 @@ public class MarkerHologram extends Controller {
         new Hologram(this, l1, name).start();
         new Hologram(this, l2, locationToXYZ(location)).start();
         new Hologram(this, l3, locationToYawPitch(location)).start();
-        new Hologram(this, location, Component.text("§a•")).start();
+        new Hologram(this, location, net.kyori.adventure.text.Component.text("§a•")).start();
     }
 
-    private Component locationToXYZ(Location location) {
+    private net.kyori.adventure.text.Component locationToXYZ(Location location) {
         var template = "§7[%.1f %.1f %.1f]";
         var formatted = String.format(template, location.getX(), location.getY(), location.getZ());
-        return Component.text(formatted);
+        return net.kyori.adventure.text.Component.text(formatted);
     }
 
-    private Component locationToYawPitch(Location location) {
+    private net.kyori.adventure.text.Component locationToYawPitch(Location location) {
         var template = "§7[%.1f %.1f]";
         var formatted = String.format(template, location.getYaw(), location.getPitch());
-        return Component.text(formatted);
+        return net.kyori.adventure.text.Component.text(formatted);
     }
 }

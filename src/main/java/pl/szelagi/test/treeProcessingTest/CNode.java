@@ -8,7 +8,7 @@
 package pl.szelagi.test.treeProcessingTest;
 
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.component.baseComponent.BaseComponent;
+import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.event.internal.player.PlayerConstructor;
@@ -19,7 +19,7 @@ import pl.szelagi.component.Controller;
 abstract class CNode extends Controller {
     private final String id;
 
-    public CNode(@NotNull BaseComponent parent) {
+    public CNode(@NotNull Component parent) {
         super(parent);
         this.id = getClass().getSimpleName();
     }
@@ -27,30 +27,30 @@ abstract class CNode extends Controller {
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        ((S) session()).componentConstructors.add(id);
+        ((S) container()).componentConstructors.add(id);
     }
 
     @Override
     public void onPlayerInit(PlayerConstructor event) {
         super.onPlayerInit(event);
-        ((S) session()).playerConstructors.add(id);
+        ((S) container()).playerConstructors.add(id);
     }
 
     @Override
     public void onPlayerDestroy(PlayerDestructor event) {
         super.onPlayerDestroy(event);
-        ((S) session()).playerDestructors.add(id);
+        ((S) container()).playerDestructors.add(id);
     }
 
     @Override
     public void onComponentDestroy(ComponentDestructor event) {
         super.onComponentDestroy(event);
-        ((S) session()).componentDestructors.add(id);
+        ((S) container()).componentDestructors.add(id);
     }
 
     @Override
     public void onPlayerJoinRequest(PlayerJoinRequest event) {
         super.onPlayerJoinRequest(event);
-        ((S) session()).playerJoinRequest.add(id);
+        ((S) container()).playerJoinRequest.add(id);
     }
 }

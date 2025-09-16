@@ -10,10 +10,10 @@ package pl.szelagi;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.szelagi.command.Command;
-import pl.szelagi.manager.BoardManager;
+import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.ControllerManager;
-import pl.szelagi.manager.SessionManager;
-import pl.szelagi.manager.VersionManager;
+import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.minecraftVersion.MinecraftVersion;
 import pl.szelagi.recovery.RecoveryManager;
 import pl.szelagi.allocator.Allocators;
 import pl.szelagi.allocator.TemporaryWorld;
@@ -59,9 +59,9 @@ public class SessionAPI extends JavaPlugin {
 
         TemporaryWorld.clean();
         CooldownVolatile.initialize(this);
-        VersionManager.initialize();
-        SessionManager.initialize(this);
-        BoardManager.initialize(this);
+        MinecraftVersion.initialize();
+        ContainerManager.initialize(this);
+        GameMapManager.initialize(this);
         ControllerManager.initialize(this);
         RecoveryManager.initialize(this);
         Allocators.initialize();

@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.Controller;
-import pl.szelagi.component.session.Session;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.util.TreeAnalyzer;
 
 import java.util.List;
@@ -26,8 +26,8 @@ public class ControllerManager {
 
     @Deprecated
     @NotNull
-    public static <T extends Controller> List<T> getControllers(@Nullable Session session, @NotNull Class<T> clazz) {
-        var analyze = new TreeAnalyzer(session);
+    public static <T extends Controller> List<T> getControllers(@Nullable Container container, @NotNull Class<T> clazz) {
+        var analyze = new TreeAnalyzer(container);
         return analyze.layers().values().stream()
                 .flatMap(List::stream)
                 .filter(clazz::isInstance)
@@ -37,8 +37,8 @@ public class ControllerManager {
 
     @Deprecated
     @Nullable
-    public static <T extends Controller> T getFirstController(@Nullable Session session, @NotNull Class<T> clazz) {
-        var analyze = new TreeAnalyzer(session);
+    public static <T extends Controller> T getFirstController(@Nullable Container container, @NotNull Class<T> clazz) {
+        var analyze = new TreeAnalyzer(container);
         return analyze.layers().values().stream()
                 .flatMap(List::stream)
                 .filter(clazz::isInstance)
