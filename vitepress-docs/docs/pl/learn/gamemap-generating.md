@@ -1,0 +1,5 @@
+# Generowanie mapy
+
+## Statyczne
+
+## Dynamiczne

@@ -1,43 +1,21 @@
-# Wprowadzenie
+# CraftContainers
+Framework umożliwiający tworzenie odizolowanych obszarów z własną logiką, stanem i mapą w serwerze Minecraft, idealny do budowania minigier, dungeonów i innych instancji, które działają niezależnie, a jednocześnie pozostają częścią tego samego serwera.
 
-**SessionAPI** to framework do Minecrafta, który umożliwia tworzenie izolowanych środowisk gry, zwanych kontenerami.
-Każdy kontener to autonomiczna przestrzeń w grze z własną logiką, stanem i kontrolą zasobów, co pozwala na realizację
-bardziej skomplikowanych rozgrywek i rozbudowanych funkcjonalności bez zakłóceń. Dzięki SessionAPI, programiści mogą
-tworzyć spersonalizowane, wieloinstancyjne sesje, które działają niezależnie od siebie, zapewniając wysoki poziom
-kontroli i optymalizację działania na serwerze.
+![kontenery](../img/context.png)
 
-## Kluczowe Zalety
 
-### 🏗 **Obsługa wielu instancji kontenerów**
+## Kluczowe zalety
 
-Umożliwia uruchamianie wielu instancji tego samego kontenera jednocześnie, gdzie każda instancja ma własną mapę i
-niezależny stan gry. Dzięki tej izolacji, kontenery działają równolegle, co pozwala na płynne skalowanie i tworzenie
-bardziej złożonych, niezależnych rozgrywek bez wzajemnego wpływu między nimi.
+### 🧩 **Modułowe podejście**
+Twórz moduły odpowiadające poszczególnym podproblemom, np. system lobby, bossa, logika gry. Każdy moduł można używać wielokrotnie w różnych projektach, co znacznie przyspiesza rozwój i pozwala utrzymać czysty, uporządkowany kod.
 
-### 🌳 **Hierarchia komponentów i zarządzanie procesami**
+![moduły](../img/modules.png){style="width:500px;"}
 
-Każda sesja opiera się na hierarchicznym drzewie komponentów, które umożliwia przejrzyste zarządzanie logiką gry. W
-drzewie komponentów główną rolę pełni sesja jako korzeń, a każdy z jego „liści” – takich jak kontrolery – może
-obsługiwać swoje własne wątki i listenery. Usunięcie dowolnej gałęzi lub całego drzewa automatycznie zakańcza wszystkie
-procesy i zasoby podrzędne, co zapobiega tworzeniu wątków widmo i optymalizuje zarządzanie zasobami.
+### 🤝 **Współpraca i community**
+Moduły z innych projektów są kompatybilne, co umożliwia łatwe dzielenie się gotowymi rozwiązaniami między programistami. Wspólna praca nad grami staje się prostsza i bardziej efektywna.
 
-### 🧩 **Wielokrotne wykorzystanie gotowych rozwiązań**
+### 🏗 **Instancyjność**
+Każda gra jest generowana dynamicznie i posiada własny, niezależny stan i mapę. Możesz tworzyć dowolną liczbę instancji tej samej gry bez ograniczeń, a każda z nich działa w pełni autonomicznie.
 
-Dzięki SessionAPI programiści mogą tworzyć kontrolery, które implementują logikę biznesową w sposób modularny i
-wielokrotnego użytku. Struktura ta umożliwia łatwe ponowne wykorzystanie rozwiązań w kolejnych projektach oraz
-integrację z zewnętrznymi zasobami, co ułatwia dzielenie się paczkami gotowych rozwiązań lub korzystanie z istniejących
-bibliotek zewnętrznych bez skomplikowanej konfiguracji.
-
-### 🔒 **Zabezpieczenia przed wyciekami stanu**
-
-Framework automatycznie zapisuje stan graczy i ustawienia sesji, chroniąc przed ich przypadkowym przeniesieniem do
-głównej gry nawet w przypadku awarii serwera. Na przykład, jeśli gracz otrzymał zasoby na potrzeby sesji (jak tryb
-kreatywny czy dodatkowe przedmioty), system po zakończeniu sesji przywróci jego poprzedni stan. Dzięki temu gracze nie
-mają dostępu do zasobów sesji poza kontrolowanym środowiskiem, co zapewnia spójność i bezpieczeństwo rozgrywki.
-
-### 🚀 **Szybsze tworzenie projektów bez powtarzania się**
-
-SessionAPI eliminuje powtarzalne problemy, z którymi możesz się zmierzyć podczas tworzenia mini-gry od podstaw. Dzięki
-gotowym rozwiązaniom i możliwości ponownego wykorzystania własnego kodu proces developmentu staje się znacznie szybszy.
-Abstrakcja komponentów, obsługa wewnętrznych listenerów oraz zarządzanie wątkami w drzewie sesji przyczyniają się do
-stabilności i przejrzystości kodu.
+### 🎮 **Minigry wewnątrz gry**
+Minigry działają w głównym kontekście serwera, co pozwala łatwo kontrolować stan graczy, korzystać z istniejących pluginów i funkcji serwera oraz uruchamiać wiele instancji różnych gier równocześnie bez dodatkowych kosztów osobnych instacji serwerów.

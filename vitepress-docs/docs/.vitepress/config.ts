@@ -29,7 +29,7 @@ export default defineConfig({
     themeConfig: {
         logo: '/logo.svg',
         nav: [
-            {text: 'Community', link: 'https://discord.gg/za2pYfGWRN'},
+            {text: 'Discord', link: 'https://discord.gg/za2pYfGWRN'},
             {text: 'GitHub', link: 'https://github.com/Szelagi/SessionAPI'},
         ],
 
@@ -42,19 +42,47 @@ export default defineConfig({
         sidebar: {
             pl: [
                 {
-                    text: 'Wprowadzenie',
+                    text: "Wprowadzenie",
                     items: [
+                        {text: "CraftContainers", link: "/pl/index.md"},
                         {text: 'Korzyści i rozwiązania', link: '/pl/introduction/key-features.md'},
                         {text: 'Zastosowania', link: '/pl/introduction/application.md'},
-                        {text: 'Modularne podejście', link: '/pl/introduction/modularity.md'},
-                        {text: 'Pierwszy projekt', link: '/pl/introduction/first-project.md'}
+                        {text: 'Instalacja', link: '/pl/introduction/installation.md'},
+                        {text: 'Szybki start', link: '/pl/introduction/quick-start.md'},
                     ]
                 },
+                {
+                    text: 'Podstaway',
+                    items: [
+                        {text: 'Modularne podejście', link: '/pl/introduction/modularity.md'},
+                        {text: 'Pierwszy projekt', link: '/pl/introduction/quick-start.md'}
+                    ]
+                },
+                {
+                    text: "Kurs",
+                    items: [
+                        {text: 'Komponenty', link: '/pl/learn/components.md'},
+                        {text: 'Zdarzenia wewnętrzne', link: '/pl/learn/internal-events.md'},
+                        {text: 'Sekwencja zdarzeń wewnętrznych', link: '/pl/learn/sequence-event-execution.md'},
+                        {text: 'Zdarzenia bukkit', link: '/pl/learn/listeners.md'},
+                        {text: 'Zadania bukkit', link: '/pl/learn/tasks.md'},
+                        {text: 'Zdarzenia w drzewach komponentów', link: '/pl/learn/nested-trees.md'},
+                        {text: 'Własne zdarzenia', link: '/pl/learn/custom-events.md'},
+                        {text: 'Adnotacje', link: '/pl/learn/annotations.md'},
+                        {text: 'Przeszukiwanie', link: '/pl/learn/search.md'},
+                        {text: 'Pobieranie instancji', link: '/pl/learn/lookup.md'},
+                        {text: 'Kreator szablonów budowli', link: '/pl/learn/blueprint.md'},
+
+
+                        {text: 'Obsługa wielu wersji gry', link: '/pl/learn/minecraft-version.md'},
+                    ]
+                },
+
                 {
                     text: 'Przewodnik techniczny',
                     items: [
                         {text: 'Instalacja', link: '/pl/technical/installation.md'},
-                        {text: 'Zdarzenia wewnętrzne', link: '/pl/technical/internal-events.md'},
+
                         {text: 'Kolejność zdarzeń lokalna', link: '/pl/technical/sequence-event-execution.md'},
                         {text: 'Drzewa zagnieżdżone', link: '/pl/technical/nested-trees.md'},
                         {text: 'Kreator map', link: '/pl/technical/creator.md'},

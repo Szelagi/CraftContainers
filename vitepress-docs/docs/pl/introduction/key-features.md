@@ -1,13 +1,4 @@
 # Korzyści i rozwiązania
-
-Framework został zaprojektowany, aby rozwiązywać najczęstsze problemy związane z tworzeniem odizolowanych środowisk w grze Minecraft.
-Dzięki niemu można łatwo zarządzać sesjami gry, optymalizować zasoby serwera oraz zwiększać modularność projektu.
-
-## Kluczowe zalety
-
-- **Modularna struktura** – ułatwia zarządzanie złożonymi projektami i zwiększa przejrzystość kodu.
-
-
 - **Szybkie tworzenie projektów** – gotowe rozwiązania społeczności, wbudowane moduły i możliwość tworzenia własnych komponentów wielokrotnego użytku.
 
 
@@ -26,10 +17,13 @@ Dzięki niemu można łatwo zarządzać sesjami gry, optymalizować zasoby serwe
 - **Wbudowany kreator map** – umożliwia modyfikowanie mapy oraz definiowanie kluczowych lokacji, do których można szybko odwołać się w kodzie.
 
 
-- **Asynchroniczne ładowanie map** – minimalizuje wpływ na wydajność serwera, eliminując spadki TPS.
+- **Dynamiczne generowanie mapy** – generowanie map według zdefiniowanego algorytmu.
 
 
 - **Zaawansowana ochrona stanu** – w przypadku crashu serwera framework dba o spójność danych graczy i serwera, np. automatycznie przywraca ekwipunek sprzed wejścia do sesji.
 
 
 - **Definiowanie przenikliwości stanu** – pozwala ustawić, czy sesja wpływa na globalny stan gracza, np. zmiany w ekwipunku mogą być zachowane po jej zakończeniu.
+
+
+- **Asynchroniczne ładowanie map** – minimalizuje wpływ na wydajność serwera, eliminując spadki TPS.

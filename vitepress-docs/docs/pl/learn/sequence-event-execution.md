@@ -1,5 +1,5 @@
 # Kolejność wykonywania zdarzeń lokalnie
-W podejściu lokalnym analizujemy każdy komponent osobno, zwracając uwagę na kolejność wykonywania [zdarzeń wewnętrznych](/pl/technical/internal-events) w jego obrębie.
+W podejściu lokalnym analizujemy każdy komponent osobno, zwracając uwagę na kolejność wykonywania [zdarzeń wewnętrznych](/pl/learn/internal-events.md) w jego obrębie.
 
 
 ## Uruchomienie komponentu

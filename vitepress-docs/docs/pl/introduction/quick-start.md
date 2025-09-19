@@ -1,5 +1,4 @@
-# Pierwszy projekt
-
+# Szybki start
 Proste wprowadzenie do pracy z SessionAPI, obejmujące podstawy zarządzania sesjami i komponentami.
 
 ![zdjęcie poglądowe pierwszego projektu](../../img/pierwszy-kontener.png)

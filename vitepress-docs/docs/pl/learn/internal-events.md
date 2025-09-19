@@ -3,7 +3,7 @@ Każdy komponent posiada wbudowane zdarzenia wewnętrzne, które odpowiadają za
 jego cyklu życia oraz interakcję z graczami.
 
 
-Rozróżniamy kolejność wykonywania zdarzeń [**lokalną**](/pl/technical/sequence-event-execution.md) *(wewnątrz komponentu)* oraz [**globalną**](/pl/technical/nested-trees.md) *(w całej strukturze drzewa)*.
+Rozróżniamy kolejność wykonywania zdarzeń [**lokalną**](/pl/learn/sequence-event-execution.md) *(wewnątrz komponentu)* oraz [**globalną**](/pl/learn/nested-trees.md) *(w całej strukturze drzewa)*.
 
 
 

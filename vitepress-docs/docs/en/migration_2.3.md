@@ -87,7 +87,7 @@ private static class MyListener implements Listener {
         var player = event.getPlayer();
         var session = SessionManager.session(player);
 
-        // Warning! Never use this for component lookup.
+        // Warning! Never use this for component lookup.md.
         // These methods are solely for filtering events from Bukkit listeners.
         // They allow finding components of a given type that have a listener of a given type.
 
