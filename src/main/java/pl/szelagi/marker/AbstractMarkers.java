@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMarkers implements IMarkers<AbstractMarkers> {
+public abstract class AbstractMarkers<T extends IMarkers<T>> implements IMarkers<T> {
     private final IncrementalGenerator idGenerator;
     private final Location base;
 
@@ -36,47 +36,4 @@ public abstract class AbstractMarkers implements IMarkers<AbstractMarkers> {
         return base;
     }
 
-//    public static void save(AbstractMarkers markers, File file, Location base) {
-//        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-//            var markerDataList = markers.toMarkerDataSet(base);
-//            oos.writeObject(markers.getIdGenerator());
-//            oos.writeObject(markerDataList);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    public static AbstractMarkers read(File file, Location base) {
-//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-//            var idGenerator = (IncrementalGenerator) ois.readObject();
-//            var markerDataSet = (Set<MarkerData>) ois.readObject();
-//            var markerSet = markerDataSet.stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
-//            return new Markers(idGenerator, base, markerSet);
-//        } catch (IOException | ClassNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-    public static void save(AbstractMarkers markers, File file, Location base) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            var markerDataList = markers.toMarkerDataSet(base);
-            oos.writeObject(markers.getIdGenerator());
-            oos.writeObject(markerDataList);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static AbstractMarkers read(File file, Location base) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            var idGenerator = (IncrementalGenerator) ois.readObject();
-            var markerDataSet = (Set<MarkerData>) ois.readObject();
-            var markerSet = markerDataSet.stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
-            return new Markers(idGenerator, base, Collections.emptyList(), markerSet);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandHelper {
-    public static final String PREFIX = "§6[§eSessionAPI§6] §r";
+    public static final String PREFIX = "§6[§eCraftContainers§6] §r";
 
     public static @Nullable Container sessionByNameId(String nameId) {
         return ContainerManager

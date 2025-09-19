@@ -44,6 +44,8 @@ import pl.szelagi.util.timespigot.Time;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public abstract class Component implements TreeListener, IHierarchical<Component> {
     // Unique ID generator shared by all components.
@@ -181,6 +183,8 @@ public abstract class Component implements TreeListener, IHierarchical<Component
         SingletonManager.check(this);
         // Requires CardinalityManager.baseComponentStart to run first
         DependencyManager.componentStart(this);
+
+        container().onComponentStart(this);
     }
 
     /**
@@ -189,6 +193,7 @@ public abstract class Component implements TreeListener, IHierarchical<Component
     private void internalOnStop() {
         CardinalityManager.baseComponentStop(this);
         DependencyManager.componentStop(this);
+        container().onComponentStop(this);
     }
 
     // LIFE CYCLES
@@ -529,23 +534,17 @@ public abstract class Component implements TreeListener, IHierarchical<Component
         return DependencyManager.getDependencies(getClass()).contains(dependencyClass);
     }
 
-    public <T extends Component> @Nullable T findComponent(Class<T> componentClass) {
-        return ComponentManager.firstComponent(container(), componentClass);
-    }
-
-    public <T extends Component> @NotNull List<T> findComponents(Class<T> componentClass) {
-        return ComponentManager.components(container(), componentClass);
-    }
-
     public <T extends Component> @NotNull T useComponent(Class<T> component) {
         checkDependency(component);
         checkSingletonDependency(component);
-        return Objects.requireNonNull(findComponent(component));
+        var res = container().getComponent(component);
+        return Objects.requireNonNull(res);
     }
 
-    public <T extends Component> @NotNull List<T> useComponents(Class<T> component) {
+    public <T extends Component> @NotNull Set<T> useComponents(Class<T> component) {
         checkDependency(component);
-        return Objects.requireNonNull(findComponents(component));
+        var res = container().getComponents(component);
+        return Objects.requireNonNull(res);
     }
 
     private void checkDependency(Class<? extends Component> controllerClass) {
@@ -564,4 +563,42 @@ public abstract class Component implements TreeListener, IHierarchical<Component
                         ", because it is not marked with @Singleton (used in " + this.name() + ")"
         );
     }
+
+    // Zawsze przeszukują drzewo
+    public @NotNull <T> List<T> findComponentsSpecOrd(@NotNull Class<T> clazz) {
+        var iterator = new DepthFirstSearch<>(this, true);
+        return findComponents(iterator, clazz);
+    }
+
+    public @Nullable <T> T findComponentSpecOrd(@NotNull Class<T> clazz) {
+        var iterator = new DepthFirstSearch<>(this, true);
+        return findFirstComponent(iterator, clazz);
+    }
+
+    public @NotNull <T> List<T> findComponentsGeneOrd(@NotNull Class<T> clazz) {
+        var iterator = new DepthFirstSearch<>(this, true);
+        return findComponents(iterator, clazz);
+    }
+
+    public @Nullable <T> T findComponentGeneOrd(@NotNull Class<T> clazz) {
+        var iterator = new DepthFirstSearch<>(this, true);
+        return findFirstComponent(iterator, clazz);
+    }
+
+    private @NotNull <T, U> List<U> findComponents(Iterator<T> iterator, Class<U> clazz) {
+        var stream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false
+        );
+        return stream.filter(clazz::isInstance).map(clazz::cast).toList();
+    }
+
+    private @Nullable <T, U> U findFirstComponent(Iterator<T> iterator, Class<U> clazz) {
+        while (iterator.hasNext()) {
+            var component = iterator.next();
+            if (!clazz.isInstance(component)) continue;
+            return clazz.cast(component);
+        }
+        return null;
+    }
+
 }

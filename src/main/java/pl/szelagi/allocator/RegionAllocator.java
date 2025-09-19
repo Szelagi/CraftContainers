@@ -60,7 +60,7 @@ public class RegionAllocator implements ISpaceAllocator {
         var slot = 0;
         while (isAllocatedSlot(slot) || isLockedSlot(slot))
             slot++;
-        var allocate = new RegionAllocate(regionSize, spaceSize, slot, world, this);
+        var allocate = new RegionAllocate(regionSize, spaceSize, slot, world, this, true);
         allocatedSpaces.put(slot, allocate);
         return allocate;
     }

@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class ComponentManager {
@@ -80,15 +81,15 @@ public class ComponentManager {
         return component.name() + ':' + component.id();
     }
 
-    public static @NotNull <T extends Component> List<T> components(@Nullable Container container, @NotNull Class<T> clazz) {
+    public static @NotNull <T> Set<T> components(@Nullable Container container, @NotNull Class<T> clazz) {
         var iterator = new DepthFirstSearch<>(container, true);
         var stream = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false
         );
-        return stream.filter(clazz::isInstance).map(clazz::cast).toList();
+        return stream.filter(clazz::isInstance).map(clazz::cast).collect(Collectors.toSet());
     }
 
-    public static @Nullable <T extends Component> T firstComponent(@Nullable Container container, @NotNull Class<T> clazz) {
+    public static @Nullable <T> T firstComponent(@Nullable Container container, @NotNull Class<T> clazz) {
         var iterator = new DepthFirstSearch<>(container, true);
         while (iterator.hasNext()) {
             var component = iterator.next();

@@ -26,66 +26,23 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Deprecated
 public class ContainerManager {
-    public static final Set<Container> CONTAINERS = new LinkedHashSet<>();
-    private static final Map<Player, Container> PLAYER_CONTAINER_HASH_MAP = new HashMap<>();
-
-    public static void addRelation(Player p, Container d) {
-        PLAYER_CONTAINER_HASH_MAP.put(p, d);
-    }
-
-    public static void removeRelation(Player p) {
-        PLAYER_CONTAINER_HASH_MAP.remove(p);
-    }
-
     public static boolean inSession(Player p) {
-        return PLAYER_CONTAINER_HASH_MAP.containsKey(p);
+        return Container.getForPlayer(p) != null;
     }
 
     @Nullable
     public static Container container(Player p) {
-        return PLAYER_CONTAINER_HASH_MAP.get(p);
+        return Container.getForPlayer(p);
     }
 
     @Nullable
     public static <T extends Container> Container container(Player p, Class<T> classType) {
-        var session = container(p);
-        return classType.isInstance(session) ? classType.cast(session) : null;
+        return Container.getForPlayer(p, classType);
     }
 
     public static @NotNull @Unmodifiable Set<Container> containers() {
-        return CONTAINERS;
-    }
-
-    public static void initialize(JavaPlugin p) {
-        class ManagerListener implements Listener {
-            @EventHandler(ignoreCancelled = true)
-            public void onSessionStartEvent(SessionStartEvent event) {
-                CONTAINERS.add(event.getSession());
-            }
-
-            @EventHandler(ignoreCancelled = true)
-            public void onSessionStopEvent(SessionStopEvent event) {
-                CONTAINERS.remove(event.getSession());
-            }
-
-            @EventHandler(ignoreCancelled = true)
-            public void onPlayerQuit(PlayerQuitEvent event) {
-                var player = event.getPlayer();
-                var session = container(player);
-                if (session == null) return;
-                session.removePlayer(player);
-            }
-
-            @EventHandler(ignoreCancelled = true)
-            public void onPluginDisable(PluginDisableEvent event) {
-                if (!SessionAPI.instance().equals(event.getPlugin())) return;
-                for (var session : containers()) {
-                    session.stop();
-                }
-            }
-        }
-        p.getServer().getPluginManager()
-                .registerEvents(new ManagerListener(), p);
+        return Container.containers();
     }
 }

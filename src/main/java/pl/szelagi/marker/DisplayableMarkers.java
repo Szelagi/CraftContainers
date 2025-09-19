@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DisplayableMarkers extends Controller implements IMarkers<AbstractMarkers> {
-    private final AbstractMarkers markers;
+public class DisplayableMarkers extends Controller implements IMarkers<DisplayableMarkers> {
+    private final Markers markers;
     private final Map<Integer, MarkerHologram> holograms = new HashMap<>();
 
     private void refreshHolograms() {
@@ -57,18 +57,19 @@ public class DisplayableMarkers extends Controller implements IMarkers<AbstractM
         holograms.remove(marker.getId());
     }
 
-    protected DisplayableMarkers(@NotNull Component parent, AbstractMarkers markers) {
+    protected DisplayableMarkers(@NotNull Component parent, Markers markers) {
         super(parent);
         this.markers = markers;
         refreshHolograms();
     }
 
-    public void save(File file, Location base) {
-        AbstractMarkers.save(markers, file, base);
+    @Override
+    public void save(@NotNull File file, @NotNull Location base) {
+        markers.save(file, base);
     }
 
     public static DisplayableMarkers from(@NotNull Component parent, File file, Location base) {
-        var markers = AbstractMarkers.read(file, base);
+        var markers = Markers.read(file, base);
         return new DisplayableMarkers(parent, markers);
     }
 
@@ -104,7 +105,7 @@ public class DisplayableMarkers extends Controller implements IMarkers<AbstractM
     }
 
     @Override
-    public @Nullable List<Marker> getByName(String name) {
+    public @NotNull List<Marker> getByName(String name) {
         return markers.getByName(name);
     }
 
@@ -155,13 +156,15 @@ public class DisplayableMarkers extends Controller implements IMarkers<AbstractM
     }
 
     @Override
-    public AbstractMarkers translateAbsolute(int dx, int dy, int dz) {
-        return markers.translateAbsolute(dx, dy, dz);
+    public DisplayableMarkers translateAbsolute(int dx, int dy, int dz) {
+        var translatedMarkers = markers.translateAbsolute(dx, dy, dz);
+        return new DisplayableMarkers(parent(), translatedMarkers);
     }
 
     @Override
-    public AbstractMarkers rotate(Degree angle, Rotation direction, RotAxis axis) {
-        return markers.rotate(angle, direction, axis);
+    public DisplayableMarkers rotate(Degree angle, Rotation direction, RotAxis axis) {
+        var rotatedMarkers = markers.rotate(angle, direction, axis);
+        return new DisplayableMarkers(parent(), rotatedMarkers);
     }
 
 }

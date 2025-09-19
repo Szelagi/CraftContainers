@@ -72,10 +72,10 @@ public class SaveBoardCommand implements CommandExecutor {
     private void save(CreatorGameMap creator, ISpatial optimized, Player player) {
         long millis = System.currentTimeMillis();
 
-        creator.creatorFileManager()
-                .saveSchematic(GameMap.CONSTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
-        creator.creatorFileManager()
-                .saveEmptySchematic(GameMap.DESTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
+//        creator.creatorFileManager()
+//                .saveSchematic(GameMap.CONSTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
+//        creator.creatorFileManager()
+//                .saveEmptySchematic(GameMap.DESTRUCTOR_FILE_NAME, optimized.getMin(), optimized.getMax(), optimized.getCenter());
 
         long delta = System.currentTimeMillis() - millis;
         player.sendMessage(PREFIX + "§7Schematics save! §f(" + delta + "ms)");
@@ -84,8 +84,8 @@ public class SaveBoardCommand implements CommandExecutor {
     private void tag(CreatorGameMap creator, ISpatial optimized, Player player, Runnable next) {
         long millis = System.currentTimeMillis();
         TagAnalyzer.async(optimized, tagResolve -> {
-            creator.creatorFileManager()
-                    .saveTag(GameMap.TAG_FILE_NAME, tagResolve);
+            creator.creatorFileManager();
+//                    .saveTag(GameMap.TAG_FILE_NAME, tagResolve);
             long delta = System.currentTimeMillis() - millis;
             player.sendMessage(PREFIX + "§7Tag process! §f(" + delta + "ms)");
             next.run();

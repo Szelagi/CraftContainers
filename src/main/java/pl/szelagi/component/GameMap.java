@@ -8,10 +8,13 @@
 package pl.szelagi.component;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import pl.szelagi.Scheduler;
 import pl.szelagi.buildin.system.BoardWatchDog;
 import pl.szelagi.component.base.Component;
@@ -24,12 +27,51 @@ import pl.szelagi.event.bukkit.BoardStartEvent;
 import pl.szelagi.event.bukkit.BoardStopEvent;
 import pl.szelagi.allocator.*;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class GameMap extends Component {
-    public final static String CONSTRUCTOR_FILE_NAME = "constructor";
-    public final static String DESTRUCTOR_FILE_NAME = "destructor";
-    public final static String TAG_FILE_NAME = "tag";
+    private static final Set<GameMap> GAME_MAPS = new HashSet<>();
+
+    public static @Unmodifiable Set<GameMap> gameMaps() {
+        return Collections.unmodifiableSet(GAME_MAPS);
+    }
+
+    public static @Nullable GameMap getForLocation(@Nullable Location location) {
+        if (location == null) return null;
+
+        return GAME_MAPS.stream()
+                .filter(gameMap -> gameMap.space().isLocationInXZ(location))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static @Nullable Container getContainerForLocation(@Nullable Location location) {
+        var gameMap = getForLocation(location);
+        return gameMap != null ? gameMap.container() : null;
+    }
+
+    public static @Nullable GameMap getForEntity(@Nullable Entity entity) {
+        if (entity == null) return null;
+        return getForLocation(entity.getLocation());
+    }
+
+    public static @Nullable Container getContainerForEntity(@Nullable Entity entity) {
+        var gameMap = getForEntity(entity);
+        return gameMap != null ? gameMap.container() : null;
+    }
+
+    public static @Nullable GameMap getForBlock(@Nullable Block block) {
+        if (block == null) return null;
+        return getForLocation(block.getLocation());
+    }
+
+    public static @Nullable Container getContainerForBlock(@Nullable Block block) {
+        var gameMap = getForBlock(block);
+        return gameMap != null ? gameMap.container() : null;
+    }
 
     private final Container container;
     private final ISpaceAllocator allocator;
@@ -72,6 +114,8 @@ public abstract class GameMap extends Component {
             // Uruchamiamy komponent
             super.start();
 
+
+            GAME_MAPS.add(this);
             // Wywołaj event o uruchomieniu mapy
             var event = new BoardStartEvent(this);
             callBukkit(event);
@@ -124,6 +168,7 @@ public abstract class GameMap extends Component {
         // Wyłączamy komponent
         super.stop();
 
+        GAME_MAPS.remove(this);
         // Wykonujemy event o zakończeniu mapy
         var event = new BoardStopEvent(this);
         callBukkit(event);
@@ -163,7 +208,6 @@ public abstract class GameMap extends Component {
     protected @NotNull Location spawnLocation() {
         return space().getAbove(space().getCenter());
     }
-
 
     @Override
     public void onComponentInit(ComponentConstructor event) {

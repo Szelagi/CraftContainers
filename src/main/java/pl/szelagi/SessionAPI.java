@@ -57,12 +57,13 @@ public class SessionAPI extends JavaPlugin {
         if (debugOnStart)
             Debug.enable(true);
 
+        getServer().getPluginManager().registerEvents(new ContainerWatcher(), this);
+
+
+
         TemporaryWorld.clean();
         CooldownVolatile.initialize(this);
         MinecraftVersion.initialize();
-        ContainerManager.initialize(this);
-        GameMapManager.initialize(this);
-        ControllerManager.initialize(this);
         RecoveryManager.initialize(this);
         Allocators.initialize();
         Command.registerCommands();

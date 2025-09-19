@@ -18,12 +18,6 @@ import java.util.List;
 
 @Deprecated
 public class ControllerManager {
-    private static JavaPlugin plugin;
-
-    public static void initialize(JavaPlugin p) {
-        plugin = p;
-    }
-
     @Deprecated
     @NotNull
     public static <T extends Controller> List<T> getControllers(@Nullable Container container, @NotNull Class<T> clazz) {

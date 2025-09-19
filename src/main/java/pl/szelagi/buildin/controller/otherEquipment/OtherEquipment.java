@@ -7,13 +7,10 @@
 
 package pl.szelagi.buildin.controller.otherEquipment;
 
-import pl.szelagi.annotation.SingletonComponent;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
-import pl.szelagi.event.tree.TreeEventHandler;
-import pl.szelagi.event.tree.tutorial.TeamEliminatedEvent;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 import pl.szelagi.state.PlayerStorage;
 

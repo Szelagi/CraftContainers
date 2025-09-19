@@ -10,6 +10,7 @@ package pl.szelagi.buildin.editor;
 import org.bukkit.GameMode;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import pl.szelagi.buildin.controller.environment.NoCreatureNaturalSpawn;
 import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
 import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
 import pl.szelagi.component.container.Container;
@@ -33,6 +34,7 @@ public class BlueprintContainer extends Container {
         super.onComponentInit(event);
         new OtherEquipment(this, true).start();
         new OtherGameMode(this, GameMode.CREATIVE).start();
+        new NoCreatureNaturalSpawn(this).start();
     }
 
     @Override

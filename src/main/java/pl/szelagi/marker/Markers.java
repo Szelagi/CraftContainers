@@ -17,10 +17,34 @@ import pl.szelagi.transform.Degree;
 import pl.szelagi.transform.Rotation;
 import pl.szelagi.util.IncrementalGenerator;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Markers extends AbstractMarkers {
+public class Markers extends AbstractMarkers<Markers> {
+    @SuppressWarnings("unchecked")
+    public static Markers read(@NotNull File file, @NotNull Location base) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            var idGenerator = (IncrementalGenerator) ois.readObject();
+            var markerDataSet = (Set<MarkerData>) ois.readObject();
+            var markerSet = markerDataSet.stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
+            return new Markers(idGenerator, base, Collections.emptyList(), markerSet);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void save(@NotNull File file, @NotNull Location base) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+            var markerDataList = toMarkerDataSet(base);
+            oos.writeObject(getIdGenerator());
+            oos.writeObject(markerDataList);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final Set<Marker> nativeMarkers;
     private final List<AffineTransform> transforms;
 
@@ -97,7 +121,7 @@ public class Markers extends AbstractMarkers {
     }
 
     @Override
-    public @Nullable List<Marker> getByName(String name) {
+    public @NotNull List<Marker> getByName(String name) {
         return nativeMarkers.stream()
                 .filter(marker -> marker.getName().equals(name))
                 .map(this::nativeToTransformedMarker)

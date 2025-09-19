@@ -22,45 +22,13 @@ import pl.szelagi.event.bukkit.BoardStopEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class GameMapManager {
-    private static final List<GameMap> RUNNING_GAME_MAPS = new ArrayList<>();
-    private static JavaPlugin plugin;
-
-    public static void initialize(JavaPlugin p) {
-        plugin = p;
-
-        class MyListener implements Listener {
-            @EventHandler(ignoreCancelled = true)
-            public void onBoardStart(BoardStartEvent event) {
-                if (!RUNNING_GAME_MAPS.contains(event.getBoard())) {
-                    RUNNING_GAME_MAPS.add(event.getBoard());
-                }
-            }
-
-            @EventHandler(ignoreCancelled = true)
-            public void onBoardStop(BoardStopEvent event) {
-                RUNNING_GAME_MAPS.remove(event.getBoard());
-            }
-        }
-
-        plugin.getServer().getPluginManager()
-                .registerEvents(new MyListener(), plugin);
-    }
-
     public static @Nullable Container container(@Nullable Location location) {
-        if (location == null) {
-            return null;
-        }
-        for (var board : RUNNING_GAME_MAPS) {
-            var space = board.space();
-            if (space.isLocationIn(location))
-                return board.container();
-        }
-        return null;
+        return GameMap.getContainerForLocation(location);
     }
 
     public static @Nullable Container container(@Nullable LivingEntity entity) {
-        if (entity == null) return null;
         return container(entity.getLocation());
     }
 

@@ -12,6 +12,8 @@ import pl.szelagi.spatial.ISpatial;
 public interface IAllocate extends ISpatial {
     ISpaceAllocator getAllocator();
 
+    boolean requiresCleanup();
+
     default boolean isAllocated() {
         return getAllocator().isAllocated(this);
     }

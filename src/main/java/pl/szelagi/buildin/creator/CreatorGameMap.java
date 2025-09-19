@@ -48,8 +48,8 @@ public class CreatorGameMap extends GameMap {
             center().getBlock()
                     .setType(Material.BEDROCK);
         });
-        if (creatorFileManager.existSchematic(CONSTRUCTOR_FILE_NAME))
-            creatorFileManager.loadSchematic(CONSTRUCTOR_FILE_NAME, space(), center());
+//        if (creatorFileManager.existSchematic(CONSTRUCTOR_FILE_NAME))
+//            creatorFileManager.loadSchematic(CONSTRUCTOR_FILE_NAME, space(), center());
     }
 
     @Override

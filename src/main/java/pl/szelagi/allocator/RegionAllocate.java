@@ -20,11 +20,13 @@ public class RegionAllocate implements IAllocate {
 //    private final Location endPoint;
     private final Location startAreaPoint;
     private final Location endAreaPoint;
+    private final boolean requiresCleanup;
 
-    public RegionAllocate(int regionSize, int spaceSize, int slot, World world, ISpaceAllocator allocator) {
+    public RegionAllocate(int regionSize, int spaceSize, int slot, World world, ISpaceAllocator allocator, boolean requiresCleanup) {
         this.slot = slot;
         this.world = world;
         this.allocator = allocator;
+        this.requiresCleanup = requiresCleanup;
 
         var totalSize = 2 * regionSize + spaceSize;
 
@@ -76,4 +78,8 @@ public class RegionAllocate implements IAllocate {
         return world;
     }
 
+    @Override
+    public boolean requiresCleanup() {
+        return requiresCleanup;
+    }
 }

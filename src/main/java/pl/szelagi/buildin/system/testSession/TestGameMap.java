@@ -17,6 +17,7 @@ import pl.szelagi.marker.AbstractMarkers;
 import pl.szelagi.component.GameMap;
 import pl.szelagi.component.container.Container;
 import pl.szelagi.marker.IMarkers;
+import pl.szelagi.marker.Markers;
 import pl.szelagi.transform.RotAxis;
 import pl.szelagi.transform.Degree;
 import pl.szelagi.transform.Rotation;
@@ -38,7 +39,7 @@ public class TestGameMap extends GameMap {
         var spawnMarkerFile = IMarkers.getFile(sapi, "droom3");
 
         var spawnSchematic = Schematics.newMassive(spawnSchemFile, space(), center());
-        var spawnMarkers = AbstractMarkers.read(spawnMarkerFile, center());
+        var spawnMarkers = Markers.read(spawnMarkerFile, center());
         var connector = spawnMarkers.getByName("connector").getFirst().getLocation();
 
 

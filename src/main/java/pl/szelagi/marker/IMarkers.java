@@ -27,12 +27,36 @@ public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
     @NotNull List<Marker> getMarkers();
     @NotNull Marker create(String name, Location location);
     @Nullable Marker getById(int id);
-    @Nullable List<Marker> getByName(String name);
+    @NotNull List<Marker> getByName(String name);
     @NotNull List<Marker> getNearbyMarkers(Location location, double radius);
     @NotNull List<Marker> removeNearbyMarkers(Location location, double radius);
     @Nullable Marker removeById(int id);
     @Nullable List<Marker> removeByName(String name);
     @NotNull List<Marker> drop();
+
+    default @NotNull List<Marker> requireAnyByName(String name) {
+        var markers = getByName(name);
+        if (markers.isEmpty())
+            throw new MarkerException("No markers found with name: " + name);
+        return markers;
+    }
+
+    default @NotNull Marker requireOneByName(String name) {
+        var markers = requireAnyByName(name);
+        if (markers.size() > 1)
+            throw new MarkerException("Expected exactly one marker with name: " + name + ", but found " + markers.size());
+        return markers.getFirst();
+    }
+
+    default @NotNull Location requireOneLocationByName(String name) {
+        return requireOneByName(name).getLocation();
+    }
+
+    default @NotNull List<Location> requireAnyLocationsByName(String name) {
+        return requireAnyByName(name).stream().map(Marker::getLocation).toList();
+    }
+
+    void save(@NotNull File file, @NotNull Location base);
 
     static File getDataFolder() {
         return new File(SessionAPI.instance().getDataFolder(), DIR_NAME);

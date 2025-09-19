@@ -55,6 +55,10 @@ public class Allocators {
         developmentAllocator = createDefaultAllocator(2);
     }
 
+    public static ISpaceAllocator defaultAllocator() {
+        return productionAllocator();
+    }
+
     public static ISpaceAllocator productionAllocator() {
         return productionAllocator;
     }
