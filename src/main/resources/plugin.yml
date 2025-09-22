@@ -9,46 +9,8 @@ depend:
 
 commands:
   #   Info
-  sessionapi:
+  craftcontainers:
     description: "Displays information about the SessionAPI library and its features."
-
-  #   Board editor
-  board-edit:
-    description: "Launches the editor for the specified board or creates a new board."
-    permission: "sessionapi.editor.edit"
-
-  board-exit:
-    description: "Ends the editing session for the current board."
-    permission: "sessionapi.editor.exit"
-
-  board-save:
-    description: "Saves the currently edited board."
-    permission: "sessionapi.editor.save"
-
-  board-list:
-    description: "Displays a list of all available boards."
-    permission: "sessionapi.editor.list"
-
-  #   Session management
-  session-join:
-    description: "Joins the specified session."
-    permission: "sessionapi.manage.join"
-
-  session-leave:
-    description: "Leaves the current session."
-    permission: "sessionapi.manage.leave"
-
-  session-stop:
-    description: "Ends the specified session."
-    permission: "sessionapi.manage.stop"
-
-  session-add-player:
-    description: "Adds the specified player to the specified session."
-    permission: "sessionapi.manage.players"
-
-  session-remove-player:
-    description: "Removes the specified player from the specified session."
-    permission: "sessionapi.manage.players"
 
   #   Session debug
   session-test:
@@ -73,42 +35,12 @@ commands:
     description: "Manages saved coordinates within the Blueprint editor."
     permission: "sessionapi.blueprint"
 
+  # container
+  container:
+    description: "Allows managing containers and the players in them."
+    permission: "sessionapi.container"
+
 permissions:
-  # Board editor permissions
-  sessionapi.editor.edit:
-    description: "Allows the user to launch the board editor or create a new board."
-    default: op
-
-  sessionapi.editor.exit:
-    description: "Allows the user to exit the board editor."
-    default: op
-
-  sessionapi.editor.save:
-    description: "Allows the user to save the currently edited board."
-    default: op
-
-  sessionapi.editor.list:
-    description: "Allows the user to view a list of all available boards."
-    default: op
-
-  # Session management permissions
-  sessionapi.manage.join:
-    description: "Allows the user to join a specified session."
-    default: op
-
-  sessionapi.manage.leave:
-    description: "Allows the user to leave the current session."
-    default: op
-
-  sessionapi.manage.stop:
-    description: "Allows the user to stop a specified session."
-    default: op
-
-  sessionapi.manage.players:
-    description: "Allows the user to add or remove players from a session."
-    default: op
-
-  # Session debug permissions
   sessionapi.debug:
     description: "Allows the user to start test sessions and toggle debug messages."
     default: op
@@ -120,3 +52,7 @@ permissions:
   sessionapi.blueprint:
     description: "Allows the user to manage blueprints"
     default: op
+
+  sessionapi.container:
+      description: "Allows the user to manage containers"
+      default: op

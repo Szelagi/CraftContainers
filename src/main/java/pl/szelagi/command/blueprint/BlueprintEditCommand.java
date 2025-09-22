@@ -37,7 +37,7 @@ public class BlueprintEditCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "<name>";
+        return "<plugin_name>#<project_name>";
     }
 
     @Override
@@ -48,12 +48,22 @@ public class BlueprintEditCommand implements SubCommand {
             player.sendMessage(PREFIX + "§cYou must specify a name.");
             return;
         }
+        var name = args[0];
 
-        if (ContainerManager.container(player) != null) {
-            player.sendMessage(PREFIX + "§cYou are already in a session.");
+        if (!name.equals(name.toLowerCase())) {
+            player.sendMessage(PREFIX + "§cThe name must be lowercase only.");
+            return;
+        }
+        if (name.split("#").length != 2) {
+            player.sendMessage(PREFIX + "§cThe name must be in the format <plugin_name>#<project_name>.");
+            return;
         }
 
-        var name = args[0];
+        if (ContainerManager.container(player) != null) {
+            player.sendMessage(PREFIX + "§cYou are already in a container.");
+            return;
+        }
+
         var schematicFile = ISchematic.getFile(name);
         var markersFile = IMarkers.getFile(name);
 
