@@ -19,4 +19,4 @@
 
 ###
 
-Cechy szczególne *SessionAPI* znajdują zastosowanie w wielu kontekstach. Jego elastyczność i modularność otwierają przed deweloperami ogromne możliwości, dając pełną swobodę w tworzeniu unikalnych i dynamicznych rozgrywek.
+Cechy szczególne *CraftContainers* znajdują zastosowanie w wielu kontekstach. Jego elastyczność i modularność otwierają przed deweloperami ogromne możliwości, dając pełną swobodę w tworzeniu unikalnych i dynamicznych rozgrywek.

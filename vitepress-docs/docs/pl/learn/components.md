@@ -30,20 +30,69 @@ Komponenty to samodzielne jednostki w projekcie realizujące jedną, konkretną 
 
 ## Typy komponentów
 
-### Container
+#### Container
 Główny komponent projektu, pełni rolę korzenia w strukturze i zarządza graczami. Do niego dołączane są wszystkie pozostałe komponenty.
 
-- addPlayer(player) -- dodaje gracza do kontenera
-- removePlayer(player) -- usuwa gracza z kontenera
-- setGameMap(gameMap) -- zmienia mapę rozgrywki na inną
+- `addPlayer(player)` - dodaje gracza do kontenera
+- `removePlayer(player)` - usuwa gracza z kontenera
+- `setGameMap(gameMap)` - zmienia mapę rozgrywki na inną
 
 ```java
+public class MyContainer extends Container {
+    public MyContainer(JavaPlugin plugin) {
+        super(plugin);
+    }
 
+    @Override
+    protected @NotNull GameMap defaultBoard() {
+        return new MyGameMap(this);
+    }
+
+    // optional
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        new NoCreatureSpawn(this).start();
+    }
+}
 ```
 
-### GameMap
+#### GameMap
 Komponent odpowiedzialny za reprezentację mapy w kontenerze.
+Przykłady użycia mapy znajdziesz w sekcji [Generowanie mapy](/pl/learn/gamemap-generating.md).
 
+#### Controller
+Komponent umożliwiający implementację dodatkowej logiki lub zadań.
 
-### Controller
-Komponent umożliwiający implementację dodatkowej funkcjonalności.
+```java
+public class NoCreatureNaturalSpawn extends Controller {
+    public NoCreatureNaturalSpawn(Component component) {
+        super(component);
+    }
+
+    @Override
+    public Listeners defineListeners() {
+        return super.defineListeners().add(MyListener.class);
+    }
+
+    private static final class MyListener implements Listener {
+        @EventHandler(ignoreCancelled = true)
+        public void onCreatureSpawn(CreatureSpawnEvent event) {
+            if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL)
+                return;
+            var session = GameMapManager.container(event.getEntity());
+            ListenerManager.first(session, getClass(), NoCreatureNaturalSpawn.class, noCreatureDrop -> {
+                event.setCancelled(true);
+            });
+        }
+
+    }
+}
+```
+
+### Uruchamianie
+
+```java
+var container = new MyContainer(plugin);
+container.start();
+container.addPlayer(player);
+```

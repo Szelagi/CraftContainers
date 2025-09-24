@@ -10,7 +10,7 @@ Pozwala na tworzenie nowych szablonów budowli oraz edycję istniejących.
   - `save` - Saves the currently edited schematic without exiting.
   - `exit` - Exits the editor.
   - `radius <number>` - Sets the maximum size of the schematic. (size = 2*radius-1)
-- `/markers`
+- `/marker`
   - `addhere <nazwa>` - Creates a marker at the player’s current position.
   - `removeid <id> ` - Removes a specific marker by its ID.
   - `removename <name>` - Removes all markers with the specified name.
@@ -22,11 +22,11 @@ Pozwala na tworzenie nowych szablonów budowli oraz edycję istniejących.
 
 
 ## Zalecany format nazwy szablonu
-Aby uniknąć konfliktów między nazwami szablonów oraz łatwo zidentyfikować, z którego pluginu pochodzi dany szablon, stosuj format `<nazwaSzablonu>#nazwaPluginu`.
+Aby uniknąć konfliktów między nazwami szablonów i ułatwić identyfikację pluginu, z którego pochodzi dany szablon, stosuj format `<nazwa_pluginu>#<nazwa_szablonu>` pisany małymi literami.
 
 ### Przykład
-- `/blueprint edit Arena1#BedWars`
-- `/blueprint edit Arena1#DuelsPvP`
+- `/blueprint edit bedwars#arena1`
+- `/blueprint edit duelspvp#arena1`
 
 
 ![uruchomienie kreatora](../../img/creator-start.png)
@@ -77,57 +77,5 @@ Za pomocą komendy `/markers`.
   Pobiera wszystkie markery w zadanym promieniu od lokalizacji.
 </details>
 
-## Statyczne generowanie mapy i pobieranie kluczowych lokalizacji
-Aby uruchomić ten przykład, musisz utworzyć blueprint o nazwie `MyGameMap#YourPluginName`.
-W blueprintcie powinna istnieć dokładnie jedna lokalizacja `itemGenerator` oraz co najmniej jedna lokalizacja `chest`.
-
-```java
-public class MyGameMap extends GameMap {
-  private final static String NAME = "MyGameMap";
-  private final static File SCHEMATIC_FILE = ISchematic.getFile(YourPlugin.getInstance(), name);
-  private final static File MARKERS_FILE = IMarkers.getFile(YourPlugin.getInstance(), name);
-
-  private ISchematic<?> schematic;
-  private Markers markers;
-
-  public MyGameMap(@NotNull Container container, ISpaceAllocator allocator) {
-    super(container, allocator);
-  }
-
-  public MyGameMap(@NotNull Container container) {
-    super(container, Allocators.defaultAllocator());
-  }
-
-  @Override
-  protected void generate() {
-    schematic = Schematics.newMassive(schematicFile, space(), center());
-    schematic.load();
-
-    markers = Markers.read(markersFile, center());
-  }
-
-  @Override
-  protected void degenerate() {
-    // Allocator przydziela przestrzeń dla GameMap.
-    // Jeśli ponownie używa tego samego obszaru, musisz zadbać o jego wyczyszczenie.
-    // Aby tego uniknąć, zdefinuj na sztywno allocator, który automatycznie czyści przestrzeń.  
-
-    // Sprawdzamy czy allokator zamuje się czyszczeniem przestrzeni
-    if (!space().requiresCleanup()) return;
-
-    if (schematic != null)
-      schematic.clean();
-  }
-
-  @Override
-  public void onComponentInit(ComponentConstructor event) {
-    // Pobieramy unikalny marker dla generatora przedmiotów.
-    var itemGeneratorMarker = markers.requireOneByName("itemGenerator");
-
-    // Pobieramy wszystkie lokalizacje oznaczone jako "chest" i ustawiamy tam skrzynie.
-    var chestsLocations = markers.requireAnyLocationsByName("chest");
-    for (var chestLocation : chestsLocations)
-      chestsLocations.getBlock().setType(Material.CHEST);
-  }
-}
-```
+## Przykłady
+Aby zobaczyć, jak wykorzystać przygotowane schematy i markery w praktyce, zajrzyj do sekcji [Generowanie mapy](/pl/learn/gamemap-generating.md), gdzie znajdziesz przykłady statycznego i dynamicznego wczytywania map oraz pobierania kluczowych lokacji.

@@ -14,16 +14,16 @@
 <repositories>
   <repository>
     <id>github</id>
-    <url>https://maven.pkg.github.com/Szelagi/SessionAPI</url>
+    <url>https://maven.pkg.github.com/Szelagi/CraftContainers</url>
   </repository>
 </repositories>
 
 <dependencies>
     <dependency>
       <groupId>pl.szelagi</groupId>
-      <artifactId>sessionapi</artifactId>
+      <artifactId>craftcontainers</artifactId>
         <!-- change to the latest version -->
-      <version>2.3.0-SNAPSHOT</version>
+      <version>2.3.3-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -34,13 +34,13 @@
 repositories {
     maven {
         name = "github"
-        url = uri("https://maven.pkg.github.com/Szelagi/SessionAPI")
+        url = uri("https://maven.pkg.github.com/Szelagi/CraftContainers")
     }
 }
 
 dependencies {
     // change to the latest version
-    compileOnly  'pl.szelagi:sessionapi:2.3.0-SNAPSHOT'
+    compileOnly  'pl.szelagi:craftcontainers:2.3.0-SNAPSHOT'
 }
 ```
-3. Dodaj wpis `depend: [SessionAPI]` do pliku `resources/plugin.yml`.
+3. Dodaj wpis `depend: [CraftContainers]` do pliku `resources/plugin.yml`.

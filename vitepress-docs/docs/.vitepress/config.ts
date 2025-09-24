@@ -4,16 +4,16 @@ import {defineConfig} from 'vitepress'
 export default defineConfig({
     head: [
         ['link', {rel: 'icon', type: 'image/svg+xml', href: '/logo.svg'}],
-        ['meta', {name: 'keywords', content: 'SessionAPI, Minecraft, game, containerization, server, minigames'}],
+        ['meta', {name: 'keywords', content: 'CraftContainers, Minecraft, game, containerization, server, minigames, SessionAPI'}],
         ['meta', {name: 'author', content: 'Kamil Szelągiewicz'}],
-        ['meta', {property: 'og:title', content: 'SessionAPI Documentation'}],
+        ['meta', {property: 'og:title', content: 'CraftContainers Documentation'}],
         ['meta', {property: 'og:description', content: 'Library for game containerization on Minecraft servers.'}],
         ['meta', {property: 'og:image', content: '/img/logo.svg'}]
     ],
-    title: 'SessionAPI',
+    title: 'CraftContainers',
     description: 'The library facilitates game containerization on a Minecraft server, enabling the creation of isolated environments within the game with separate logic and state.',
     outDir: "../../docs",
-    base: "/SessionAPI/",
+    base: "/CraftContainers/",
 
     locales: {
         root: {
@@ -30,13 +30,13 @@ export default defineConfig({
         logo: '/logo.svg',
         nav: [
             {text: 'Discord', link: 'https://discord.gg/za2pYfGWRN'},
-            {text: 'GitHub', link: 'https://github.com/Szelagi/SessionAPI'},
+            {text: 'GitHub', link: 'https://github.com/Szelagi/CraftContainers'},
         ],
 
         socialLinks: [
             {icon: 'discord', link: 'https://discord.gg/za2pYfGWRN'},
             {icon: 'linkedin', link: 'https://www.linkedin.com/in/kamil-szelagiewicz/'},
-            {icon: 'github', link: 'https://github.com/Szelagi/SessionAPI'}
+            {icon: 'github', link: 'https://github.com/Szelagi/CraftContainers'}
         ],
 
         sidebar: {
@@ -49,13 +49,6 @@ export default defineConfig({
                         {text: 'Zastosowania', link: '/pl/introduction/application.md'},
                         {text: 'Instalacja', link: '/pl/introduction/installation.md'},
                         {text: 'Szybki start', link: '/pl/introduction/quick-start.md'},
-                    ]
-                },
-                {
-                    text: 'Podstaway',
-                    items: [
-                        {text: 'Modularne podejście', link: '/pl/introduction/modularity.md'},
-                        {text: 'Pierwszy projekt', link: '/pl/introduction/quick-start.md'}
                     ]
                 },
                 {
@@ -72,26 +65,10 @@ export default defineConfig({
                         {text: 'Przeszukiwanie', link: '/pl/learn/search.md'},
                         {text: 'Pobieranie instancji', link: '/pl/learn/lookup.md'},
                         {text: 'Kreator szablonów budowli', link: '/pl/learn/blueprint.md'},
-
-
+                        {text: 'Generowanie mapy', link: '/pl/learn/gamemap-generating.md'},
+                        {text: 'Allokatory mapy', link: '/pl/learn/allocators.md'},
+                        {text: 'Komunikacja', link: '/pl/learn/communication.md'},
                         {text: 'Obsługa wielu wersji gry', link: '/pl/learn/minecraft-version.md'},
-                    ]
-                },
-
-                {
-                    text: 'Przewodnik techniczny',
-                    items: [
-                        {text: 'Instalacja', link: '/pl/technical/installation.md'},
-
-                        {text: 'Kolejność zdarzeń lokalna', link: '/pl/technical/sequence-event-execution.md'},
-                        {text: 'Drzewa zagnieżdżone', link: '/pl/technical/nested-trees.md'},
-                        {text: 'Kreator map', link: '/pl/technical/creator.md'},
-                        {text: 'Zdarzenia bukkit', link: '/pl/technical/listeners.md'},
-                        {text: 'Zadania i wątki', link: '/pl/technical/tasks.md'},
-                        {text: 'Kontenery graczy', link: '/pl/technical/container.md'},
-                        // {text: 'Przywracanie stanu', link: '/pl/technical/recovery.md'},
-                        // {text: 'Generowanie mapy', link: '/pl/technical/board.md'},
-                        // {text: 'Własne zdarzenia', link: '/pl/technical/custom-events.md'},
                     ]
                 },
                 {
