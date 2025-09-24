@@ -12,14 +12,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.container.Container;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-public class ListenerManager implements Listener {
+public class ListenerManager {
     // Przechowuje instancje Listener, dla konkretnej klasy.
     // Używany do znalezienia aktualnej instancji Listener dla konkretnej klasy.
     // Potrzebne, aby od rejestrować listener.
@@ -36,7 +36,7 @@ public class ListenerManager implements Listener {
     private static final Map<Pair<Container, Class<? extends Listener>>, LinkedHashSet<Component>> SESSION_LISTENER_TO_COMPONENTS = new HashMap<>();
 
     // BUKKIT LISTENER METHODS
-    public static void controllerStart(Component component) {
+    public static void onComponentStart(Component component) {
         var listeners = component.listeners();
         for (var listener : listeners.get()) {
             trackingStart(component, listener);
@@ -44,7 +44,7 @@ public class ListenerManager implements Listener {
         }
     }
 
-    public static void controllerStop(Component component) {
+    public static void onComponentStop(Component component) {
         var listeners = component.listeners();
         for (var listener : listeners.get()) {
             listenerStop(component, listener);
@@ -58,7 +58,7 @@ public class ListenerManager implements Listener {
 
         ENABLE_LISTENERS.computeIfAbsent(listener, k -> {
             try {
-                var plugin = SessionAPI.instance();
+                var plugin = CraftContainers.instance();
                 var constructor = k.getDeclaredConstructor();
                 constructor.setAccessible(true);
                 var instance = constructor.newInstance();
@@ -109,37 +109,11 @@ public class ListenerManager implements Listener {
     }
 
     // OPERATE
-
     private static Pair<Container, Class<? extends Listener>> sessionListenerPair(Container container, Class<? extends Listener> listenerClass) {
         return Pair.of(container, listenerClass);
     }
 
-    private static @Nullable LinkedHashSet<Component> findComponents(@Nullable Container container, Class<? extends Listener> listenerClass) {
-        if (container == null) return null;
-        var pair = sessionListenerPair(container, listenerClass);
-        var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
-        //        if (components == null) {
-//            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered correctly.");
-//        }
-        return components;
-    }
-
-    public static <T extends Component> void each(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
-        var components = findComponents(container, listenerClass);
-        if (components == null) return;
-        components.stream()
-                .filter(componentClass::isInstance)
-                .map(componentClass::cast)
-                .forEach(action);
-    }
-
-    public static void each(@Nullable Container container, Class<? extends Listener> listenerClass, Consumer<Component> action) {
-        var components = findComponents(container, listenerClass);
-        if (components == null) return;
-        components.forEach(action);
-    }
-
-    public static @Nullable Component findComponent(@Nullable Container container, Class<? extends Listener> listenerClass) {
+    protected static @Nullable Component findComponent(@Nullable Container container, Class<? extends Listener> listenerClass) {
         if (container == null) return null;
         var pair = sessionListenerPair(container, listenerClass);
         var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
@@ -156,13 +130,23 @@ public class ListenerManager implements Listener {
         return components.getFirst();
     }
 
+    protected static @Nullable LinkedHashSet<Component> findComponents(@Nullable Container container, Class<? extends Listener> listenerClass) {
+        if (container == null) return null;
+        var pair = sessionListenerPair(container, listenerClass);
+        var components = SESSION_LISTENER_TO_COMPONENTS.get(pair);
+        //        if (components == null) {
+//            throw new IllegalStateException("No components found for session '" + session.name() + "' and listenerClass class '" + listenerClass.getName() + "'. Ensure the listenerClass is registered correctly.");
+//        }
+        return components;
+    }
+
     public static void first(@Nullable Container container, Class<? extends Listener> listenerClass, Consumer<Component> action) {
         var component = findComponent(container, listenerClass);
         if (component == null) return;
         action.accept(component);
     }
 
-    public static <T> void first(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
+    public static <T extends Component> void first(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass, Consumer<T> action) {
         var components = findComponents(container, listenerClass);
         if (components == null) return;
 
@@ -176,25 +160,14 @@ public class ListenerManager implements Listener {
         action.accept(typedComponent);
     }
 
-    public static <T extends Component> List<T> components(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass) {
-        var components = findComponents(container, listenerClass);
-        if (components == null) return new ArrayList<>();
-        return components.stream()
-                .filter(componentClass::isInstance)
-                .map(componentClass::cast)
-                .toList();
-    }
 
-    public static <T extends Component> @Nullable T first(@Nullable Container container, Class<? extends Listener> listenerClass, Class<T> componentClass) {
-        var components = findComponents(container, listenerClass);
-        if (components == null) return null;
 
-        return components.stream()
-                .filter(componentClass::isInstance)
-                .map(componentClass::cast)
-                .findFirst()
-                .orElse(null);
 
-    }
+
+
+
+
+
+
 
 }

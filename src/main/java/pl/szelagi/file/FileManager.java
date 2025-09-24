@@ -8,7 +8,7 @@
 package pl.szelagi.file;
 
 import org.bukkit.Location;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.tag.TagResolve;
 import pl.szelagi.tag.exception.SignTagException;
@@ -23,7 +23,7 @@ public class FileManager {
     private final File directory;
 
     public FileManager(String directoryName) {
-        var pluginFolder = SessionAPI.instance().getDataFolder();
+        var pluginFolder = CraftContainers.instance().getDataFolder();
         this.directory = new File(pluginFolder, directoryName);
     }
 

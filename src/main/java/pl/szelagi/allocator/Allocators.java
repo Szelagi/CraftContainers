@@ -10,61 +10,79 @@ package pl.szelagi.allocator;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import pl.szelagi.ConfigManager;
+import org.bukkit.scheduler.BukkitTask;
 import pl.szelagi.Scheduler;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.util.timespigot.Time;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Allocators {
-    private static ISpaceAllocator productionAllocator;
-    private static ISpaceAllocator developmentAllocator;
+    private static ISpaceAllocator blueprintAllocator;
+    private static ISpaceAllocator defaultLazyAllocator;
+    private static ISpaceAllocator defaultRecyclingAllocator;
+    private static Map<World, BukkitTask> worldBukkitTaskMap = new HashMap<>();
+    private static Map<World, Listener> worldListenerMap = new HashMap<>();
 
-    private static ISpaceAllocator createDefaultAllocator(int minSize) {
-        var allocator = new RegionAllocator(ConfigManager.config().maxBoardSize, ConfigManager.config().distanceBetweenMaps, new EmptyChunkGenerator(), world -> {
-            Scheduler.runTaskTimer(() -> {
-                world.setTime(13000L);
-            }, Time.zero(), Time.seconds(450));
+    public static void registerDefaultWorldLogic(World world) {
+        var task = Scheduler.runTaskTimer(
+                () -> world.setTime(13000L),
+                Time.zero(),
+                Time.seconds(450));
+        worldBukkitTaskMap.put(world, task);
 
-            Bukkit.getPluginManager().registerEvents(new WorldEnvironment(world), SessionAPI.instance());
-        });
+        var listener = new WorldEnvironment(world);
+        Bukkit.getPluginManager().registerEvents(listener, CraftContainers.instance());
+        worldListenerMap.put(world, listener);
+    }
 
-        allocator.initialize();
+    public static void unregisterDefaultWorldLogic(World world) {
+        var task = worldBukkitTaskMap.remove(world);
+        task.cancel();
 
+        var listener = worldListenerMap.remove(world);
+        HandlerList.unregisterAll(listener);
+    }
+
+    private static ISpaceAllocator createDefaultLazyAllocator(int worldMaxAlloc) {
+        var regionSize = CraftContainers.config().maxRegionSize;
+        var spaceGap = CraftContainers.config().distanceBetweenRegions;
+
+        var allocator = new LazyRegionAllocator(worldMaxAlloc, regionSize, spaceGap, null, Allocators::registerDefaultWorldLogic, Allocators::unregisterDefaultWorldLogic);
         return allocator;
+    }
 
-//        var generativeAllocator = new GenerativeAllocatorWrapper(allocator);
-//        var pool = new SimplePool<IAllocate>(minSize) {
-//            @Override
-//            protected IAllocate creator() {
-//                return generativeAllocator.allocate();
-//            }
-//
-//            @Override
-//            protected void releaser(IAllocate allocate) {
-//                allocate.deallocate();
-//            }
-//        };
-//
-//        return new PoolAllocator(generativeAllocator, pool);
+    private static ISpaceAllocator createDefaultRecyclingAllocator() {
+        var regionSize = CraftContainers.config().maxRegionSize;
+        var spaceGap = CraftContainers.config().distanceBetweenRegions;
+
+        var allocator = new RecyclingRegionAllocator(regionSize, spaceGap, null, Allocators::registerDefaultWorldLogic, Allocators::unregisterDefaultWorldLogic);
+        return allocator;
     }
 
     public static void initialize() {
-        productionAllocator = createDefaultAllocator(6);
-        developmentAllocator = createDefaultAllocator(2);
+        var lazyBlueprintMaxAlloc = CraftContainers.config().lazyBlueprintMaxAllocs;
+        var lazyWorldMaxAlloc = CraftContainers.config().lazyWorldMaxAllocs;
+
+        blueprintAllocator = createDefaultLazyAllocator(lazyBlueprintMaxAlloc);
+        defaultLazyAllocator = createDefaultLazyAllocator(lazyWorldMaxAlloc);
+        defaultRecyclingAllocator = createDefaultRecyclingAllocator();
     }
 
-    public static ISpaceAllocator defaultAllocator() {
-        return productionAllocator();
+    public static ISpaceAllocator blueprintAllocator() {
+        return blueprintAllocator;
     }
 
-    public static ISpaceAllocator productionAllocator() {
-        return productionAllocator;
+    public static ISpaceAllocator defaultLazyAllocator() {
+        return defaultLazyAllocator;
     }
 
-    public static ISpaceAllocator developmentAllocator() {
-        return developmentAllocator;
+    public static ISpaceAllocator defaultRecyclingAllocator() {
+        return defaultRecyclingAllocator;
     }
 
     private record WorldEnvironment(World world) implements Listener {

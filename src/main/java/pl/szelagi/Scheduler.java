@@ -62,7 +62,7 @@ public class Scheduler {
         return task;
     }
 
-    private static SessionAPI plugin() {
-        return SessionAPI.getInstance();
+    private static CraftContainers plugin() {
+        return CraftContainers.instance();
     }
 }

@@ -14,10 +14,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 
-public class LobbyListener implements Listener {
+public class LobbyListener implements AdaptedListener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         if (check(event.getPlayer()))
@@ -44,8 +46,8 @@ public class LobbyListener implements Listener {
     }
 
     private boolean check(Player player) {
-        var session = ContainerManager.container(player);
-        var lobby = ListenerManager.first(session, getClass(), Lobby.class);
+        var container = Container.getForPlayer(player);
+        var lobby = first(container, Lobby.class);
         if (lobby == null)
             return false;
         return lobby.isLobby();

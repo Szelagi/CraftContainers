@@ -20,10 +20,13 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.jetbrains.annotations.NotNull;
+import pl.szelagi.component.GameMap;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.spatial.ISpatial;
@@ -49,10 +52,10 @@ public class SecureZone extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static final class MyListener implements Listener {
+    private static final class MyListener implements AdaptedListener {
         private boolean check(Player player, Block block) {
-            var session = ContainerManager.container(player);
-            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
+            var session = Container.getForPlayer(player);
+            var controller = first(session, SecureZone.class);
             if (controller == null) return false;
 
             var blockLoc = block.getLocation();
@@ -75,8 +78,8 @@ public class SecureZone extends Controller {
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-            var session = GameMapManager.container(event.getBlock());
-            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
+            var session = GameMap.getContainerForBlock(event.getBlock());
+            var controller = first(session, SecureZone.class);
             if (controller == null) return;
 
             assert session != null;
@@ -101,8 +104,8 @@ public class SecureZone extends Controller {
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-            var session = GameMapManager.container(event.getBlock());
-            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
+            var session = GameMap.getContainerForBlock(event.getBlock());
+            var controller = first(session, SecureZone.class);
             if (controller == null) return;
 
             assert session != null;
@@ -121,8 +124,8 @@ public class SecureZone extends Controller {
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onStructureGrow(StructureGrowEvent event) {
-            var session = GameMapManager.container(event.getLocation());
-            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
+            var session = GameMap.getContainerForLocation(event.getLocation());
+            var controller = first(session, SecureZone.class);
             if (controller == null) return;
 
             List<BlockState> toRemove = new ArrayList<>();
@@ -148,8 +151,8 @@ public class SecureZone extends Controller {
                     .getLocation();
             var from = event.getBlock()
                     .getLocation();
-            var session = GameMapManager.container(from);
-            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
+            var session = GameMap.getContainerForLocation(from);
+            var controller = first(session, SecureZone.class);
             if (controller == null) return;
 
             assert session != null;
@@ -160,8 +163,8 @@ public class SecureZone extends Controller {
         }
 
         public boolean waterBucketCheck(Player player, Location location) {
-            var session = ContainerManager.container(player);
-            var controller = ListenerManager.first(session, getClass(), SecureZone.class);
+            var session = Container.getForPlayer(player);
+            var controller = first(session, SecureZone.class);
             if (controller == null) return false;
 
             assert session != null;

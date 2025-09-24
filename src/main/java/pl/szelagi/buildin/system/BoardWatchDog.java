@@ -14,11 +14,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
+import pl.szelagi.component.GameMap;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
 import pl.szelagi.component.container.Container;
 import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.util.timespigot.Time;
@@ -46,7 +48,7 @@ public class BoardWatchDog extends Controller {
         return space.isLocationInXZ(location);
     }
 
-    private static final class MyListener implements Listener {
+    private static final class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onPlayerMove(PlayerMoveEvent event) {
             var from = event.getFrom();
@@ -57,9 +59,9 @@ public class BoardWatchDog extends Controller {
                 return;
 
             var player = event.getPlayer();
-            var session = ContainerManager.container(player);
-            if (session == null) return;
-            ListenerManager.first(session, getClass(), BoardWatchDog.class, boardWatchDog -> {
+            var container = Container.getForPlayer(player);
+            if (container == null) return;
+            first(container, BoardWatchDog.class, boardWatchDog -> {
                 if (!boardWatchDog.isLocationCorrect(event.getTo())) {
                     event.setCancelled(true);
                 }
@@ -72,8 +74,8 @@ public class BoardWatchDog extends Controller {
             var from = event.getFrom();
             var to = event.getTo();
 
-            var sessionInDestination = GameMapManager.container(to);
-            var playerSession = ContainerManager.container(event.getPlayer());
+            var sessionInDestination = GameMap.getContainerForLocation(to);
+            var playerSession = Container.getForPlayer(event.getPlayer());
 
             if (playerSession != null) {
                 handlePlayerInSession(playerSession, sessionInDestination, player, from, to, event);
@@ -92,7 +94,7 @@ public class BoardWatchDog extends Controller {
                 Location to,
                 PlayerTeleportEvent event
         ) {
-            ListenerManager.first(playerContainer, getClass(), BoardWatchDog.class, boardWatchDog -> {
+            first(playerContainer, BoardWatchDog.class, boardWatchDog -> {
                 // Jeżeli teleportacja jest wewnątrz sesji, pomiń
                 if (boardWatchDog.isLocationCorrect(to)) return;
 
@@ -106,7 +108,7 @@ public class BoardWatchDog extends Controller {
                         var currentSession = ContainerManager.container(player);
                         if (currentSession == null) return;
 
-                        ListenerManager.first(playerContainer, getClass(), BoardWatchDog.class, watchdogCheck -> {
+                        first(playerContainer, BoardWatchDog.class, watchdogCheck -> {
                             if (!watchdogCheck.isLocationCorrect(player.getLocation())) {
                                 player.teleport(from);
                                 player.sendMessage(ILLEGAL_SPACE_EXIT);

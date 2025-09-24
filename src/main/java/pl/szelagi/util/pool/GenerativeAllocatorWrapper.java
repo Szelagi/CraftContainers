@@ -69,7 +69,12 @@ public class GenerativeAllocatorWrapper implements ISpaceAllocator {
     }
 
     @Override
-    public void initialize() {
-        spaceAllocator.initialize();
+    public boolean isDestroyed() {
+        return spaceAllocator.isDestroyed();
+    }
+
+    @Override
+    public void destroy() {
+        spaceAllocator.destroy();
     }
 }

@@ -40,7 +40,7 @@ public class BlueprintGameMap extends GameMap {
     }
 
     public BlueprintGameMap(@NotNull BlueprintContainer session) {
-        super(session, Allocators.developmentAllocator());
+        super(session, Allocators.blueprintAllocator());
     }
 
     @Override
@@ -83,6 +83,8 @@ public class BlueprintGameMap extends GameMap {
 
     @Override
     protected void degenerate() {
+        if (!space().requiresCleanup()) return;
+
         if (schematic != null) {
             schematic.clean();
         }

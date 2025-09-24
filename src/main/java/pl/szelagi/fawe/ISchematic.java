@@ -10,7 +10,7 @@ package pl.szelagi.fawe;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.transform.ITransformable;
 import pl.szelagi.util.Cloneable;
@@ -27,11 +27,11 @@ public interface ISchematic<T extends ISchematic<T>> extends ISpatial, ITransfor
     void clean();
 
     static File getDataFolder() {
-        return new File(SessionAPI.instance().getDataFolder(), DIR_NAME);
+        return new File(CraftContainers.instance().getDataFolder(), DIR_NAME);
     }
 
     static File getFile(String name) {
-        var dataPath = SessionAPI.instance().getDataFolder().toPath();
+        var dataPath = CraftContainers.instance().getDataFolder().toPath();
         var fileName = name + "." + EXTENSION_NAME;
         return dataPath.resolve(DIR_NAME).resolve(fileName).toFile();
     }

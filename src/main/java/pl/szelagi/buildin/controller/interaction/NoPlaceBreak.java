@@ -11,9 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import pl.szelagi.component.GameMap;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
 import pl.szelagi.manager.GameMapManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
@@ -27,19 +29,19 @@ public class NoPlaceBreak extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static class MyListener implements Listener {
+    private static class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onBlockPlace(BlockPlaceEvent event) {
-            var session = GameMapManager.container(event.getBlock());
-            ListenerManager.first(session, getClass(), NoPlaceBreak.class, noPlaceBreak -> {
+            var container = GameMap.getContainerForBlock(event.getBlock());
+            first(container, NoPlaceBreak.class, noPlaceBreak -> {
                 event.setCancelled(true);
             });
         }
 
         @EventHandler(ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
-            var session = GameMapManager.container(event.getBlock());
-            ListenerManager.first(session, getClass(), NoPlaceBreak.class, noPlaceBreak -> {
+            var container = GameMap.getContainerForBlock(event.getBlock());
+            first(container, NoPlaceBreak.class, noPlaceBreak -> {
                 event.setCancelled(true);
             });
         }

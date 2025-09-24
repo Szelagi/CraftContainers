@@ -15,7 +15,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.sign.Side;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.relative.RelativeLocation;
 import pl.szelagi.spatial.ISpatial;
 import pl.szelagi.tag.exception.SignTagException;
@@ -34,7 +34,7 @@ public class TagAnalyzer {
         var parts = spatial.partition(PART_SIZE);
         var iterator = parts.iterator();
         var globalResolve = new TagResolve();
-        var instance = SessionAPI.getInstance();
+        var instance = CraftContainers.instance();
 
         var nextElement = new Runnable() {
             @Override

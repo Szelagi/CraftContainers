@@ -7,7 +7,7 @@
 
 package pl.szelagi.command;
 
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.command.container.ContainerCommand;
 import pl.szelagi.command.debug.DebugSessionCommand;
 import pl.szelagi.command.debug.TestSessionCommand;
@@ -18,7 +18,7 @@ import pl.szelagi.command.test.TestCommand;
 
 public class Command {
     public static void registerCommands() {
-        var sapi = SessionAPI.getInstance();
+        var sapi = CraftContainers.instance();
 
         // sessionapi
         var craftcontainers = sapi.getCommand("craftcontainers");

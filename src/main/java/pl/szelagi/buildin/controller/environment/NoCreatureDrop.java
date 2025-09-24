@@ -10,9 +10,11 @@ package pl.szelagi.buildin.controller.environment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import pl.szelagi.component.GameMap;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
 import pl.szelagi.manager.GameMapManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
@@ -26,11 +28,11 @@ public class NoCreatureDrop extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static final class MyListener implements Listener {
+    private static final class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onEntityDeath(EntityDeathEvent event) {
-            var session = GameMapManager.container(event.getEntity());
-            ListenerManager.first(session, getClass(), NoCreatureDrop.class, noCreatureDrop -> {
+            var session = GameMap.getContainerForEntity(event.getEntity());
+            first(session, NoCreatureDrop.class, noCreatureDrop -> {
                 event.getDrops().clear();
                 event.setDroppedExp(0);
             });

@@ -12,7 +12,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.transform.ITransformable;
 
 import java.io.File;
@@ -33,6 +33,13 @@ public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
     @Nullable Marker removeById(int id);
     @Nullable List<Marker> removeByName(String name);
     @NotNull List<Marker> drop();
+
+    default List<Marker> createFrom(IMarkers<?> markers) {
+        return markers.getMarkers()
+                .stream()
+                .map(marker -> create(marker.getName(), marker.getLocation()))
+                .toList();
+    }
 
     default @NotNull List<Marker> requireAnyByName(String name) {
         var markers = getByName(name);
@@ -59,11 +66,11 @@ public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
     void save(@NotNull File file, @NotNull Location base);
 
     static File getDataFolder() {
-        return new File(SessionAPI.instance().getDataFolder(), DIR_NAME);
+        return new File(CraftContainers.instance().getDataFolder(), DIR_NAME);
     }
 
     static File getFile(String name) {
-        var dataPath = SessionAPI.instance().getDataFolder().toPath();
+        var dataPath = CraftContainers.instance().getDataFolder().toPath();
         var fileName = name + "." + EXTENSION_NAME;
         return dataPath.resolve(DIR_NAME).resolve(fileName).toFile();
     }

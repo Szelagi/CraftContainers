@@ -7,12 +7,17 @@
 
 package pl.szelagi.allocator;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.codehaus.plexus.util.FileUtils;
+import org.bukkit.WorldCreator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class TemporaryWorld {
     private static final String FLAG = ".tmp-world";
@@ -38,15 +43,9 @@ public class TemporaryWorld {
 
             var world = Bukkit.getWorld(file.getName());
             if (world != null) {
-                teleportPlayersToPrimaryWorld(world);
-                Bukkit.unloadWorld(world, false);
+                unloadWorld(world);
             }
-
-            try {
-                FileUtils.deleteDirectory(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            deleteWorld(file);
         }
     }
 
@@ -69,4 +68,48 @@ public class TemporaryWorld {
             throw new RuntimeException(e);
         }
     }
+
+    public static World createTemporaryWorld(@Nullable Consumer<WorldCreator> worldCreatorConsumer,
+                                             @Nullable Consumer<World> worldConsumer) {
+        var name = "tmp_world_" + UUID.randomUUID().toString().replace("-", "");
+        var worldCreator = new WorldCreator(name);
+        worldCreator.generator(new EmptyChunkGenerator());
+
+        if (worldCreatorConsumer != null)
+            worldCreatorConsumer.accept(worldCreator);
+
+        var world = worldCreator.createWorld();
+        assert world != null;
+        TemporaryWorld.markTemporary(world);
+
+        if (worldConsumer != null)
+            worldConsumer.accept(world);
+        return world;
+    }
+
+    public static void deleteTemporaryWorld(@NotNull World world) {
+        var worldFolder = world.getWorldFolder();
+
+        var flag = new File(worldFolder, FLAG);
+        if (!flag.exists()) {
+            throw new IllegalArgumentException("World is not temporary!");
+        }
+
+        unloadWorld(world);
+        deleteWorld(worldFolder);
+    }
+
+    private static void unloadWorld(World world) {
+        teleportPlayersToPrimaryWorld(world);
+        Bukkit.unloadWorld(world, false);
+    }
+
+    private static void deleteWorld(File worldFolder) {
+        try {
+            FileUtils.deleteDirectory(worldFolder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

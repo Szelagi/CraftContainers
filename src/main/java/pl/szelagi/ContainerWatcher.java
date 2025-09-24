@@ -19,7 +19,7 @@ public class ContainerWatcher implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPluginDisable(PluginDisableEvent event) {
-        if (!SessionAPI.instance().equals(event.getPlugin())) return;
+        if (!CraftContainers.instance().equals(event.getPlugin())) return;
         var containersCopy = new HashSet<>(Container.containers());
 
         for (var container : containersCopy) {

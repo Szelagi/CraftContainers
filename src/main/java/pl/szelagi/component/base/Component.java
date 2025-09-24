@@ -44,7 +44,6 @@ import pl.szelagi.util.timespigot.Time;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public abstract class Component implements TreeListener, IHierarchical<Component> {
@@ -219,7 +218,7 @@ public abstract class Component implements TreeListener, IHierarchical<Component
 
         // zarejestruj komponent do ListenerManger
         // uruchamia listener oraz pozwala sprawdzać jakie komponenty go używają
-        ListenerManager.controllerStart(this);
+        ListenerManager.onComponentStart(this);
 
         // ustaw flagę, że nie został wykonany na nim PlayerConstructor
         isInvokePlayersConstructor = false;
@@ -297,7 +296,7 @@ public abstract class Component implements TreeListener, IHierarchical<Component
         container().recovery().destroyComponent(this);
 
         // wyrejestruj komponent z ListenerManger
-        ListenerManager.controllerStop(this);
+        ListenerManager.onComponentStop(this);
 
         // usuń jako dziecko rodzica
         if (parent != null) {

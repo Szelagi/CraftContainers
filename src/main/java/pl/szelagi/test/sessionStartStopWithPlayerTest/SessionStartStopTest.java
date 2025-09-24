@@ -8,14 +8,14 @@
 package pl.szelagi.test.sessionStartStopWithPlayerTest;
 
 import org.bukkit.Bukkit;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.test.SAPITest;
 import pl.szelagi.test.TestName;
 
 class SessionStartStopTest {
     @SAPITest(test = TestName.SESSION_START_STOP_WITH_PLAYER_TEST)
     public void sessionStartStopWithPlayerTest() {
-       var s = new MyContainer(SessionAPI.instance());
+       var s = new MyContainer(CraftContainers.instance());
        try {
            s.start();
            var p = Bukkit.getPlayer("TesterBot");

@@ -9,7 +9,7 @@ package pl.szelagi.command.blueprint;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.buildin.editor.BlueprintContainer;
 import pl.szelagi.command.SubCommand;
 import pl.szelagi.component.base.StartException;
@@ -67,7 +67,7 @@ public class BlueprintEditCommand implements SubCommand {
         var schematicFile = ISchematic.getFile(name);
         var markersFile = IMarkers.getFile(name);
 
-        var editor = new BlueprintContainer(SessionAPI.instance(), schematicFile, markersFile);
+        var editor = new BlueprintContainer(CraftContainers.instance(), schematicFile, markersFile);
         try {
             editor.start();
             editor.addPlayer(player);

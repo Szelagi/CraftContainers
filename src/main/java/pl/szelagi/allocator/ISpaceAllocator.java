@@ -14,5 +14,6 @@ public interface ISpaceAllocator {
     void deallocate(IAllocate allocate);
     boolean isAllocated(IAllocate allocate);
     Set<IAllocate> allocatedSpaces();
-    void initialize();
+    boolean isDestroyed();
+    void destroy();
 }

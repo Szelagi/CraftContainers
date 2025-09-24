@@ -9,7 +9,7 @@ package pl.szelagi.recovery;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.container.Container;
 import pl.szelagi.file.FileManager;
@@ -32,7 +32,7 @@ public class Recovery {
     private static final Logger LOGGER = Logger.getLogger(Recovery.class.getName());
 
     private final Container container;
-    private final FileManager fileManager = new FileManager(SessionAPI.RECOVERY_DIRNAME);
+    private final FileManager fileManager = new FileManager(CraftContainers.RECOVERY_DIRNAME);
 
     // Przechowuje recepturę awaryjnego zakańczania komponentów,
     private final HashMap<Component, HashSet<ComponentRecoveryLambda>> componentDestroyRecoveries = new HashMap<>();

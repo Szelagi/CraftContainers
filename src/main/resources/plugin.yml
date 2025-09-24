@@ -1,58 +1,58 @@
-name: SessionAPI
+name: CraftContainers
 description: "The library facilitates game containerization on a Minecraft server, enabling the creation of isolated environments within the game with separate logic and state."
 version: '${project.version}'
-main: pl.szelagi.SessionAPI
+main: pl.szelagi.CraftContainers
 api-version: '1.21'
 authors: [ Szelagi ]
 depend:
   - FastAsyncWorldEdit
 
 commands:
-  #   Info
+  # Info
   craftcontainers:
-    description: "Displays information about the SessionAPI library and its features."
+    description: "Displays information about the CraftContainers framework and its features."
 
-  #   Session debug
+  # Session debug
   session-test:
     description: "Starts a test session for experimental or diagnostic purposes."
-    permission: "sessionapi.debug"
+    permission: "craftcontainers.debug"
 
   session-debug:
     description: "Toggles debugging messages on or off."
-    permission: "sessionapi.debug"
+    permission: "craftcontainers.debug"
 
   session-internal-test:
     description: "Command for running internal tests."
-    permission: "sessionapi.test"
+    permission: "craftcontainers.test"
 
   # blueprint
   blueprint:
     description: "Manages the editor for creating and editing schematic structures."
-    permission: "sessionapi.blueprint"
+    permission: "craftcontainers.blueprint"
 
   # marker
   marker:
     description: "Manages saved coordinates within the Blueprint editor."
-    permission: "sessionapi.blueprint"
+    permission: "craftcontainers.blueprint"
 
   # container
   container:
     description: "Allows managing containers and the players in them."
-    permission: "sessionapi.container"
+    permission: "craftcontainers.container"
 
 permissions:
-  sessionapi.debug:
+  craftcontainers.debug:
     description: "Allows the user to start test sessions and toggle debug messages."
     default: op
 
-  sessionapi.test:
+  craftcontainers.test:
     description: "Allows use of the integration test command"
     default: op
 
-  sessionapi.blueprint:
+  craftcontainers.blueprint:
     description: "Allows the user to manage blueprints"
     default: op
 
-  sessionapi.container:
+  craftcontainers.container:
       description: "Allows the user to manage containers"
       default: op

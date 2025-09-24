@@ -7,12 +7,8 @@
 
 package pl.szelagi;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.szelagi.command.Command;
-import pl.szelagi.manager.GameMapManager;
-import pl.szelagi.manager.ControllerManager;
-import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.minecraftVersion.MinecraftVersion;
 import pl.szelagi.recovery.RecoveryManager;
 import pl.szelagi.allocator.Allocators;
@@ -22,44 +18,37 @@ import pl.szelagi.util.Debug;
 
 import java.io.File;
 
-public class SessionAPI extends JavaPlugin {
+public class CraftContainers extends JavaPlugin {
     public static final String RECOVERY_DIRNAME = "recovery";
-    public static final String BOARD_DIRNAME = "board";
-
-    private static SessionAPI instance;
-
-    @Deprecated
-    public static SessionAPI getInstance() {
+    public static final String BLUEPRINT_DIRNAME = "blueprint";
+    private static CraftContainers instance;
+    private static Config config;
+    public static CraftContainers instance() {
         return instance;
     }
-
-    public static SessionAPI instance() {
-        return instance;
+    public static Config config() {
+        return config;
     }
 
     @Override
     public void onEnable() {
-        instance = this;
-
-        // Plugin startup logic
         var directory = getDataFolder();
-        if (!directory.exists()) directory.mkdir();
+        directory.mkdirs();
+
+        instance = this;
+        config = new Config(this);
 
         var recoveryDir = new File(directory, RECOVERY_DIRNAME);
-        if (!recoveryDir.exists()) recoveryDir.mkdir();
+        if (!recoveryDir.exists()) recoveryDir.mkdirs();
 
-        var boardDir = new File(directory, BOARD_DIRNAME);
-        if (!boardDir.exists()) boardDir.mkdir();
+        var boardDir = new File(directory, BLUEPRINT_DIRNAME);
+        if (!boardDir.exists()) boardDir.mkdirs();
 
-        ConfigManager.init(this);
-
-        var debugOnStart = ConfigManager.config().debugOnStart;
+        var debugOnStart = CraftContainers.config().debugOnStart;
         if (debugOnStart)
             Debug.enable(true);
 
         getServer().getPluginManager().registerEvents(new ContainerWatcher(), this);
-
-
 
         TemporaryWorld.clean();
         CooldownVolatile.initialize(this);
@@ -71,11 +60,12 @@ public class SessionAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         TemporaryWorld.clean();
     }
 
-    public FileConfiguration config() {
-        return ConfigManager.config().fileConfiguration;
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        config = new Config(this);
     }
 }

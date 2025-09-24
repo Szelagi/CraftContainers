@@ -8,22 +8,11 @@
 package pl.szelagi.manager;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import pl.szelagi.SessionAPI;
 import pl.szelagi.component.container.Container;
-import pl.szelagi.event.bukkit.SessionStartEvent;
-import pl.szelagi.event.bukkit.SessionStopEvent;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Deprecated

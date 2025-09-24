@@ -81,22 +81,4 @@ public class ComponentManager {
         return component.name() + ':' + component.id();
     }
 
-    public static @NotNull <T> Set<T> components(@Nullable Container container, @NotNull Class<T> clazz) {
-        var iterator = new DepthFirstSearch<>(container, true);
-        var stream = StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false
-        );
-        return stream.filter(clazz::isInstance).map(clazz::cast).collect(Collectors.toSet());
-    }
-
-    public static @Nullable <T> T firstComponent(@Nullable Container container, @NotNull Class<T> clazz) {
-        var iterator = new DepthFirstSearch<>(container, true);
-        while (iterator.hasNext()) {
-            var component = iterator.next();
-            if (!clazz.isInstance(component)) continue;
-            return clazz.cast(component);
-        }
-        return null;
-    }
-
 }

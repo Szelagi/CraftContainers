@@ -7,7 +7,7 @@
 
 package pl.szelagi.util;
 
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.container.Container;
 
@@ -44,7 +44,7 @@ public class Debug {
     public static void enable(boolean enable) {
         if (enable) {
             logger = Logger.getLogger("SAPIDebug");
-            var instance = SessionAPI.instance();
+            var instance = CraftContainers.instance();
             var dataFolder = instance.getDataFolder();
             try {
                 var debugFolder = new java.io.File(dataFolder, "debug");

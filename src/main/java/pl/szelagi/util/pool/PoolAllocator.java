@@ -41,7 +41,12 @@ public class PoolAllocator implements ISpaceAllocator {
     }
 
     @Override
-    public void initialize() {
-        allocator.initialize();
+    public boolean isDestroyed() {
+        return allocator.isDestroyed();
+    }
+
+    @Override
+    public void destroy() {
+        allocator.destroy();
     }
 }

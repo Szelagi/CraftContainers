@@ -9,7 +9,7 @@ package pl.szelagi.command.blueprint;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import pl.szelagi.ConfigManager;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.buildin.editor.BlueprintGameMap;
 import pl.szelagi.buildin.editor.BlueprintContainer;
 import pl.szelagi.command.SubCommand;
@@ -58,7 +58,7 @@ public class BlueprintRadiusCommand implements SubCommand {
         try {
             size = Integer.parseInt(args[0]);
             if (size <= 0) throw new NumberFormatException();
-            if (size >= ConfigManager.config().maxBoardSize)
+            if (size >= CraftContainers.config().maxRegionSize)
                 throw new NumberFormatException();
         } catch (NumberFormatException e) {
             player.sendMessage(PREFIX + "§cInvalid size specified.");

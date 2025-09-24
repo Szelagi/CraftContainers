@@ -25,6 +25,7 @@ import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.GameMap;
 import pl.szelagi.component.container.Container;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.recovery.internalEvent.PlayerRecovery;
@@ -58,7 +59,7 @@ public class LoadingGameMap extends GameMap {
     }
 
     private void showMessage(@NotNull Player player) {
-        var title = Component.text("§6§lSessionAPI");
+        var title = Component.text("§6§lCraftContainers");
         var subtitle = Component.text("§eThe map is being generated...");
 
         var fullTitle = Title.title(
@@ -103,14 +104,14 @@ public class LoadingGameMap extends GameMap {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static class MyListener implements Listener {
+    private static class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onPlayerTeleport(PlayerTeleportEvent event) {
             var cause = event.getCause();
             var player = event.getPlayer();
             if (cause != PlayerTeleportEvent.TeleportCause.SPECTATE) return;
-            var session = ContainerManager.container(player);
-            ListenerManager.first(session, getClass(), LoadingGameMap.class, loadingBoard -> {
+            var container = Container.getForPlayer(player);
+            first(container, LoadingGameMap.class, loadingBoard -> {
                 event.setCancelled(true);
             });
         }

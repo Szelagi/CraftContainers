@@ -14,9 +14,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import pl.szelagi.component.GameMap;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
 import pl.szelagi.manager.GameMapManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
@@ -30,13 +32,13 @@ public class ProtectItemFrame extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static class MyListener implements Listener {
+    private static class MyListener implements AdaptedListener {
         public boolean check(Entity entity) {
             var entityType = entity.getType();
             if (entityType != EntityType.ITEM_FRAME)
                 return false;
-            var session = GameMapManager.container(entity.getLocation());
-            var component = ListenerManager.first(session, getClass(), ProtectItemFrame.class);
+            var container = GameMap.getContainerForLocation(entity.getLocation());
+            var component = first(container, ProtectItemFrame.class);
             return (component != null);
         }
 

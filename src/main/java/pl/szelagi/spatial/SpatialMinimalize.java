@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.joml.Vector3i;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ public class SpatialMinimalize {
         var parts = spatial.partition(PART_SIZE);
         var iterator = parts.iterator();
         var resolves = new HashSet<SpatialResolve>();
-        var instance = SessionAPI.getInstance();
+        var instance = CraftContainers.instance();
 
         var nextElement = new Runnable() {
             @Override

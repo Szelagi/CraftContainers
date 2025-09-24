@@ -11,10 +11,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import pl.szelagi.component.base.Component;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.event.internal.player.PlayerConstructor;
 import pl.szelagi.event.internal.player.PlayerDestructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
@@ -53,11 +55,11 @@ public class HideOtherPlayers extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    public static class MyListener implements Listener {
+    public static class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onPlayerJoin(PlayerJoinEvent event) {
-            for (var session : ContainerManager.containers()) {
-                ListenerManager.first(session, getClass(), HideOtherPlayers.class, hideOtherPlayers -> {
+            for (var container : Container.containers()) {
+                first(container, HideOtherPlayers.class, hideOtherPlayers -> {
                     for (var player : hideOtherPlayers.players())
                         player.hidePlayer(hideOtherPlayers.plugin(), event.getPlayer());
                 });

@@ -8,7 +8,7 @@
 package pl.szelagi.minecraftVersion;
 
 import org.bukkit.Bukkit;
-import pl.szelagi.ConfigManager;
+import pl.szelagi.CraftContainers;
 
 import java.util.regex.Pattern;
 
@@ -23,7 +23,7 @@ public class MinecraftVersion {
     }
 
     public static void initialize() throws IllegalArgumentException {
-        var version = ConfigManager.config().minecraftVersion;
+        var version = CraftContainers.config().minecraftVersion;
         if (version == null || version.equals("auto")) {
             version = Bukkit.getBukkitVersion().split("-")[0];
         }

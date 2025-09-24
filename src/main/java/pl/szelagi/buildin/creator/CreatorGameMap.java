@@ -18,7 +18,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import pl.szelagi.Scheduler;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.buildin.controller.environment.NoCreatureNaturalSpawn;
 import pl.szelagi.buildin.controller.otherEquipment.OtherEquipment;
 import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
@@ -43,7 +43,7 @@ public class CreatorGameMap extends GameMap {
 
     @Override
     protected void generate() {
-        this.creatorFileManager = new FileManager(SessionAPI.BOARD_DIRNAME + '/' + editName);
+        this.creatorFileManager = new FileManager(CraftContainers.BLUEPRINT_DIRNAME + '/' + editName);
         Scheduler.runAndWait(() -> {
             center().getBlock()
                     .setType(Material.BEDROCK);

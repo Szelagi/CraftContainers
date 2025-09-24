@@ -9,7 +9,7 @@ package pl.szelagi.util.pool;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -26,7 +26,7 @@ public abstract class SimplePool<T> extends Pool<T> {
             pool.add(creator());
         }
 
-        task = Bukkit.getScheduler().runTaskTimer(SessionAPI.instance(), this::balance, 0L, 100L);
+        task = Bukkit.getScheduler().runTaskTimer(CraftContainers.instance(), this::balance, 0L, 100L);
     }
 
     public T acquire() {

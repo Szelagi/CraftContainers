@@ -13,7 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.util.CooldownVolatile;
@@ -29,15 +31,15 @@ public class NoPvP extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static class MyListener implements Listener {
+    private static class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
             if (!(event.getEntity() instanceof Player victim))
                 return;
             if (!(event.getDamager() instanceof Player attacker))
                 return;
-            var session = ContainerManager.container(victim);
-            ListenerManager.first(session, getClass(), NoPvP.class, noPvP -> {
+            var session = Container.getForPlayer(victim);
+            first(session, NoPvP.class, noPvP -> {
                 if (CooldownVolatile.canUseAndStart(attacker, noPvP.name(), Time.seconds(2)))
                     attacker.sendMessage("§cYou cannot attack a player because pvp is disabled!");
                 event.setCancelled(true);

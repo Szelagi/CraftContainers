@@ -14,19 +14,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.annotation.SingletonComponent;
 import pl.szelagi.command.marker.MarkerAddHere;
 import pl.szelagi.command.marker.MarkerRemoveId;
 import pl.szelagi.component.Controller;
+import pl.szelagi.component.container.Container;
 import pl.szelagi.manager.ContainerManager;
+import pl.szelagi.manager.listener.AdaptedListener;
 import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 
 @SingletonComponent
 public class MarkerBlockLogic extends Controller {
-    public static final NamespacedKey CREATE_NBT_KEY = new NamespacedKey(SessionAPI.instance(), "addmarker");
-    public static final NamespacedKey DELETE_NBT_KEY = new NamespacedKey(SessionAPI.instance(), "removemarker");
+    public static final NamespacedKey CREATE_NBT_KEY = new NamespacedKey(CraftContainers.instance(), "addmarker");
+    public static final NamespacedKey DELETE_NBT_KEY = new NamespacedKey(CraftContainers.instance(), "removemarker");
     public static final Material MARKER_MATERIAL = Material.REDSTONE_BLOCK;
     public static final Material MARKER_CLEAR_MATERIAL = Material.BARRIER;
 
@@ -39,15 +41,15 @@ public class MarkerBlockLogic extends Controller {
         return super.defineListeners().add(Logic.class);
     }
 
-    public static class Logic implements Listener {
+    public static class Logic implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onBlockPlace(BlockPlaceEvent event) {
             var type = event.getBlock().getType();
             var player = event.getPlayer();
             if (type != MARKER_MATERIAL && type != MARKER_CLEAR_MATERIAL) return;
 
-            var session = ContainerManager.container(event.getPlayer());
-            ListenerManager.first(session, getClass(), MarkerBlockLogic.class, markerBlockLogic -> {
+            var container = Container.getForPlayer(event.getPlayer());
+            first(container, MarkerBlockLogic.class, markerBlockLogic -> {
                 var componentSession = markerBlockLogic.container();
                 var board = componentSession.gameMap();
                 if (!(board instanceof BlueprintGameMap blueprintBoard))
@@ -57,16 +59,16 @@ public class MarkerBlockLogic extends Controller {
                 var meta = item.getItemMeta();
                 if (meta == null) return;
 
-                var location = event.getBlock().getLocation();
-                var container = meta.getPersistentDataContainer();
-                var name = container.get(CREATE_NBT_KEY, PersistentDataType.STRING);
+                var location = event.getBlock().getLocation().add(0.5, 0.5, 0.5);
+                var dataContainer = meta.getPersistentDataContainer();
+                var name = dataContainer.get(CREATE_NBT_KEY, PersistentDataType.STRING);
                 if (name != null) {
                     var marker = blueprintBoard.getMarkers().create(name, location);
                     var message = String.format(MarkerAddHere.SUCCESS_TEMPLATE, name, marker.getId());
                     player.sendMessage(message);
                 }
 
-                var clear = container.get(DELETE_NBT_KEY, PersistentDataType.BOOLEAN);
+                var clear = dataContainer.get(DELETE_NBT_KEY, PersistentDataType.BOOLEAN);
                 if (clear != null) {
                     var markers = blueprintBoard.getMarkers().removeNearbyMarkers(location, 0.6);
                     for (var marker : markers) {

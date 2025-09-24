@@ -8,14 +8,14 @@
 package pl.szelagi.test.sessionAddRemovePlayer;
 
 import org.bukkit.Bukkit;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.test.SAPITest;
 import pl.szelagi.test.TestName;
 
 class SessionAddRemovePlayerTest {
     @SAPITest(test = TestName.ADD_REMOVE_PLAYER)
     public void sessionAddRemovePlayerTest() {
-       var s = new MyContainer(SessionAPI.instance());
+       var s = new MyContainer(CraftContainers.instance());
        try {
            s.start();
            var p = Bukkit.getPlayer("TesterBot");

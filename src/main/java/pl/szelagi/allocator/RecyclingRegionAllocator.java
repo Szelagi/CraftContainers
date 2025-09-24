@@ -9,37 +9,34 @@ package pl.szelagi.allocator;
 
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.generator.ChunkGenerator;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-public class RegionAllocator implements ISpaceAllocator {
+public class RecyclingRegionAllocator implements ISpaceAllocator {
     private static final long TIME_BLOCK = 60_000;
     private final int regionSize;
-    private final int spaceSize;
-    private final ChunkGenerator generator;
-    private final Consumer<World> worldConfig;
+    private final int spaceGap;
+    private final @Nullable Consumer<World> destroyWorldConsumer;
     private final Map<Integer, RegionAllocate> allocatedSpaces = new HashMap<>();
     private final Map<Integer, Long> timeLocks = new HashMap<>();
     private World world;
+    boolean isDestroyed = false;
 
-    public RegionAllocator(int regionSize, int spaceSize, ChunkGenerator chunkGenerator, Consumer<World> worldConfig) {
-        this.regionSize = regionSize;
-        this.spaceSize = spaceSize;
-        this.generator = chunkGenerator;
-        this.worldConfig = worldConfig;
+    public RecyclingRegionAllocator(int regionSize, int spaceGap) {
+        this(regionSize, spaceGap, null, null, null);
     }
 
-    public void initialize() {
-        if (world != null) throw new IllegalStateException("World has already been initialized");
-        var name = "tmp_world_" + UUID.randomUUID().toString().replace("-", "");
-        var worldCreator = new WorldCreator(name);
-        worldCreator.generator(generator);
-        world = worldCreator.createWorld();
-        assert world != null;
-        TemporaryWorld.markTemporary(world);
-        worldConfig.accept(world);
+    public RecyclingRegionAllocator(int regionSize,
+                                    int spaceGap,
+                                    @Nullable Consumer<WorldCreator> worldCreatorConsumer,
+                                    @Nullable Consumer<World> worldConsumer,
+                                    @Nullable Consumer<World> destroyWorldConsumer) {
+        this.regionSize = regionSize;
+        this.spaceGap = spaceGap;
+        this.destroyWorldConsumer = destroyWorldConsumer;
+        world = TemporaryWorld.createTemporaryWorld(worldCreatorConsumer, worldConsumer);
     }
 
     private boolean isAllocatedSlot(int slot) {
@@ -56,11 +53,12 @@ public class RegionAllocator implements ISpaceAllocator {
 
     @Override
     public IAllocate allocate() {
-        if (world == null) initialize();
+        if (isDestroyed()) throw new AllocatorDestroyedException(this);
+
         var slot = 0;
         while (isAllocatedSlot(slot) || isLockedSlot(slot))
             slot++;
-        var allocate = new RegionAllocate(regionSize, spaceSize, slot, world, this, true);
+        var allocate = new RegionAllocate(regionSize, spaceGap, slot, world, this, true);
         allocatedSpaces.put(slot, allocate);
         return allocate;
     }
@@ -86,5 +84,22 @@ public class RegionAllocator implements ISpaceAllocator {
     @Override
     public Set<IAllocate> allocatedSpaces() {
         return new HashSet<>(allocatedSpaces.values());
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+    @Override
+    public void destroy() {
+        if (isDestroyed())
+            throw new AllocatorDestroyedException(this);
+        if (!allocatedSpaces().isEmpty())
+            throw new AllocatorNotEmptyException(this);
+        if (destroyWorldConsumer != null)
+            destroyWorldConsumer.accept(world);
+        TemporaryWorld.deleteTemporaryWorld(world);
+        isDestroyed = true;
     }
 }

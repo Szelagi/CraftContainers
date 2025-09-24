@@ -14,7 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import pl.szelagi.SessionAPI;
+import pl.szelagi.CraftContainers;
 import pl.szelagi.file.FileManager;
 import pl.szelagi.util.Debug;
 
@@ -137,7 +137,7 @@ public class RecoveryManager implements Listener {
 
 
     public static Set<RecoveryFile> findRecoveries(String prefix) {
-        var fileManager = new FileManager(SessionAPI.RECOVERY_DIRNAME);
+        var fileManager = new FileManager(CraftContainers.RECOVERY_DIRNAME);
         var hashSet = new HashSet<RecoveryFile>();
         var files = fileManager.directory().listFiles();
         if (files == null) return new HashSet<>();

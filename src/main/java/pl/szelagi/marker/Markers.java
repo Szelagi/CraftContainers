@@ -18,17 +18,22 @@ import pl.szelagi.transform.Rotation;
 import pl.szelagi.util.IncrementalGenerator;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Markers extends AbstractMarkers<Markers> {
     @SuppressWarnings("unchecked")
     public static Markers read(@NotNull File file, @NotNull Location base) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            var idGenerator = (IncrementalGenerator) ois.readObject();
-            var markerDataSet = (Set<MarkerData>) ois.readObject();
-            var markerSet = markerDataSet.stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
-            return new Markers(idGenerator, base, Collections.emptyList(), markerSet);
+        try {
+            byte[] data = Files.readAllBytes(file.toPath());
+
+            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
+                var idGenerator = (IncrementalGenerator) ois.readObject();
+                var markerDataSet = (Set<MarkerData>) ois.readObject();
+                var markerSet = markerDataSet.stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
+                return new Markers(idGenerator, base, Collections.emptyList(), markerSet);
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

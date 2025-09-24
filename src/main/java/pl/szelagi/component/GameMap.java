@@ -81,7 +81,7 @@ public abstract class GameMap extends Component {
 
     @Deprecated
     public GameMap(@NotNull Container container) {
-        this(container, Allocators.productionAllocator());
+        this(container, Allocators.defaultRecyclingAllocator());
     }
 
     public GameMap(@NotNull Container container, ISpaceAllocator allocator) {
@@ -180,7 +180,7 @@ public abstract class GameMap extends Component {
             // Niszczmy pozostałości mapy
             degenerate();
             // Zwalniamy przydzieloną przestrzeń
-            allocator.deallocate(space);
+            Scheduler.runTask(() -> allocator.deallocate(space));
         };
 
         if (isAsync) {
@@ -196,12 +196,16 @@ public abstract class GameMap extends Component {
     protected abstract void degenerate();
 
     public final Location center() {
-        var space = space();
-        return space.getCenter();
+        return space().getCenter();
     }
 
     public final IAllocate space() {
-        if (space == null) throw new IllegalStateException("Space not set");
+        if (space == null)
+            throw new IllegalStateException(
+                    "Invalid use of method: 'space' has not been initialized. " +
+                            "Do not call this method from a constructor or as a static field."
+            );
+
         return space;
     }
 
