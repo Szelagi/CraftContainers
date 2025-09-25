@@ -41,6 +41,10 @@ public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
                 .toList();
     }
 
+    default @NotNull List<Location> getLocationsByName(String name) {
+        return getByName(name).stream().map(Marker::getLocation).toList();
+    }
+
     default @NotNull List<Marker> requireAnyByName(String name) {
         var markers = getByName(name);
         if (markers.isEmpty())

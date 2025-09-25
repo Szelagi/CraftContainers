@@ -31,6 +31,7 @@ import pl.szelagi.recovery.internalEvent.PlayerRecovery;
 import pl.szelagi.recovery.internalEvent.PlayerRecoveryCause;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class Container extends Component {
     private static final Map<Player, Container> PLAYER_TO_CONTAINER = new HashMap<>();
@@ -214,5 +215,9 @@ public abstract class Container extends Component {
 
     public @NotNull <T> Set<T> getComponents(Class<T> clazz) {
         return index.get(clazz);
+    }
+
+    public <T> void forEachComponents(Class<T> clazz, Consumer<T> consumer) {
+        getComponents(clazz).forEach(consumer);
     }
 }

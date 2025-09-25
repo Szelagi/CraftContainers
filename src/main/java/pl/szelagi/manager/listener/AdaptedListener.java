@@ -69,6 +69,14 @@ public interface AdaptedListener extends Listener {
                 .toList();
     }
 
+    static @Nullable Component firstFor(@Nullable Container container, Class<? extends Listener> listenerClass) {
+        return findComponents(container, listenerClass).stream().findFirst().orElse(null);
+    }
+
+    static List<Component> eachFor(@Nullable Container container, Class<? extends Listener> listenerClass) {
+        return findComponents(container, listenerClass).stream().toList();
+    }
+
     default void first(@Nullable Container container,
                        @NotNull Consumer<Component> componentConsumer) {
         firstFor(container, getClass(), componentConsumer);
@@ -99,5 +107,13 @@ public interface AdaptedListener extends Listener {
     default <T extends Component> List<T> each(@Nullable Container container,
                                           @NotNull Class<T> componentClass) {
         return eachFor(container, getClass(), componentClass);
+    }
+
+    default @Nullable Component first(@Nullable Container container) {
+        return firstFor(container, getClass());
+    }
+
+    default List<Component> each(@Nullable Container container) {
+        return eachFor(container, getClass());
     }
 }

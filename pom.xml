@@ -113,7 +113,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Szelagi Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/Szelagi/SessionAPI</url>
+            <url>https://maven.pkg.github.com/Szelagi/CraftContainers</url>
         </repository>
     </distributionManagement>
 
