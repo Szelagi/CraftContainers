@@ -12,34 +12,54 @@ import pl.szelagi.component.Controller;
 import pl.szelagi.util.timespigot.Time;
 
 public class ItemGenerator extends Controller {
-    private final net.kyori.adventure.text.Component text;
-    private final Material visualMaterial;
-    private final Material itemMaterial;
+    private final ItemStack spawnItem;
     private final Location location;
     private final Time spawnDelay;
+    private final RotHologramBlock rotHologramBlock;
+    private final Hologram hologram;
 
-    public ItemGenerator(Component component, net.kyori.adventure.text.Component text, Location location, Material visualMaterial, Material itemMaterial, Time spawnDelay) {
-        super(component);
-        this.text = text;
-        this.visualMaterial = visualMaterial;
-        this.itemMaterial = itemMaterial;
+    public ItemGenerator(Component parent, net.kyori.adventure.text.Component label, Location location, ItemStack displayItem, ItemStack spawnItem, Time spawnDelay) {
+        super(parent);
+        this.spawnItem = spawnItem;
         this.location = location;
         this.spawnDelay = spawnDelay;
+
+        var fallingLocation = location.clone().add(0, 2.9, 0);
+        var hologramLocation = location.clone().add(0, 2, 0);
+
+        // Możesz utworzyć obiekty komponentów podrzędnych w konstruktorze, ale nie możesz ich uruchomić z poziomu konstruktora
+        // poniważ w konstruktorze rodzic (this) nie jest włączony więc sam nie może uruchamiać komponentów podrzędnych
+        this.rotHologramBlock = new RotHologramBlock(this, fallingLocation, displayItem);
+        this.hologram = new Hologram(this, hologramLocation, label);
+    }
+    public ItemGenerator(Component parent, net.kyori.adventure.text.Component label, Location location, Material displayMaterial, ItemStack spawnItem, Time spawnDelay) {
+        this(parent, label, location, new ItemStack(displayMaterial), spawnItem, spawnDelay);
+    }
+
+    public ItemGenerator(Component parent, net.kyori.adventure.text.Component label, Location location, ItemStack displayItemStack, Material spawnMaterial, Time spawnDelay) {
+        this(parent, label, location, displayItemStack, new ItemStack(spawnMaterial), spawnDelay);
+    }
+
+    public ItemGenerator(Component parent, net.kyori.adventure.text.Component label, Location location, Material displayMaterial, Material spawnMaterial, Time spawnDelay) {
+        this(parent, label, location, new ItemStack(displayMaterial), new ItemStack(spawnMaterial), spawnDelay);
     }
 
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        var fallingLocation = location.clone().add(0, 2.9, 0);
-        var hologramLocation = location.clone().add(0, 2, 0);
-        new RotHologramBlock(this, fallingLocation, visualMaterial).start();
-        new Hologram(this, hologramLocation, text).start();
-        runTaskTimer(this::generate, spawnDelay, spawnDelay);
+        // rodzic (this) uruchomił się, więc uruchamiamy komponenty podrzędne
+        // craftcontainers śledzi uruchomione komponenty więc zostaną wyłączone automatycznie wraz z rodzicem
+        rotHologramBlock.start();
+        hologram.start();
+
+        // uruchamiamy zadanie, które spawnuje item
+        runTaskTimer(this::spawnItem, spawnDelay, spawnDelay);
     }
 
-    private void generate() {
+    // prosty kod na generowanie itemów ma mapie
+    private void spawnItem() {
         final var world = location.getWorld();
-        var itemStack = new ItemStack(itemMaterial);
+        var itemStack = new ItemStack(spawnItem);
         world.dropItem(location, itemStack, i -> {
             i.setVelocity(new Vector(0, 0, 0));
             i.setPickupDelay(0);

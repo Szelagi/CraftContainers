@@ -17,12 +17,17 @@ import pl.szelagi.util.timespigot.Time;
 public class RotHologramBlockID extends Controller {
     private float multiplier = 0;
     private final Location location;
-    private final Material material;
+    private final ItemStack displayItemStack;
     private ItemDisplay itemDisplay;
-    public RotHologramBlockID(Component component, Location location, Material material) {
-        super(component);
+
+    public RotHologramBlockID(Component parent, Location location, ItemStack displayItemStack) {
+        super(parent);
         this.location = location;
-        this.material = material;
+        this.displayItemStack = displayItemStack.clone();
+    }
+
+    public RotHologramBlockID(Component parent, Location location, Material displayMaterial) {
+        this(parent, location, new ItemStack(displayMaterial));
     }
 
     @Override
@@ -32,10 +37,10 @@ public class RotHologramBlockID extends Controller {
         itemDisplay = (ItemDisplay) world.spawnEntity(location, EntityType.ITEM_DISPLAY);
         itemDisplay.setCustomNameVisible(false);
         itemDisplay.setCustomName("FloatingBlockBD");
-        itemDisplay.setItemStack(new ItemStack(material));
+        itemDisplay.setItemStack(displayItemStack.clone());
 
         runTaskTimer(() -> {
-            if (itemDisplay == null || itemDisplay.isDead()) return;
+            if (itemDisplay == null) return;
 
             Vector3f translation = new Vector3f(0, 0, 0);
             AxisAngle4f axisAngleRotMat = new AxisAngle4f((float) -(Math.PI/2) * multiplier++ , new Vector3f(0, 1, 0));
@@ -54,8 +59,9 @@ public class RotHologramBlockID extends Controller {
     @Override
     public void onComponentDestroy(ComponentDestructor event) {
         super.onComponentDestroy(event);
-        if (itemDisplay != null && !itemDisplay.isDead()) {
+        if (itemDisplay != null) {
             itemDisplay.remove();
+            itemDisplay = null;
         }
     }
 }

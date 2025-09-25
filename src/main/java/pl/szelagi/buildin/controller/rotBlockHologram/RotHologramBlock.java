@@ -2,28 +2,33 @@ package pl.szelagi.buildin.controller.rotBlockHologram;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.component.Controller;
 import pl.szelagi.minecraftVersion.MinecraftVersion;
 
 public class RotHologramBlock extends Controller {
-    private final Location location;
-    private final Material material;
-    public RotHologramBlock(Component component, Location location, Material material) {
+    private final Component rotHologramBlock;
+
+    public RotHologramBlock(Component component, Location location, ItemStack displayItemStack) {
         super(component);
-        this.location = location;
-        this.material = material;
+
+        if (MinecraftVersion.isGreaterOrEqual(1, 19, 4)) {
+            rotHologramBlock = new RotHologramBlockID(this, location, displayItemStack);
+        } else {
+            rotHologramBlock = new RotHologramBlockAS(this, location, displayItemStack);
+        }
+    }
+
+    public RotHologramBlock(Component parent, Location location, Material material) {
+        this(parent,location, new ItemStack(material));
     }
 
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        if (MinecraftVersion.isGreaterOrEqual(1, 19, 4)) {
-            new RotHologramBlockID(this, location, material).start();
-        } else {
-            new RotHologramBlockAS(this, location, material).start();
-        }
+        rotHologramBlock.start();
     }
 
 }

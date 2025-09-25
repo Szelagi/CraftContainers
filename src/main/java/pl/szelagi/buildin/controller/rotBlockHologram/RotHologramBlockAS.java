@@ -15,12 +15,17 @@ import pl.szelagi.util.timespigot.Time;
 public class RotHologramBlockAS extends Controller {
     private float yaw;
     private final Location location;
-    private final Material material;
+    private final ItemStack displayItemStack;
     private ArmorStand armorStand;
-    public RotHologramBlockAS(Component component, Location location, Material material) {
-        super(component);
-        this.location = location.clone().add(new Vector(0, -1.7, 0));
-        this.material = material;
+
+    public RotHologramBlockAS(Component parent, Location location, ItemStack displayItemStack) {
+        super(parent);
+        this.location = location;
+        this.displayItemStack = displayItemStack.clone();
+    }
+
+    public RotHologramBlockAS(Component parent, Location location, Material displayMaterial) {
+        this(parent, location, new ItemStack(displayMaterial));
     }
 
     @Override
@@ -35,10 +40,10 @@ public class RotHologramBlockAS extends Controller {
         armorStand.setMarker(true);
         armorStand.setCustomNameVisible(false);
         armorStand.setCustomName("FloatingBlockAS");
-        armorStand.getEquipment().setHelmet(new ItemStack(material));
+        armorStand.getEquipment().setHelmet(displayItemStack.clone());
 
         runTaskTimer(() -> {
-            if (armorStand == null || armorStand.isDead()) return;
+            if (armorStand == null) return;
             yaw += 5;
             if (yaw >= 360) yaw = 0;
             armorStand.setRotation(yaw, 0);
@@ -48,8 +53,9 @@ public class RotHologramBlockAS extends Controller {
     @Override
     public void onComponentDestroy(ComponentDestructor event) {
         super.onComponentDestroy(event);
-        if (armorStand != null && !armorStand.isDead()) {
+        if (armorStand != null) {
             armorStand.remove();
+            armorStand = null;
         }
     }
 
