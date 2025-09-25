@@ -9,11 +9,11 @@ package pl.szelagi.test.treeProcessingTest;
 
 import org.bukkit.Bukkit;
 import pl.szelagi.CraftContainers;
-import pl.szelagi.test.SAPITest;
+import pl.szelagi.test.TestE2E;
 import pl.szelagi.test.TestName;
 
 class TreeTest {
-    @SAPITest(test = TestName.CONSTRUCTOR_TREE_TEST)
+    @TestE2E(test = TestName.CONSTRUCTOR_TREE_TEST)
     public void constructorTreeTest() {
         var s = new S(CraftContainers.instance());
         try {
@@ -29,7 +29,7 @@ class TreeTest {
         }
     }
 
-    @SAPITest(test = TestName.DESTRUCTOR_TREE_TEST)
+    @TestE2E(test = TestName.DESTRUCTOR_TREE_TEST)
     public void destructorTreeTest() {
         var s = new S(CraftContainers.instance());
         try {
@@ -45,7 +45,7 @@ class TreeTest {
         test("C11 C10 C9 C8 C7 C6 C5 C4 C3 C2 C1", actual);
     }
 
-    @SAPITest(test = TestName.PLAYER_CONSTRUCTOR_AFTER_TREE_TEST)
+    @TestE2E(test = TestName.PLAYER_CONSTRUCTOR_AFTER_TREE_TEST)
     public void playerConstructorAfterTreeTest() {
         var s = new S(CraftContainers.instance());
         try {
@@ -61,7 +61,7 @@ class TreeTest {
         }
     }
 
-    @SAPITest(test = TestName.PLAYER_DESTRUCTOR_BEFORE_TREE_TEST)
+    @TestE2E(test = TestName.PLAYER_DESTRUCTOR_BEFORE_TREE_TEST)
     public void playerDestructorBeforeTreeTest() {
         var s = new S(CraftContainers.instance());
         try {
@@ -78,7 +78,7 @@ class TreeTest {
         test("C11 C10 C9 C8 C7 C6 C5 C4 C3 C2 C1", actual);
     }
 
-    @SAPITest(test = TestName.PLAYER_DESTRUCTOR_AFTER_TREE_TEST)
+    @TestE2E(test = TestName.PLAYER_DESTRUCTOR_AFTER_TREE_TEST)
     public void playerDestructorAfterTreeTest() {
         var s = new S(CraftContainers.instance());
         try {
@@ -95,7 +95,7 @@ class TreeTest {
         }
     }
 
-    @SAPITest(test = TestName.PLAYER_JOIN_REQUEST_TREE_TEST)
+    @TestE2E(test = TestName.PLAYER_JOIN_REQUEST_TREE_TEST)
     public void playerJoinRequestTreeTest() {
         var s = new S(CraftContainers.instance());
         try {

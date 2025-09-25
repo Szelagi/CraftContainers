@@ -11,12 +11,16 @@ import com.github.t9t.minecraftrconclient.RconClient;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.OutputFrame;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.MountableFile;
 import pl.szelagi.command.test.TestCommand;
 import pl.szelagi.test.TestName;
+import pl.szelagi.test.Tests;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +37,7 @@ import java.util.regex.Pattern;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @ExtendWith(Watcher.class)
-public class CoreIT {
+public class CoreE2E {
     private static String generatePassword(int length) {
         var random = new SecureRandom();
         return random.ints(48, 122)
@@ -56,7 +60,7 @@ public class CoreIT {
 
     private static Path sapiPath() {
         Properties props = new Properties();
-        try (InputStream in = CoreIT.class.getResourceAsStream("/build.properties")) {
+        try (InputStream in = CoreE2E.class.getResourceAsStream("/build.properties")) {
             props.load(in);
             String finalName = props.getProperty("project.finalName");
             var fileName = finalName + ".jar";
@@ -72,7 +76,7 @@ public class CoreIT {
 
     private static Path fawePath() throws URISyntaxException {
         var plugin = Paths.get(
-                Objects.requireNonNull(CoreIT.class.getClassLoader().getResource("fawe.jar")).toURI()
+                Objects.requireNonNull(CoreE2E.class.getClassLoader().getResource("fawe.jar")).toURI()
         );
         if (!Files.exists(plugin)) {
             throw new RuntimeException("Could not find fawe.jar");
@@ -91,7 +95,7 @@ public class CoreIT {
         var fawePath = fawePath();
 
         server = new GenericContainer<>("itzg/minecraft-server")
-                .withCreateContainerCmdModifier(cmd -> cmd.withName("sessionapi-test-server"))
+                .withCreateContainerCmdModifier(cmd -> cmd.withName("craftcontainers-test-server"))
                 .withEnv("EULA", "TRUE")
                 .withEnv("TYPE", "PAPER")
                 .withEnv("VERSION", "1.21.1")
@@ -101,26 +105,21 @@ public class CoreIT {
                 .withEnv("LEVEL_TYPE", "FLAT")
                 .withEnv("ONLINE_MODE", "FALSE")
                 .withEnv("DIFFICULTY", "peaceful")
+                .withEnv("INIT_MEMORY", "1G")
+                .withEnv("MAX_MEMORY", "2G")
                 .withExposedPorts(25565, 25575)
                 .withCopyFileToContainer(MountableFile.forHostPath(sapiPath.toString()), "/plugins/sapi.jar")
                 .withCopyFileToContainer(MountableFile.forHostPath(fawePath.toString()), "/plugins/fawe.jar")
                 .withNetwork(sharedNetwork)
-                .withNetworkAliases("mc-server");
-//                .withCopyFileToContainer(MountableFile.forHostPath(worldPath.toString()), "/world.zip")
-//                .withCommand("unzip -o /world.zip -d /world")
-//                .waitingFor(org.testcontainers.containers.wait.strategy.Wait.forListeningPort());
+                .withNetworkAliases("mc-server")
+                .waitingFor(
+                        Wait.forLogMessage(".*Done \\(.*\\)!.*", 1)
+                                .withStartupTimeout(Duration.ofMinutes(5))
+                );
 
-        System.out.println("Starting the container...");
+        System.out.println("Starting the docker container...");
         server.start();
         System.out.println("Waiting for the server to fully start...");
-
-        await()
-                .pollInterval(Duration.ofMillis(100))
-                .until(() -> {
-                    String logs = server.getLogs();
-                    return logs.contains("Done (");
-                });
-
 
         port = server.getMappedPort(25565);
         host = server.getHost();
@@ -130,10 +129,10 @@ public class CoreIT {
         rcon = RconClient.open(HOST, rconPort, rconPassword);
 
         bot = new GenericContainer<>("szelagi/mc-test-player")
-                .withCreateContainerCmdModifier(cmd -> cmd.withName("sessionapi-test-client"))
+                .withCreateContainerCmdModifier(cmd -> cmd.withName("craftcontainers-test-client"))
                 .withEnv("SERVER_HOST", "mc-server")
                 .withEnv("SERVER_PORT", "25565")
-                .withEnv("USERNAME", "TesterBot")
+                .withEnv("USERNAME", Tests.TEST_PLAYER_NICK)
                 .withEnv("MC_VERSION", "1.21.1")
                 .withNetwork(sharedNetwork);
 
@@ -170,60 +169,16 @@ public class CoreIT {
     @Test
     public void hasPlugins() {
         var res = rcon.sendCommand("pl");
-        if (!res.contains("SessionAPI"))
-            throw new IllegalStateException("SessionAPI not present");
+        if (!res.contains("CraftContainers"))
+            throw new IllegalStateException("CraftContainers not present");
 
         if (!res.contains("FastAsyncWorldEdit"))
             throw new IllegalStateException("FastAsyncWorldEdit not present");
     }
 
-    @Test
-    public void sessionStartStopTest() {
-        internalTest(TestName.SESSION_START_STOP_TEST);
-    }
-
-    @Test
-    public void sessionStartStopWithPlayerTest() {
-        internalTest(TestName.SESSION_START_STOP_WITH_PLAYER_TEST);
-    }
-
-    @Test
-    public void constructorTreeTest() {
-        internalTest(TestName.CONSTRUCTOR_TREE_TEST);
-    }
-
-    @Test
-    public void destructorTreeTest() {
-        internalTest(TestName.DESTRUCTOR_TREE_TEST);
-    }
-
-    @Test
-    public void playerConstructorAfterTreeTest() {
-        internalTest(TestName.PLAYER_CONSTRUCTOR_AFTER_TREE_TEST);
-    }
-
-    @Test
-    public void playerDestructorAfterTreeTest() {
-        internalTest(TestName.PLAYER_DESTRUCTOR_AFTER_TREE_TEST);
-    }
-
-    @Test
-    public void playerDestructorBeforeTreeTest() {
-        internalTest(TestName.PLAYER_DESTRUCTOR_BEFORE_TREE_TEST);
-    }
-
-    @Test
-    public void playerJoinRequestTreeTest() {
-        internalTest(TestName.PLAYER_JOIN_REQUEST_TREE_TEST);
-    }
-
-    @Test
-    public void addRemovePlayerTest() {
-        internalTest(TestName.ADD_REMOVE_PLAYER);
-    }
-
-
-    private void internalTest(@NotNull TestName testName) throws RemoteTestFailed {
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(TestName.class)
+    public void internalTest(@NotNull TestName testName) throws RemoteTestFailed {
         var query = TestCommand.COMMAND_NAME + " " + testName;
         var res = rcon.sendCommand(query);
         if (!res.contains(TestCommand.SUCCESS)) {

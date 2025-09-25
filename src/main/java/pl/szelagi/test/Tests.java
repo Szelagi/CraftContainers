@@ -7,6 +7,8 @@
 
 package pl.szelagi.test;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -15,16 +17,24 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 public class Tests {
+    public static final String TEST_PLAYER_NICK = "TesterBot";
+    public static Player getTestPlayer() {
+        var player = Bukkit.getPlayer(TEST_PLAYER_NICK);
+        if (player == null)
+            throw new IllegalStateException("Test player not found.");
+        return player;
+    }
+
     private static List<Method> findTests(TestName testName) {
         var reflections = new Reflections(new ConfigurationBuilder()
                 .forPackages(Tests.class.getPackage().getName())
                 .addScanners(Scanners.MethodsAnnotated));
 
-        var methods = reflections.getMethodsAnnotatedWith(SAPITest.class);
+        var methods = reflections.getMethodsAnnotatedWith(TestE2E.class);
         return methods
                 .stream()
                 .filter(method ->
-                        method.getAnnotation(SAPITest.class).test().equals(testName)
+                        method.getAnnotation(TestE2E.class).test().equals(testName)
                 ).toList();
     }
 

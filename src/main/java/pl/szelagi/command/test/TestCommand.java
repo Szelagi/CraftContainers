@@ -9,22 +9,14 @@ package pl.szelagi.command.test;
 
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ConfigurationBuilder;
-import pl.szelagi.test.SAPITest;
 import pl.szelagi.test.TestName;
 import pl.szelagi.test.Tests;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TestCommand implements CommandExecutor {
-    public static final String COMMAND_NAME = "session-internal-test";
+    public static final String COMMAND_NAME = "craftcontainers-e2e-test";
     public static final String SUCCESS = "OK";
 
     private String exceptionToString(Throwable e) {
@@ -64,7 +56,6 @@ public class TestCommand implements CommandExecutor {
         try {
             Tests.perform(testName);
             sendSuccess(commandSender);
-            return true;
         } catch (Exception e) {
             sendError(commandSender, exceptionToString(e));
         }

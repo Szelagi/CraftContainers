@@ -21,8 +21,8 @@ commands:
     description: "Toggles debugging messages on or off."
     permission: "craftcontainers.debug"
 
-  session-internal-test:
-    description: "Command for running internal tests."
+  craftcontainers-e2e-test:
+    description: "Command for running e2e tests."
     permission: "craftcontainers.test"
 
   # blueprint
