@@ -600,4 +600,12 @@ public abstract class Component implements TreeListener, IHierarchical<Component
         return null;
     }
 
+    public void broadcast(net.kyori.adventure.text.Component message) {
+        players().forEach(player -> player.sendMessage(message));
+    }
+
+    public void broadcast(String message) {
+        broadcast(net.kyori.adventure.text.Component.text(message));
+    }
+
 }

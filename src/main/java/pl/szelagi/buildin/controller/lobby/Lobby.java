@@ -132,11 +132,6 @@ public class Lobby extends Controller {
         return finalizeEventDispatcher;
     }
 
-    private void broadcast(String message) {
-        for (var player : players())
-            player.sendMessage(message);
-    }
-
     @Override
     public Listeners defineListeners() {
         return super.defineListeners().add(LobbyListener.class);

@@ -110,11 +110,6 @@ public class MessageTimer extends Controller {
         breakCountMessage = message;
     }
 
-    private void broadcast(String message) {
-        for (var player : players())
-            player.sendMessage(message);
-    }
-
     private void broadcastSound(Sound sound) {
         for (var player : players())
             Audience.audience(player)
