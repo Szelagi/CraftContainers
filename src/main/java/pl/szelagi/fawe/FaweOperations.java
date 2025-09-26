@@ -24,6 +24,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.transform.Axis;
 import pl.szelagi.transform.RotAxis;
@@ -111,7 +112,7 @@ public class FaweOperations {
                 .newEditSessionBuilder()
                 .world(world)
                 .fastMode(true)
-                .relightMode(RelightMode.NONE)
+                .relightMode(RelightMode.OPTIMAL)
                 .limitUnlimited()
                 .checkMemory(false)
                 .build()) {
@@ -151,6 +152,31 @@ public class FaweOperations {
             editSession.setBlocks(region, state);
             editSession.flushQueue();
         }
+    }
+
+    public static void setBlock(Location pos1, Location pos2, Material material) {
+        if (!pos1.getWorld().getName().equals(pos2.getWorld().getName()))
+            throw new IllegalArgumentException("Pos1 and pos2 have different world");
+
+        var world = BukkitAdapter.adapt(pos1.getWorld());
+        try (EditSession editSession = WorldEdit.getInstance()
+                .newEditSessionBuilder()
+                .world(world)
+                .fastMode(true)
+                .relightMode(RelightMode.OPTIMAL)
+                .limitUnlimited()
+                .checkMemory(false)
+                .build()) {
+
+            var min = minPoint(pos1, pos2);
+            var max = maxPoint(pos1, pos2);
+            var region = (Region) new CuboidRegion(world, min, max);
+
+            var state = BukkitAdapter.asBlockType(material).getDefaultState();
+            editSession.setBlocks(region, state);
+            editSession.flushQueue();
+        }
+
     }
 
     // Zamienia współrzędne lokalne punktu minimalnego schematu na współrzędne absolutne bazując na origin absolutnym
