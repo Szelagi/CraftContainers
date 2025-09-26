@@ -9,37 +9,38 @@ package pl.szelagi.state;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.state.manual.ManualContainerException;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ManualStorage<I, S> implements Serializable, Iterable<S> {
     private final HashMap<I, S> inputStorageMap = new HashMap<>();
 
-    public @NotNull S createOrThrow(@NotNull I input, @NotNull Function<I, S> creator) throws ManualContainerException {
+    public @NotNull S createOrThrow(@NotNull I input, @NotNull Function<I, S> creator) throws ManualStorageException {
         if (inputStorageMap.containsKey(input))
-            throw new ManualContainerException("manual container of " + input + " multi initialization");
+            throw new ManualStorageException("manual container of " + input + " multi initialization");
         inputStorageMap.put(input, creator.apply(input));
         return getOrThrow(input);
     }
 
-    public @NotNull S getOrThrow(@NotNull I input) throws ManualContainerException {
+    public @NotNull S getOrThrow(@NotNull I input) throws ManualStorageException {
         var record = inputStorageMap.get(input);
         if (record == null)
-            throw new ManualContainerException("manual container of " + input + " is not initialized");
+            throw new ManualStorageException("manual container of " + input + " is not initialized");
         return record;
     }
 
-    public @NotNull S removeOrThrow(@NotNull I input) throws ManualContainerException {
+    public @NotNull S removeOrThrow(@NotNull I input) throws ManualStorageException {
         var record = inputStorageMap.remove(input);
         if (record == null)
-            throw new ManualContainerException("remove " + input + " not exists in manual container");
+            throw new ManualStorageException("remove " + input + " not exists in manual container");
         return record;
     }
 
@@ -60,10 +61,25 @@ public class ManualStorage<I, S> implements Serializable, Iterable<S> {
         return inputStorageMap.containsKey(input);
     }
 
+    public Collection<S> toCollection() {
+        return inputStorageMap.values();
+    }
+
     @NotNull
     @Override
     public Iterator<S> iterator() {
-        return inputStorageMap.values()
-                .iterator();
+        return toCollection().iterator();
+    }
+
+    public Stream<S> stream() {
+        return toCollection().stream();
+    }
+
+    public int size() {
+        return inputStorageMap.size();
+    }
+
+    public boolean isEmpty() {
+        return inputStorageMap.isEmpty();
     }
 }

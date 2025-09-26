@@ -5,12 +5,12 @@
  * For more details, visit <https://www.gnu.org/licenses/>.
  */
 
-package pl.szelagi.state.manual;
+package pl.szelagi.state;
 
 import pl.szelagi.util.ServerRuntimeException;
 
-public class ManualContainerException extends ServerRuntimeException {
-    public ManualContainerException(String name) {
+public class ManualStorageException extends ServerRuntimeException {
+    public ManualStorageException(String name) {
         super(name);
     }
 }

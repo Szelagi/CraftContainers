@@ -9,7 +9,6 @@ package pl.szelagi.state;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.szelagi.state.manual.ManualContainerException;
 
 import java.util.function.Function;
 
@@ -20,7 +19,7 @@ public class Storage<I, S> extends ManualStorage<I, S> {
         this.creator = creator;
     }
 
-    public @NotNull S createOrThrow(@NotNull I input) throws ManualContainerException {
+    public @NotNull S createOrThrow(@NotNull I input) throws ManualStorageException {
         return createOrThrow(input, creator);
     }
 
