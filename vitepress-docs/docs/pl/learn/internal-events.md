@@ -24,19 +24,16 @@ public void onComponentInit(ComponentConstructor event) {
     runTaskTimer(this::giveItems, Time.ticks(10), Time.ticks(10));
 
     // Inicjalizacja generatora przedmiotów
-    var board = board();
-    if (board != null) {
-        var generatorTag = board.tags("generator");
-        var location = generatorTag.firstCentredXZ(); // Pobranie pozycji generatora
-        var label = Component.text("§a§lGENERATOR"); // Etykieta wyświetlana nad generatorem
-        var displayMaterial = Material.EMERALD_BLOCK; // Blok reprezentujący generator
-        var itemMaterial = Material.EMERALD; // Przedmiot generowany przez generator
-        var interval = Time.ticks(10); // Interwał generowania przedmiotów (w tickach)
+    var label = Component.text("§a§lGENERATOR"); // Etykieta wyświetlana nad generatorem
+    var displayMaterial = Material.EMERALD_BLOCK; // Blok reprezentujący generator
+    var itemMaterial = Material.EMERALD; // Przedmiot generowany przez generator
+    var interval = Time.ticks(10); // Interwał generowania przedmiotów (w tickach)
 
-        // Tworzenie i uruchamianie generatora przedmiotów
-        var generator = new ItemGenerator(this, label, location, displayMaterial, itemMaterial, interval);
-        generator.start();
-    }
+    // Tworzenie i uruchamianie generatora przedmiotów
+    // lokacja pochodzi z konstruktora
+    var generator = new ItemGenerator(this, label, location, displayMaterial, itemMaterial, interval);
+    generator.start();
+
 }
 
 private void giveItems() {
@@ -146,7 +143,7 @@ public void onPlayerJoinRequest(PlayerJoinRequest event) {
   // Decyzja, czy gracz może dołączyć
   var newPlayerCount = players().size() + 1;
   if (newPlayerCount > MY_PLAYER_LIMIT) {
-      var reason = new Reason(this, "Nie możesz dołączyć, ponieważ sesja jest już pełna!");
+      var reason = new Reason(this, "Nie możesz dołączyć, ponieważ kontener jest już pełny!");
       event.setCanceled(reason);
   }
 }

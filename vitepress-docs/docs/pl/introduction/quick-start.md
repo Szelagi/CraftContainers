@@ -1,12 +1,11 @@
-# Szybki start
-Proste wprowadzenie do pracy z SessionAPI, obejmujące podstawy zarządzania sesjami i komponentami.
+# Szybki start - przykład gry Spleef
+Proste wprowadzenie do pracy z CraftContainers.
 
-![zdjęcie poglądowe pierwszego projektu](../../img/pierwszy-kontener.png)
+![gra spleef](../../img/spleef-gameplay.gif)
 
-## Listenery w bibliotece
-
-Każdy komponent (`Session`, `Board`, `Controller`) posiada wbudowane zdarzenia wewnętrzne, które odpowiadają za różne etapy
-życia komponentu oraz interakcję z graczami.
+Funkcjonalności umieszczamy wewnątrz komponentów. 
+Każdy komponent posiada wbudowane zdarzenia wewnętrzne, które odpowiadają za różne etapy
+cyklu życia oraz interakcję z graczami.
 
 * **onComponentInit()** – Wywoływany automatycznie, gdy komponent zostaje utworzony. Używany do inicjalizacji
   komponentu (np. tworzenie zasobów, uruchamianie wątków, inicjowanie logiki).
@@ -21,165 +20,455 @@ Każdy komponent (`Session`, `Board`, `Controller`) posiada wbudowane zdarzenia 
 * **onPlayerDestroy()** – Wywoływany automatycznie, gdy gracz opuszcza sesję. Używany do usuwania
   właściwości gracza, które były przypisane na potrzeby sesji (np. usuwanie efektów czy zmiany statusu).
 
-## Tworzenie głównej klasy kontenera
+  
+## Faza budowania mapy
+1. Uruchom edytor schematów: `/blueprint edit simplespleef#mygamemap`
+2. Zbuduj prostą arenę spleef według własnego pomysłu.
+3. Oznacz kluczowe lokacje na mapie:
+  - `/marker givemarkerblock spawn` - postaw blok w miejscu spawn graczy
+  - `/marker givemarkerblock pos1` - postaw blok w jednym rogu na wysokości śniegu
+  - `/marker givemarkerblock pos2` - postaw blok w przeciwnym rogu na wysokości śniegu
+4. Zapisz projekt: `/blueprint save`
+5. Opuść edytor: `/blueprint exit`
 
-**Session** to klasa zarządzająca sesją gry, odpowiadająca za graczy, mapę i kontrolery. Inicjuje, uruchamia i kończy
-sesję, zapewniając organizację i kontrolę nad grą.
+![mapa spleef](../../img/spleef-gamemap.png)
 
-```java
-public class MyContainer extends Session {
-	public MyContainer(JavaPlugin plugin) {
-		super(plugin);
-	}
+[Dowiedz się więcej o edytorze Blueprint.](/pl/learn/blueprint.md)
 
-	@NotNull
-	@Override
-	// Ta metoda jest wywoływana automatycznie, aby zdefiniować domyślną mapę dla kontenera.
-	// Mapa może być później zmieniona za pomocą metody .setBoard(#Board), jeśli zajdzie taka potrzeba.
-	protected Board defaultBoard() {
-		return new MyBoard(this);
-	}
 
-	@Override
-	// Ta metoda jest wywoływana automatycznie w momencie tworzenia instancji sesji.
-	public void onComponentInit(ComponentConstructor event) {
-		super.onComponentInit(event);
-		// Aby dodać kontroler do drzewa komponentów sesji, tworzymy jego instancję,
-		// a jako argument przekazujemy "this" (jako rodzica), co oznacza, że kontroler będzie podłączony do bieżącej sesji.
-		// Następnie uruchamiamy kontroler, aby zaczął działać.
-		new MyController(this).start();
-        // Nie musimy przechowywać jego instancji, ponieważ zostanie automatycznie wyłączony wraz z wyłączeniem rodzica, w tym przypadku MySession.
-	}
-}
+## Klasa odpowiadająca za mapę
 
-```
-
-### Najważniejsze listenery
-
-* **onComponentInit()** – Wywoływany automatycznie podczas tworzenia instancji sesji, używany do uruchomienia
-  wymaganych zasobów.
-
-* **onComponentDestroy()** – Wywoływany automatycznie podczas usuwania sesji, służy do zwolnienia i usunięcia zasobów.
-
-::: tip
-Biblioteka automatycznie śledzi utworzone komponenty oraz wątki, dlatego nie musisz używać metody
-`onComponentDestroy()` do ich zwolnienia – zrobi to za Ciebie.
-:::
-
-### Najważniejsze metody
-
-* **start()** – Uruchamia sesję, buduje mapę, oraz inicjuje i uruchamia wszystkie kontrolery.
-
-* **stop()** – Usuwa sesję, w tym strukturę, mapę i graczy, a także usuwa listenery oraz wątki związane z sesją.
-
-* **addPlayer(#Player)** – Dodaje gracza do kontenera.
-
-* **removePlayer(#Player)** – Usuwa gracza z kontenera.
-
-* **setBoard(#Board)** – Zmienia mapę w sesji.
-
-## Tworzenie klasy odpowiedzialnej za mapę
-
-Board to klasa reprezentująca mapę, odpowiedzialna za jej budowanie i usuwanie. Posiada listenery do obsługi tworzenia i
-niszczenia planszy, a także do inicjalizacji graczy.
+[Dowiedz się więcej generowaniu mapy.](/pl/learn/gamemap-generating.md)
 
 ```java
-public class MyBoard extends Board {
-	public MyBoard(Session session) {
-		super(session);
-	}
-}
-```
+public class SpleefGameMap extends GameMap {
+    // Pliki wygenerowane w edytorze map (schemat i markery)
+    private final static String NAME = "mygamemap";
+    // Nazwa pluginu musi być "SimpleSpleef", aby arena była poprawnie rozpoznana
+    // (np. jako simplespleef#mygamemap)
+    private final static File SCHEMATIC_FILE = ISchematic.getFile(SimpleSpleef.getInstance(), NAME);
+    private final static File MARKERS_FILE = IMarkers.getFile(SimpleSpleef.getInstance(), NAME);
 
-### Najważniejsze listenery
+    // Schemat mapy i zestaw markerów (np. spawn, strefa eliminacji) 
+    // dostosowane do bieżącej instancji gry
+    private ISchematic<?> schematic;
+    private Markers markers;
 
-* **generate()** – Wywoływany do zbudowania mapy.
+    public SpleefGameMap(@NotNull Container container, @NotNull ISpaceAllocator allocator) {
+        super(container, allocator);
+    }
 
-* **degenerate()** – Wywoływany do usunięcia mapy.
+    public SpleefGameMap(@NotNull Container container) {
+        super(container, Allocators.defaultRecyclingAllocator());
+    }
 
-::: tip
-Klasa Board zawiera domyślne metody do budowania i niszczenia mapy, oparte na schematach FAWE. Zwykle nie ma potrzeby
-ich przeciążania, ponieważ biblioteka zapewnia wystarczające rozwiązania. Przeciążenie metod `generate()` i
-`degenerate()`
-jest konieczne tylko w przypadku specjalnych, niestandardowych operacji.
-:::
+    // Generowanie mapy – wstawienie schematu w przestrzeń gry
+    @Override
+    protected void generate() {
+        // Wczytanie schematu mapy i ustawienie go w wyznaczonym obszarze
+        schematic = Schematics.newMassive(SCHEMATIC_FILE, space(), center());
+        schematic.load();
 
-## Tworzenie kontrolera
+        // Wczytanie markerów (np. spawn, strefy gry) z pliku
+        markers = Markers.read(MARKERS_FILE, center());
+    }
 
-Kontroler obsługuje logikę dla graczy. W tym przypadku wysyłamy wiadomość "Hello, world!" do każdego gracza, który
-dołącza do kontenera.
+    // Czyszczenie mapy - zwykłe usunięcie ternu gdzie był schemat
+    @Override
+    protected void degenerate() {
+        // Allocator przydziela przestrzeń dla GameMap.
+        // Jeśli ponownie używa tego samego obszaru, musisz zadbać o jego wyczyszczenie.
+        // Aby tego uniknąć, zdefinuj na sztywno allocator, który automatycznie czyści przestrzeń.
 
-```java
-public class MyController extends Controller {
-	public MyController(BaseComponent baseComponent) {
-		super(baseComponent);
-	}
+        // Sprawdzamy, czy przestrzeń wymaga ręcznego czyszczenia
+        if (!space().requiresCleanup()) return;
 
-	@Override
-	public void onPlayerInit(PlayerConstructor event) {
-		super.onPlayerInit(event);
-		var player = event.getPlayer();
-		player.sendMessage("Hello world!");
-	}
-}
-```
+        // Usunięcie schematu z mapy
+        if (schematic != null)
+            schematic.clean();
+    }
 
-### Listenery Bukkit
+    // Kiedy mapa uruchomi się
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        // Pobranie kluczowych lokalizacji z markerów
+        var spawn = markers.requireOneLocationByName("spawn");
+        var eliminated = markers.requireOneLocationByName("eliminated");
+        var pos1 = markers.requireOneLocationByName("pos1");
+        var pos2 = markers.requireOneLocationByName("pos2");
 
-* **defineListeners()** : *Listener (Bukkit)* – Metoda wywoływana automatycznie. Jej zadaniem jest zwrócenie klas typu
-  Listener, które będą obsługiwać zdarzenia związane z danym kontrolerem w systemie Bukkit.
-
-<details>
-  <summary>Przykład wykrywania zdarzenia skoku gracza</summary>
-
-Jeśli chcemy wykrywać zdarzenia skoku gracza wyłącznie w sesji kontrolowanej przez `MyController`, możemy zarejestrować nasłuchiwacz w następujący sposób:
-```java
-@Override
-public Listeners defineListeners() {
-    return super.defineListeners().add(MyListener.class);
-}
-
-private static class MyListener implements Listener { 
-    @EventHandler(ignoreCancelled = true) 
-    public void onPlayerJump(PlayerJumpEvent event) {
-        var player = event.getPlayer();
-        var session = SessionManager.session(player);
-        ListenerManager.each(session, MyListener.class, MyController.class, myController -> {
-           player.sendMessage("Skoczyłeś!"); 
-        });
+        // Uruchomienie logiki gry (rdzenia Spleefa) z użyciem wczytanych punktów
+        new SpleefCore(this, spawn, eliminated, pos1, pos2).start();
     }
 }
 ```
 
-::: tip
-Biblioteka automatycznie zarządza cyklem życia Listenerów (Bukkit). Kiedy kontroler zostanie uruchomiony, a dla niego
-nie ma aktywnego listenera, framework stworzy nową instancję i załaduje go. Gdy listener nie będzie już potrzebny (np.
-gdy żaden kontener nie używa danego komponentu), SessionAPI usunie go z serwera, dbając o wydajność. Biblioteka unika
-duplikowania listenerów, aby zapewnić optymalną pracę systemu.
-:::
-
-
-</details>
-
-
-* **
-
-## Uruchamianie kontenera instancji sesji
-
-Aby uruchomić kontener, tworzymy jego instancję i wywołujemy metodę start(). Dodanie gracza do kontenera wywołuje
-przygotowaną logikę, np. powitanie.
-
-```text
-var container = new MyContainer(plugin);
-container.start();
-container.addPlayer(player);
+## Stan gry
+```java
+public enum GameState {
+    WAITING,
+    PLAY,
+    REGENERATING
+}
 ```
 
-## Utworzona struktura drzewa sesji
+## Stan gracza
 
-Po uruchomieniu sesji zostanie stworzona zaplanowana struktura drzewa, która umożliwia łatwą wymianę rozwiązań, ponieważ
-wszystko jest obudowane w komponenty. Jest ona dobrze ustrukturyzowana i zapewnia przewidywalne zwalnianie zasobów.
-Kiedy fragment drzewa zostaje odłączony, wszystkie jego elementy, łącznie z dziećmi, są rekurencyjnie niszczone, a
-listenery uruchamiane w przewidywalnej kolejności.
+```java
+public class SpleefPlayer extends PlayerState {
+    private boolean isAlive;
+    public SpleefPlayer(Player player, boolean isAlive) {
+        super(player);
+        this.isAlive = isAlive;
+    }
 
-![zdjęcie poglądowe pierwszego projektu](../../img/schemat-hierarchia.png)
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+}
+```
+
+## Event handler
+[Dowiedz się więcej komunikacji komponentów.](/pl/learn/component-interaction.md)
+```java
+public interface SpleefEventHandler {
+    void invokePlayerEliminated(SpleefPlayer spleefPlayer);
+}
+```
+
+## Główny rdzeń spleef
+
+```java
+@SingletonComponent
+public class SpleefCore extends Controller implements SpleefEventHandler {
+    private GameState gameState = GameState.WAITING;
+    private PlayerManualStorage<SpleefPlayer> spleefPlayers = new PlayerManualStorage<>();
+
+    // Kluczowe lokalizacje areny
+    private final Location spawn;
+    private final Location eliminated;
+    private final Location snowPos1;
+    private final Location snowPos2;
+
+    public SpleefCore(@NotNull Component parent,
+                      Location spawn,
+                      Location eliminated,
+                      Location snowPos1,
+                      Location snowPos2) {
+        super(parent);
+        this.spawn = spawn;
+        this.eliminated = eliminated;
+        this.snowPos1 = snowPos1;
+        this.snowPos2 = snowPos2;
+    }
+
+
+
+    @Override
+    public void onComponentInit(ComponentConstructor event) {
+        // Oddzielny ekwipunek na czas gry
+        new OtherEquipment(this).start();
+
+        // Ustaw oddzielny tryb gry na czas gry.
+        new OtherGameMode(this, GameMode.SURVIVAL).start();
+
+        // Oddzielny tryb gry (wszyscy w survivalu)
+        new SpleefLogic(this).start();
+
+        // Start w stanie "oczekiwanie na graczy"
+        setGameStateWaiting();
+    }
+
+    @Override
+    public void onPlayerInit(PlayerConstructor event) {
+        // Każdy nowy gracz dostaje obiekt SpleefPlayer (domyślnie wyeliminowany)
+        var player = event.player();
+        spleefPlayers.createOrThrow(player, player1 -> new SpleefPlayer(player1, false));
+        player.teleport(eliminated);
+    }
+
+    @Override
+    public void onPlayerDestroy(PlayerDestructor event) {
+        // Usunięcie stanu gracza po opuszczeniu areny
+        var player = event.player();
+        spleefPlayers.removeOrThrow(player);
+    }
+
+    // Daj graczowi łopatę z enchantem Efficiency IV
+    public void giveSpleefItems(Player player) {
+        var inv = player.getInventory();
+        inv.clear();
+        var tool = new ItemStack(Material.DIAMOND_SHOVEL);
+        var meta = tool.getItemMeta();
+        meta.addEnchant(Enchantment.EFFICIENCY, 4, true);
+        tool.setItemMeta(meta);
+        inv.addItem(tool);
+    }
+
+    private void setGameStateWaiting() {
+        gameState = GameState.WAITING;
+
+        // Utworzenie lobby (min. 2 graczy)
+        var lobby = new Lobby(this, Time.seconds(4), spawn, 32, 2);
+
+        // Po zakończeniu lobby automatyczne przejście do fazy gry
+        lobby.getFinalizeEvent().register(this::setGameStatePlay);
+        lobby.start();
+
+        // Przeniesienie wszystkich graczy na spawn i wyczyszczenie ekwipunku
+        players().forEach(player -> {
+            player.teleport(spawn);
+            player.getEquipment().clear();
+        });
+    }
+
+    private void setGameStatePlay() {
+        gameState = GameState.PLAY;
+
+        // Wszyscy gracze stają się "żywi"
+        spleefPlayers.forEach(spleefPlayer -> spleefPlayer.setAlive(true));
+        players().forEach(this::giveSpleefItems);
+    }
+
+    private void setGameStateRegenerating() {
+        gameState = GameState.REGENERATING;
+
+        runTaskAsync(() -> {
+            // Odbudowanie warstwy śniegu w tle (FAWE – bez lagów dla serwera)
+            FaweOperations.setBlock(snowPos1, snowPos2, Material.SNOW_BLOCK);
+            // Po regeneracji powrót do stanu oczekiwania
+            runTask(this::setGameStateWaiting);
+        });
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    // Wysokość, poniżej której gracz jest eliminowany
+    public int getEliminationY() {
+        return snowPos1.getBlockY() - 3;
+    }
+
+    public SpleefPlayer getSpleefPlayer(Player player) {
+        return spleefPlayers.getOrThrow(player);
+    }
+
+    // Wywoływane, gdy gracz zostanie wyeliminowany (przez logikę SpleefLogic)
+    @Override
+    public void invokePlayerEliminated(SpleefPlayer spleefPlayer) {
+        var eliminationMessage = "§c" + spleefPlayer.getPlayer().getName() + " has been eliminated!";
+        broadcast(eliminationMessage);
+
+        var remainPlayers = spleefPlayers.stream().filter(sp -> sp.isAlive()).toList();
+        if (remainPlayers.size() == 1) {
+            var winner = remainPlayers.getFirst();
+            var winnerMessage = "§6" + winner.getPlayer().getName() + " has won the game!";
+            broadcast(winnerMessage);
+
+            setGameStateRegenerating();
+        }
+    }
+}
+```
+
+## Kontroller logiki spleef
+[Dowiedz się więcej o filtrowaniu eventów bukkit.](/pl/learn/listeners.md)
+
+```java
+// Ten komponent może istnieć tylko raz w danym kontenerze (wiele instancji SpleefLogic nie ma sensu).
+@SingletonComponent
+// Komponent wymaga aktywnego SpleefCore – bez niego logika gry nie ma zastosowania.
+@Dependency(component = SpleefCore.class)
+public class SpleefLogic extends Controller {
+    public SpleefLogic(@NotNull Component parent) {
+        super(parent);
+    }
+
+    @Override
+    public Listeners defineListeners() {
+        // Dodaj listener obsługujący zdarzenia gry
+        return super.defineListeners().add(MyListener.class);
+    }
+
+    // AdaptedListener to rozszerzony listener Bukkita,
+    // pozwalający filtrować zdarzenia w obrębie kontenera.
+    // Nigdy nie implementuj Listenera bezpośrednio w komponencie,
+    // bo wtedy jedna instancja obsługiwałaby wiele aren.
+    private static class MyListener implements AdaptedListener {
+        @EventHandler(ignoreCancelled = true)
+        public void onBlockPlace(BlockPlaceEvent event) {
+            // Każde zdarzenie Bukkit na początku pochodzi z globalnego kontekstu serwera.
+            // Aby powiązać je z właściwą areną, musimy odfiltrować je na podstawie gracza.
+            // Najpierw pobieramy kontener przypisany do gracza, który wywołał zdarzenie.
+            var container = Container.getForPlayer(event.getPlayer());
+            // Metoda first(...) uruchamia logikę dla pierwszego komponentu typu SpleefLogic
+            // wewnątrz podanego kontenera. Dzięki temu mamy pewność, że zdarzenie zostanie
+            // obsłużone tylko w ramach właściwej instancji gry.
+            first(container, SpleefLogic.class, spleefLogic -> {
+                // Po przefiltrowaniu zdarzenia i upewnieniu się, że dotyczy właściwego
+                // kontenera, anulujemy możliwość stawiania bloków na arenie.
+                event.setCancelled(true);
+            });
+        }
+
+        @EventHandler(ignoreCancelled = true)
+        public void onBlockBreak(BlockBreakEvent event) {
+            var player = event.getPlayer();
+            var container = Container.getForPlayer(player);
+            first(container, SpleefLogic.class, spleefLogic -> {
+
+                // Ponieważ ustawiliśmy zależność @Dependency(component = SpleefCore.class),
+                // możemy pobrać główny komponent SpleefCore i komunikować się z nim.
+                //
+                // Wskazówka: gdyby ta zależność nie była zadeklarowana, nadal moglibyśmy
+                // spróbować go wyszukać, ale wynik mógłby być null.
+                var core = spleefLogic.useComponent(SpleefCore.class);
+                var spleefPlayer = core.getSpleefPlayer(player);
+
+                // Pozwalamy niszczyć bloki śniegu tylko w trakcie aktywnej gry,
+                // pod warunkiem że gracz jest żywy i rzeczywiście niszczy blok śniegu.
+                if (event.getBlock().getType() == Material.SNOW_BLOCK && spleefPlayer.isAlive() && core.getGameState() == GameState.PLAY) {
+                    event.setDropItems(false);
+                    player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 4));
+                } else {
+                    event.setCancelled(true);
+                }
+            });
+        }
+
+        // Blokujemy możliwość wyrzucania przedmiotów z ekwipunku.
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerDropItem(PlayerDropItemEvent event) {
+            var container = Container.getForPlayer(event.getPlayer());
+            first(container, SpleefLogic.class, spleefLogic -> {
+                event.setCancelled(true);
+            });
+        }
+
+
+        // Zapobiegamy niszczeniu się przedmiotów poprzez wyzerowanie ich obrażeń.
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerItemDamage(PlayerItemDamageEvent event) {
+            var container = Container.getForPlayer(event.getPlayer());
+            first(container, SpleefLogic.class, spleefLogic -> {
+                event.setDamage(0);
+            });
+        }
+
+        // Wyłączamy możliwość otrzymywania obrażeń przez graczy
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if (!(event.getEntity() instanceof Player player)) return;
+
+            var container = Container.getForPlayer(player);
+            first(container, SpleefLogic.class, spleefLogic -> {
+                event.setDamage(0);
+            });
+        }
+
+
+        // Trafienie gracza śnieżką powoduje silne odepchnięcie w kierunku jej lotu.
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+            if (!(event.getEntity() instanceof Player victim)) return;
+            if (!(event.getDamager() instanceof Snowball snowball)) return;
+
+            var container = Container.getForPlayer(victim);
+            first(container, SpleefLogic.class, spleefLogic -> {
+                var knockback = snowball.getVelocity().normalize().multiply(1.5);
+                victim.setVelocity(knockback);
+            });
+        }
+
+        // Śnieżki mogą niszczyć bloki śniegu.
+        @EventHandler(ignoreCancelled = true)
+        public void onProjectileHit(ProjectileHitEvent event) {
+            if (!(event.getEntity() instanceof Snowball snowball)) return;
+            if (!(snowball.getShooter() instanceof Player player)) return;
+
+            var block = event.getHitBlock();
+            if (block == null || block.getType() != Material.SNOW_BLOCK) return;
+
+            var container = Container.getForPlayer(player);
+            first(container, SpleefLogic.class, spleefLogic -> {
+
+                var core = spleefLogic.useComponent(SpleefCore.class);
+                var spleefPlayer = core.getSpleefPlayer(player);
+
+                // Śnieżki mogą niszczyć bloki śniegu tylko wtedy,
+                // gdy gra jest w toku i gracz nie został wyeliminowany.
+                if (core.getGameState() != GameState.PLAY || !spleefPlayer.isAlive())
+                    return;
+
+                block.setType(Material.AIR);
+            });
+        }
+
+        // Logika eliminacji gracza.
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerMove(PlayerMoveEvent event) {
+            var fromY = event.getFrom().getBlockY();
+            var toY = event.getTo().getBlockY();
+            if (fromY == toY) return;
+
+            var player = event.getPlayer();
+            var container = Container.getForPlayer(player);
+            first(container, SpleefLogic.class, spleefLogic -> {
+
+                var core = spleefLogic.useComponent(SpleefCore.class);
+
+                // Ignorujemy zdarzenie, jeżeli gracz wciąż znajduje się powyżej
+                // poziomu eliminacji (eliminationY).
+                if (toY > core.getEliminationY()) return;
+
+                var spleefPlayer = core.getSpleefPlayer(player);
+
+                // Nie eliminujemy gracza, jeśli jest już martwy
+                // albo jeśli rozgrywka aktualnie nie trwa.
+                if (core.getGameState() != GameState.PLAY || !spleefPlayer.isAlive())
+                    return;
+
+                // Oznaczamy gracza jako wyeliminowanego.
+                spleefPlayer.setAlive(false);
+
+                // Powiadamiamy wszystkie komponenty obsługujące zdarzenia Spleefa
+                // o fakcie eliminacji gracza.
+                container.forEachComponents(
+                        SpleefEventHandler.class,
+                        spleefEventHandler -> spleefEventHandler.invokePlayerEliminated(spleefPlayer));
+
+            });
+        }
+    }
+}
+```
+
+## Główna klasa kontenera
+```java
+public class SpleefContainer extends Container {
+    public SpleefContainer(JavaPlugin plugin) {
+        super(plugin);
+    }
+
+    @Override
+    protected @NotNull GameMap defaultBoard() {
+        return new SpleefGameMap(this);
+    }
+}
+```
+
+## Uruchamianie
+```java
+//...
+// Tworzenie nowej instancji gry
+var spleef = new SpleefContainer(this);
+spleef.start();
+
+// Dodawanie gracza do instancji
+spleef.addPlayer(player);
+```

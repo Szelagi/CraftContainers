@@ -20,16 +20,16 @@ public Listeners defineListeners() {
     return super.defineListeners().add(MyListener.class);
 }
 
-private static class MyListener implements Listener {
+private static class MyListener implements AdaptedListener {
     /**
      * Obsługa skoku gracza – wysyła wiadomość, gdy gracz skoczy.
      */
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJump(PlayerJumpEvent event) {
         var player = event.getPlayer();
-        var session = SessionManager.session(player);
+        var container = Container.getForPlayer(player);
 
-        ListenerManager.each(session, getClass(), MyComponent.class, myComponent -> {
+        each(container, MyComponent.class, myComponent -> {
             player.sendMessage("§eYou jumped! §7(Event captured by MyComponent)");
         });
     }
@@ -40,9 +40,9 @@ private static class MyListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         var player = event.getPlayer();
-        var session = SessionManager.session(player);
+        var container = Container.getForPlayer(player);
 
-        ListenerManager.first(session, getClass(), MyComponent.class, myComponent -> {
+        first(container, MyComponent.class, myComponent -> {
             event.setCancelled(true);
             player.sendMessage("§eYou cannot drop items! §7(Event captured by MyComponent)");
         });
@@ -76,51 +76,78 @@ Framework zapewnia efektywne metody do filtrowania zdarzeń.
 #### Wykonaj dla każdego komponentu konkretnego typu
 Wykonuje consumer dla wszystkich komponentów określonego typu posiadających listener.
 ```java
-ListenerManager.each(session, MyListener.class, MyComponent.class, myComponent -> {});
+each(container, MyComponent.class, myComponent -> {})
+        
+// statyczne
+AdaptedListener.eachFor(container, MyListener.class, MyComponent.class, myComponent -> {});
 ```
 
 
 #### Wykonaj dla pierwszego komponentu konkretnego typu
 Działa podobnie jak each, ale wykonuje consumer tylko dla pierwszego pasującego komponentu.
 ```java
-ListenerManager.first(session, MyListener.class, MyComponent.class, myComponent -> {});
+first(container, MyComponent.class, myComponent -> {});
+
+// statyczne
+AdaptedListener.firstFor(container, MyListener.class, MyComponent.class, myComponent -> {});
 ```
 
 
 #### Wykonaj dla każdego komponentu używającego listenera
 Wykonuje **consumer** dla wszystkich komponentów posiadających listener.
 ```java
-ListenerManager.each(session, MyListener.class, component -> {});
+each(container, component -> {});
+
+// statyczne
+AdaptedListener.eachFor(container, MyListener.class, component -> {});
 ```
 
 
 #### Wykonaj dla pierwszego komponentu używającego listenera
 ```java
-ListenerManager.first(session, MyListener.class, component -> {});
+first(container, component -> {});
+
+// statyczne
+AdaptedListener.firstFor(container, MyListener.class, component -> {});
 ```
 
 ### Metody wyszukiwania
 
 #### Znajdź wszystkie komponenty konkretnego typu
 ```java
-var myComponents = ListenerManager.components(session, MyListener.class, MyComponent.class);
+var myComponents = each(container, MyComponent.class);
+
+// statyczne
+var myComponents = AdaptedListener.eachFor(container, MyListener.class, MyComponent.class);
 ```
 
 #### Znajdź pierwszy komponent konkretnego typu
 ```java
-var myComponent = ListenerManager.first(session, MyListener.class, MyComponent.class);
+var myComponent = first(container, MyComponent.class);
+
+// statyczne
+var myComponent = AdaptedListener.firstFor(container, MyListener.class, MyComponent.class);
 ```
 
 #### Znajdź wszystkie komponenty używające listenera
 ```java
-var components = ListenerManager.components(session, MyListener.class);
+var components = each(container);
+
+// statyczne
+var components = AdaptedListener.eachFor(container, MyListener.class);
 ```
 
 #### Znajdź pierwszy komponent używający listenera
 ```java
-var component = ListenerManager.first(session, MyListener.class);
+var component = first(container);
+
+// statyczne
+var component = AdaptedListener.firstFor(container, MyListener.class);
 ```
 
 ::: warning Uwaga
-Powyższych metod nie należy używać do ogólnego wyszukiwania komponentów w drzewie sesji – służą wyłącznie do filtrowania zdarzeń w listenerach.
+Nie używaj tych metod do ogólnego przeszukiwania komponentów w drzewie kontenera.  
+Służą one wyłącznie do **filtrowania zdarzeń w listenerach**.
+
+Jeśli chcesz przeszukać całe drzewo kontenera, zobacz sekcję [Przeszukiwanie drzewa](/pl/learn/search.md).
 :::

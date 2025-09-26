@@ -67,7 +67,8 @@ export default defineConfig({
                         {text: 'Kreator szablonów budowli', link: '/pl/learn/blueprint.md'},
                         {text: 'Generowanie mapy', link: '/pl/learn/gamemap-generating.md'},
                         {text: 'Allokatory mapy', link: '/pl/learn/allocators.md'},
-                        {text: 'Komunikacja', link: '/pl/learn/communication.md'},
+                        {text: 'Współpraca komponentów', link: '/pl/learn/component-interaction.md'},
+                        {text: 'Kompozycja i dziedziczenie komponentów', link: '/pl/learn/composition-and-inheritance.md'},
                         {text: 'Obsługa wielu wersji gry', link: '/pl/learn/minecraft-version.md'},
                     ]
                 },

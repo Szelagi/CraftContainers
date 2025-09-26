@@ -74,13 +74,13 @@ public class NoCreatureNaturalSpawn extends Controller {
         return super.defineListeners().add(MyListener.class);
     }
 
-    private static final class MyListener implements Listener {
+    private static final class MyListener implements AdaptedListener {
         @EventHandler(ignoreCancelled = true)
         public void onCreatureSpawn(CreatureSpawnEvent event) {
             if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL)
                 return;
-            var session = GameMapManager.container(event.getEntity());
-            ListenerManager.first(session, getClass(), NoCreatureNaturalSpawn.class, noCreatureDrop -> {
+            var container = GameMap.getContainerForEntity(event.getEntity());
+            first(container, getClass(), NoCreatureNaturalSpawn.class, noCreatureDrop -> {
                 event.setCancelled(true);
             });
         }
