@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import pl.szelagi.Scheduler;
-import pl.szelagi.buildin.system.BoardWatchDog;
+import pl.szelagi.buildin.system.GameMapWatchDog;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.base.StartException;
 import pl.szelagi.component.base.StopException;
@@ -216,7 +216,7 @@ public abstract class GameMap extends Component {
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        new BoardWatchDog(this).start();
+        new GameMapWatchDog(this).start();
     }
 
     @Override

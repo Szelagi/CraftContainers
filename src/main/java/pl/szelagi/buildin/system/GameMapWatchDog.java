@@ -10,29 +10,27 @@ package pl.szelagi.buildin.system;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 import pl.szelagi.component.GameMap;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.component.Controller;
 import pl.szelagi.component.container.Container;
-import pl.szelagi.manager.GameMapManager;
 import pl.szelagi.manager.ContainerManager;
 import pl.szelagi.manager.listener.AdaptedListener;
-import pl.szelagi.manager.listener.ListenerManager;
 import pl.szelagi.manager.listener.Listeners;
 import pl.szelagi.util.timespigot.Time;
 
 import static pl.szelagi.command.CommandHelper.PREFIX;
 
 
-public class BoardWatchDog extends Controller {
+public class GameMapWatchDog extends Controller {
     private static final String ILLEGAL_SPACE_EXIT = PREFIX + "§cYou cannot leave the area this way.";
     private static final String ILLEGAL_SPACE_ENTER = PREFIX + "§cYou do not have access to this area.";
 
-    public BoardWatchDog(@NotNull Component parent) {
+    public GameMapWatchDog(@NotNull Component parent) {
         super(parent);
     }
 
@@ -61,8 +59,8 @@ public class BoardWatchDog extends Controller {
             var player = event.getPlayer();
             var container = Container.getForPlayer(player);
             if (container == null) return;
-            first(container, BoardWatchDog.class, boardWatchDog -> {
-                if (!boardWatchDog.isLocationCorrect(event.getTo())) {
+            first(container, GameMapWatchDog.class, gameMapWatchDog -> {
+                if (!gameMapWatchDog.isLocationCorrect(event.getTo())) {
                     event.setCancelled(true);
                 }
             });
@@ -86,6 +84,23 @@ public class BoardWatchDog extends Controller {
             }
         }
 
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerRespawn(PlayerRespawnEvent event) {
+            var player = event.getPlayer();
+            var container = Container.getForPlayer(player);
+            first(container, GameMapWatchDog.class, gameMapWatchDog -> {
+                gameMapWatchDog.runTaskLater(() -> {
+                    if (gameMapWatchDog.isLocationCorrect(player.getLocation())) return;
+
+                    try {
+                        throw new IllegalPlayerMapExitException(player, gameMapWatchDog.gameMap());
+                    } finally {
+                        container.stop();
+                    }
+                }, Time.ticks(1));
+            });
+        }
+
         private void handlePlayerInSession(
                 Container playerContainer,
                 Container containerInDestination,
@@ -94,9 +109,9 @@ public class BoardWatchDog extends Controller {
                 Location to,
                 PlayerTeleportEvent event
         ) {
-            first(playerContainer, BoardWatchDog.class, boardWatchDog -> {
+            first(playerContainer, GameMapWatchDog.class, gameMapWatchDog -> {
                 // Jeżeli teleportacja jest wewnątrz sesji, pomiń
-                if (boardWatchDog.isLocationCorrect(to)) return;
+                if (gameMapWatchDog.isLocationCorrect(to)) return;
 
                 if (containerInDestination != null && !playerContainer.equals(containerInDestination)) {
                     // Gracz próbuje przenieść się na inną sesję
@@ -104,11 +119,11 @@ public class BoardWatchDog extends Controller {
                     player.sendMessage(ILLEGAL_SPACE_ENTER);
                 } else {
                     // Zablokuj teleportacje poza mapą, używając zadania opóźnionego
-                    boardWatchDog.runTaskLater(() -> {
+                    gameMapWatchDog.runTaskLater(() -> {
                         var currentSession = ContainerManager.container(player);
                         if (currentSession == null) return;
 
-                        first(playerContainer, BoardWatchDog.class, watchdogCheck -> {
+                        first(playerContainer, GameMapWatchDog.class, watchdogCheck -> {
                             if (!watchdogCheck.isLocationCorrect(player.getLocation())) {
                                 player.teleport(from);
                                 player.sendMessage(ILLEGAL_SPACE_EXIT);
