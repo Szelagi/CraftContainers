@@ -75,6 +75,7 @@ export default defineConfig({
                 {
                     text: 'Wbudowane komponenty',
                     items: [
+                        {text: 'Kontrolery', link: '/pl/buildin/controllers.md'}
                         // {text: 'Algorytmy grupujące', link: '/pl/buildin/grouping.md'},
                         // {text: 'Osobny ekwipunek', link: '/pl/buildin/other-equipment.md'},
                         // {text: 'Osobny tryb gry', link: '/pl/buildin/other-gamemode.md'},
