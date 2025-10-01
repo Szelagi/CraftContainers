@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class TaskSystem {
     private final Plugin plugin;
-    private final Set<SAPITask> tasks = new HashSet<>();
+    private final Set<ComponentTask> tasks = new HashSet<>();
 
     public TaskSystem(Plugin plugin) {
         this.plugin = plugin;
@@ -30,67 +30,67 @@ public class TaskSystem {
         }
     }
 
-    public @NotNull SAPITask runTask(@NotNull Runnable runnable) {
+    public @NotNull ComponentTask runTask(@NotNull Runnable runnable) {
         var bukkitTask = plugin.getServer()
                 .getScheduler()
                 .runTask(plugin, runnable);
-        var processTask = new SAPITask(this, bukkitTask);
+        var processTask = new ComponentTask(this, bukkitTask);
         tasks.add(processTask);
         return processTask;
     }
 
-    public @NotNull SAPITask runTaskAsync(@NotNull Runnable runnable) {
+    public @NotNull ComponentTask runTaskAsync(@NotNull Runnable runnable) {
         var bukkitTask = plugin.getServer()
                 .getScheduler()
                 .runTaskAsynchronously(plugin, runnable);
-        var processTask = new SAPITask(this, bukkitTask);
+        var processTask = new ComponentTask(this, bukkitTask);
         tasks.add(processTask);
         return processTask;
     }
 
-    public @NotNull SAPITask runTaskLater(@NotNull Runnable runnable, @NotNull Time laterTime) {
+    public @NotNull ComponentTask runTaskLater(@NotNull Runnable runnable, @NotNull Time laterTime) {
         var bukkitTask = plugin.getServer()
                 .getScheduler()
                 .runTaskLater(plugin, runnable, laterTime.toTicks());
-        var processTask = new SAPITask(this, bukkitTask);
+        var processTask = new ComponentTask(this, bukkitTask);
         tasks.add(processTask);
         return processTask;
     }
 
-    public @NotNull SAPITask runTaskLaterAsync(@NotNull Runnable runnable, @NotNull Time laterTime) {
+    public @NotNull ComponentTask runTaskLaterAsync(@NotNull Runnable runnable, @NotNull Time laterTime) {
         var bukkitTask = plugin.getServer()
                 .getScheduler()
                 .runTaskLaterAsynchronously(plugin, runnable, laterTime.toTicks());
-        var processTask = new SAPITask(this, bukkitTask);
+        var processTask = new ComponentTask(this, bukkitTask);
         tasks.add(processTask);
         return processTask;
     }
 
-    public @NotNull SAPITask runTaskTimer(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
+    public @NotNull ComponentTask runTaskTimer(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
         var bukkitTask = plugin.getServer()
                 .getScheduler()
                 .runTaskTimer(plugin, runnable, laterTime.toTicks(), repeatTime.toTicks());
-        var processTask = new SAPITask(this, bukkitTask);
+        var processTask = new ComponentTask(this, bukkitTask);
         tasks.add(processTask);
         return processTask;
     }
 
-    public @NotNull SAPITask runTaskTimerAsync(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
+    public @NotNull ComponentTask runTaskTimerAsync(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
         var bukkitTask = plugin.getServer()
                 .getScheduler()
                 .runTaskTimerAsynchronously(plugin, runnable, laterTime.toTicks(), repeatTime.toTicks());
-        var processTask = new SAPITask(this, bukkitTask);
+        var processTask = new ComponentTask(this, bukkitTask);
         tasks.add(processTask);
         return processTask;
     }
 
-    public void stopTask(@NotNull SAPITask SAPITask) {
-        SAPITask.getBukkitTask().cancel();
-        tasks.remove(SAPITask);
+    public void stopTask(@NotNull ComponentTask ComponentTask) {
+        ComponentTask.getBukkitTask().cancel();
+        tasks.remove(ComponentTask);
     }
 
     public void optimiseTasks() {
-        var unableTasks = new ArrayList<SAPITask>();
+        var unableTasks = new ArrayList<ComponentTask>();
         boolean isQueued;
         boolean isRunning;
         boolean isExist;

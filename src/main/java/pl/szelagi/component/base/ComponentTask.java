@@ -11,11 +11,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
-public class SAPITask implements BukkitTask {
+public class ComponentTask implements BukkitTask {
     private final BukkitTask bukkitTask;
     private final TaskSystem taskSystem;
 
-    public SAPITask(TaskSystem taskSystem, BukkitTask bukkitTask) {
+    public ComponentTask(TaskSystem taskSystem, BukkitTask bukkitTask) {
         this.taskSystem = taskSystem;
         this.bukkitTask = bukkitTask;
     }

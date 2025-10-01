@@ -12,7 +12,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.component.base.Component;
-import pl.szelagi.component.base.SAPITask;
+import pl.szelagi.component.base.ComponentTask;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.event.internal.component.ComponentDestructor;
 import pl.szelagi.component.Controller;
@@ -21,16 +21,17 @@ import pl.szelagi.util.timespigot.Time;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class MessageTimer extends Controller {
     private static final Sound MESSAGE_SOUND = Sound.sound(Key.key("block.note_block.snare"), Sound.Source.AMBIENT, 1f, 1.8f);
     private boolean isCounting = false;
     private final Time waitTime;
-    private final ArrayList<SAPITask> countDownTasks = new ArrayList<>();
-    private final ArrayList<Runnable> messages = new ArrayList<>();
+    private final List<ComponentTask> countDownTasks = new ArrayList<>();
+    private final List<Runnable> messages = new ArrayList<>();
     private @Nullable String startCountMessage = null;
     private @Nullable String breakCountMessage = null;
-    private SAPITask mainTask = null;
+    private ComponentTask mainTask = null;
     private final EventDispatcher<Void> finalizeEventDispatcher = new EventDispatcher<>();
     private final HashSet<Integer> busySeconds = new HashSet<>();
 

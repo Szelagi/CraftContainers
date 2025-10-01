@@ -411,27 +411,27 @@ public abstract class Component implements TreeListener, IHierarchical<Component
     public void onPlayerRecovery(PlayerRecovery event) {}
 
     // TASK SYSTEM
-    public final @NotNull SAPITask runTask(@NotNull Runnable runnable) {
+    public final @NotNull ComponentTask runTask(@NotNull Runnable runnable) {
         return taskSystem.runTask(runnable);
     }
 
-    public final @NotNull SAPITask runTaskAsync(@NotNull Runnable runnable) {
+    public final @NotNull ComponentTask runTaskAsync(@NotNull Runnable runnable) {
         return taskSystem.runTaskAsync(runnable);
     }
 
-    public final @NotNull SAPITask runTaskLater(@NotNull Runnable runnable, @NotNull Time laterTime) {
+    public final @NotNull ComponentTask runTaskLater(@NotNull Runnable runnable, @NotNull Time laterTime) {
         return taskSystem.runTaskLater(runnable, laterTime);
     }
 
-    public final @NotNull SAPITask runTaskLaterAsync(@NotNull Runnable runnable, @NotNull Time laterTime) {
+    public final @NotNull ComponentTask runTaskLaterAsync(@NotNull Runnable runnable, @NotNull Time laterTime) {
         return taskSystem.runTaskLaterAsync(runnable, laterTime);
     }
 
-    public final @NotNull SAPITask runTaskTimer(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
+    public final @NotNull ComponentTask runTaskTimer(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
         return taskSystem.runTaskTimer(runnable, laterTime, repeatTime);
     }
 
-    public final @NotNull SAPITask runTaskTimerAsync(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
+    public final @NotNull ComponentTask runTaskTimerAsync(@NotNull Runnable runnable, @NotNull Time laterTime, @NotNull Time repeatTime) {
         return taskSystem.runTaskTimerAsync(runnable, laterTime, repeatTime);
     }
 
