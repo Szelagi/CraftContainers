@@ -43,4 +43,34 @@ import pl.szelagi.buildin.controller.otherGameMode.OtherGameMode;
 
 // Każdy gracz na w kontenrze, będzie w trybie kreatywnym
 new OtherGameMode(parent, GameMode.CREATIVE).start();
+```
 
+## OtherSpeed
+
+## NoCreatureDrop
+
+## NoCreatureNaturalSpawn
+
+## VisualEnvironment
+
+## WorldEnvironment
+
+## Hologram
+
+## NoPvP
+
+## NoPlaceBreak
+
+## NoPlaceBreakExcept
+
+## ProtectItemFrame
+
+## RotHologramBlock
+
+## BarTimerController
+
+## BossBarController
+
+## FakeWorldBorder
+
+## HideOtherPlayers

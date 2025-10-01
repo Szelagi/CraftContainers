@@ -73,21 +73,17 @@ export default defineConfig({
                     ]
                 },
                 {
-                    text: 'Wbudowane komponenty',
+                    text: 'Wbudowane elementy',
                     items: [
                         {text: 'Kontrolery', link: '/pl/buildin/controllers.md'}
                         // {text: 'Algorytmy grupujące', link: '/pl/buildin/grouping.md'},
-                        // {text: 'Osobny ekwipunek', link: '/pl/buildin/other-equipment.md'},
-                        // {text: 'Osobny tryb gry', link: '/pl/buildin/other-gamemode.md'},
-                        // {text: 'Interaktywny sklep', link: '/pl/buildin/trader.md'},
-                        // {text: 'Generator itemów', link: '/pl/buildin/generator.md'},
-                        // {text: 'Poczekalnia', link: '/pl/buildin/lobby.md'},
                     ]
                 },
                 {
                     text: 'Przykładowe projekty',
                     items: [
-                        // {text: 'Gra CakeWars', link: '/pl/project/cakewars.md'},
+                        // {text: 'Gra BedWars', link: '/pl/project/bedwars.md'},
+                        // {text: 'Gra Spleef', link: '/pl/project/spleef.md'},
                     ]
                 },
                 {
