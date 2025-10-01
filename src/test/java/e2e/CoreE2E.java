@@ -114,7 +114,7 @@ public class CoreE2E {
                 .withNetworkAliases("mc-server")
                 .waitingFor(
                         Wait.forLogMessage(".*Done \\(.*\\)!.*", 1)
-                                .withStartupTimeout(Duration.ofMinutes(5))
+                                .withStartupTimeout(Duration.ofMinutes(8))
                 );
 
         System.out.println("Starting the docker container...");

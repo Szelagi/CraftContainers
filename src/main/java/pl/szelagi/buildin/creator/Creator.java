@@ -24,7 +24,7 @@ public class Creator extends Container {
 
     @NotNull
     @Override
-    protected GameMap defaultBoard() {
+    protected GameMap defaultGameMap() {
         return new CreatorGameMap(this, mainDirectory);
     }
 

@@ -68,7 +68,7 @@ public abstract class Container extends Component {
         currentGameMap = new LoadingGameMap(this);
         currentGameMap.start(false, null);
 
-        setGameMap(defaultBoard());
+        setGameMap(defaultGameMap());
 
         CONTAINERS.add(this);
 
@@ -180,7 +180,7 @@ public abstract class Container extends Component {
         new SessionSavePlayers(this).start();
     }
 
-    protected abstract @NotNull GameMap defaultBoard();
+    protected abstract @NotNull GameMap defaultGameMap();
 
     @Override
     public final @NotNull List<Player> players() {

@@ -25,7 +25,7 @@ public class AddRemovePlayerTest {
         }
 
         @Override
-        protected @NotNull GameMap defaultBoard() {
+        protected @NotNull GameMap defaultGameMap() {
             return new G(this);
         }
     }

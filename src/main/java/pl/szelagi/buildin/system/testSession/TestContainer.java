@@ -20,7 +20,7 @@ public class TestContainer extends Container {
     }
 
     @Override
-    protected @NotNull GameMap defaultBoard() {
+    protected @NotNull GameMap defaultGameMap() {
         return new TestGameMap(this);
     }
 
