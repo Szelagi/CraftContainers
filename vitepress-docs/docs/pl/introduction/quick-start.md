@@ -1,7 +1,7 @@
 # Szybki start - przykład gry Spleef
 Proste wprowadzenie do pracy z CraftContainers.
 
-![gra spleef](../../img/spleef-gameplay.gif)
+[//]: # (![gra spleef]&#40;../../img/spleef-gameplay.gif&#41;)
 
 Funkcjonalności umieszczamy wewnątrz komponentów. 
 Każdy komponent posiada wbudowane zdarzenia wewnętrzne, które odpowiadają za różne etapy

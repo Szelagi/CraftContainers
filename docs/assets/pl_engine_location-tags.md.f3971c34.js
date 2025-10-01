@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a}from"./app.8706ebaa.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"pl/engine/location-tags.md"}'),o={name:"pl/engine/location-tags.md"};function n(s,c,r,i,p,l){return a(),t("div")}const m=e(o,[["render",n]]);export{d as __pageData,m as default};
