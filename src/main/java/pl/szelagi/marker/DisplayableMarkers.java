@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public class DisplayableMarkers extends Controller implements IMarkers<DisplayableMarkers> {
     private final Markers markers;
@@ -42,8 +43,7 @@ public class DisplayableMarkers extends Controller implements IMarkers<Displayab
     private void createHologram(@NotNull Marker marker) {
         if (holograms.containsKey(marker.getId()))
             throw new IllegalStateException("Marker with id " + marker.getId() + " already exists");
-        var label = marker.getName() + " §8ID" + marker.getId();
-        var markerHologram = new MarkerHologram(this, label, marker.getLocation());
+        var markerHologram = new MarkerHologram(this, marker);
         markerHologram.start();
         holograms.put(marker.getId(), markerHologram);
     }
@@ -95,6 +95,13 @@ public class DisplayableMarkers extends Controller implements IMarkers<Displayab
     @Override
     public @NotNull Marker create(String name, Location location) {
         var marker = markers.create(name, location);
+        createHologram(marker);
+        return marker;
+    }
+
+    @Override
+    public @NotNull Marker create(String name, Location location, IMetadata metadata) {
+        var marker = markers.create(name, location, metadata);
         createHologram(marker);
         return marker;
     }
@@ -167,4 +174,13 @@ public class DisplayableMarkers extends Controller implements IMarkers<Displayab
         return new DisplayableMarkers(parent(), rotatedMarkers);
     }
 
+    @Override
+    public @NotNull Marker updateMetadata(int id, BiConsumer<Marker, IMutableMetadata> modifier) {
+        var prevMarker = markers.getById(id);
+        var newMarker = markers.updateMetadata(id, modifier);
+        assert prevMarker != null;
+        removeHologram(prevMarker);
+        createHologram(newMarker);
+        return newMarker;
+    }
 }

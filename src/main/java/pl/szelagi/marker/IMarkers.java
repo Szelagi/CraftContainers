@@ -17,6 +17,8 @@ import pl.szelagi.transform.ITransformable;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
     String SEPARATOR_NAME = "#";
@@ -26,6 +28,7 @@ public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
     @NotNull Location getBase();
     @NotNull List<Marker> getMarkers();
     @NotNull Marker create(String name, Location location);
+    @NotNull Marker create(String name, Location location, IMetadata metadata);
     @Nullable Marker getById(int id);
     @NotNull List<Marker> getByName(String name);
     @NotNull List<Marker> getNearbyMarkers(Location location, double radius);
@@ -33,6 +36,7 @@ public interface IMarkers<T extends IMarkers<T>> extends ITransformable<T> {
     @Nullable Marker removeById(int id);
     @Nullable List<Marker> removeByName(String name);
     @NotNull List<Marker> drop();
+    @NotNull Marker updateMetadata(int id, BiConsumer<Marker, IMutableMetadata> modifier);
 
     default List<Marker> createFrom(IMarkers<?> markers) {
         return markers.getMarkers()

@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.szelagi.Scheduler;
+import pl.szelagi.buildin.controller.CenterHologram;
 import pl.szelagi.fawe.ISchematic;
 import pl.szelagi.fawe.Schematics;
 import pl.szelagi.marker.DisplayableMarkers;
@@ -46,7 +47,7 @@ public class BlueprintGameMap extends GameMap {
     @Override
     public void onComponentInit(ComponentConstructor event) {
         super.onComponentInit(event);
-        new MarkerHologram(this, "center", center()).start();
+        new CenterHologram(this, center()).start();
 
         worldBorder = new FakeWorldBorder(this, center(), radius);
         worldBorder.start();

@@ -13,15 +13,18 @@ import pl.szelagi.buildin.controller.hologram.Hologram;
 import pl.szelagi.component.base.Component;
 import pl.szelagi.event.internal.component.ComponentConstructor;
 import pl.szelagi.component.Controller;
+import pl.szelagi.marker.Marker;
 
 public class MarkerHologram extends Controller {
-    private final net.kyori.adventure.text.Component name;
+    private final net.kyori.adventure.text.Component label;
+    private final net.kyori.adventure.text.Component metadata;
     private final Location location;
 
-    public MarkerHologram(@NotNull Component parent, @NotNull String name, @NotNull Location location) {
+    public MarkerHologram(@NotNull Component parent, @NotNull Marker marker) {
         super(parent);
-        this.name = net.kyori.adventure.text.Component.text("§2" + name);
-        this.location = location;
+        this.label = net.kyori.adventure.text.Component.text(marker.getName() + " §8ID" + marker.getId());
+        this.metadata = net.kyori.adventure.text.Component.text("§7" + marker.getMetadata().size() + " metadata");
+        this.location = marker.getLocation();
     }
 
     @Override
@@ -30,8 +33,8 @@ public class MarkerHologram extends Controller {
         var l3 = location.clone().add(0, 0.3, 0);
         var l2 = location.clone().add(0, 0.6, 0);
         var l1 = location.clone().add(0, 0.9, 0);
-        new Hologram(this, l1, name).start();
-        new Hologram(this, l2, locationToXYZ(location)).start();
+        new Hologram(this, l1, label).start();
+        new Hologram(this, l2, metadata).start();
         new Hologram(this, l3, locationToYawPitch(location)).start();
         new Hologram(this, location, net.kyori.adventure.text.Component.text("§a•")).start();
     }

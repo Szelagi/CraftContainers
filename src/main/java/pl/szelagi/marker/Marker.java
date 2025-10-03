@@ -8,18 +8,23 @@
 package pl.szelagi.marker;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 public class Marker {
     private final int id;
     private final String name;
     private final Location location;
+    private final Metadata metadata;
 
-    protected Marker(int id, String name, Location location) {
+    protected Marker(int id, String name, Location location, IMetadata metadata) {
         this.id = id;
         this.name = name;
-        this.location = location;
+        this.location = location.clone();
+        this.metadata = new Metadata(metadata);
     }
 
     public int getId() {
@@ -34,22 +39,29 @@ public class Marker {
         return location;
     }
 
+    public IMetadata getMetadata() {
+        return metadata;
+    }
+
     public MarkerData toMarkerData(Location base) {
         var dx = location.getX() - base.getX();
         var dy = location.getY() - base.getY();
         var dz = location.getZ() - base.getZ();
-        return new MarkerData(id, name, dx, dy, dz, location.getYaw(), location.getPitch());
+        return new MarkerData(id, name, dx, dy, dz, location.getYaw(), location.getPitch(), metadata.toMap());
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Marker #%d: %s at [x=%.0f, y=%.0f, z=%.0f]",
-                id,
+                "Marker %s #%d\nLocation: [x=%.0f, y=%.0f, z=%.0f]\nRotation: [yaw=%.0f, pitch=%.0f]\nMetadata:\n%s",
                 name,
+                id,
                 location.getX(),
                 location.getY(),
-                location.getZ()
+                location.getZ(),
+                location.getYaw(),
+                location.getPitch(),
+                getMetadata()
         );
     }
 

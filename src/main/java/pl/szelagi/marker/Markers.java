@@ -20,6 +20,7 @@ import pl.szelagi.util.IncrementalGenerator;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class Markers extends AbstractMarkers<Markers> {
@@ -84,7 +85,7 @@ public class Markers extends AbstractMarkers<Markers> {
         var finalLocation = transformedLocation.add(adaptedBase);
         var location = new Location(getBase().getWorld(), finalLocation.x(), finalLocation.y(), finalLocation.z());
 
-        return new Marker(marker.getId(), marker.getName(), location);
+        return new Marker(marker.getId(), marker.getName(), location, marker.getMetadata());
     }
 
     private Marker transformedToNativeMarker(Marker transformedMarker) {
@@ -96,7 +97,7 @@ public class Markers extends AbstractMarkers<Markers> {
         var finalLocation = reversed.add(adaptedBase);
 
         var location = new Location(getBase().getWorld(), finalLocation.x(), finalLocation.y(), finalLocation.z());
-        return new Marker(transformedMarker.getId(), transformedMarker.getName(), location);
+        return new Marker(transformedMarker.getId(), transformedMarker.getName(), location, transformedMarker.getMetadata());
     }
 
     protected void addMarker(Marker marker) {
@@ -111,8 +112,13 @@ public class Markers extends AbstractMarkers<Markers> {
 
     @Override
     public @NotNull Marker create(String name, Location location) {
+        return create(name, location, new Metadata());
+    }
+
+    @Override
+    public @NotNull Marker create(String name, Location location, IMetadata metadata) {
         var id = (int) getIdGenerator().next();
-        var marker = new Marker(id, name, location);
+        var marker = new Marker(id, name, location, metadata);
         addMarker(marker);
         return marker;
     }
@@ -178,6 +184,18 @@ public class Markers extends AbstractMarkers<Markers> {
     }
 
     @Override
+    public @NotNull Marker updateMetadata(int id, BiConsumer<Marker, IMutableMetadata> modifier) {
+        var marker = removeById(id);
+        if (marker == null)
+            throw new MarkerException("Cannot update metadata: marker with id " + id + " does not exist");
+        var mutableMeta = new Metadata(marker.getMetadata());
+        modifier.accept(marker, mutableMeta);
+        var newMarker = new Marker(marker.getId(), marker.getName(), marker.getLocation(), mutableMeta);
+        addMarker(newMarker);
+        return newMarker;
+    }
+
+    @Override
     protected @NotNull Set<MarkerData> toMarkerDataSet(Location base) {
         return nativeMarkers.stream()
                 .map(marker -> marker.toMarkerData(base))
@@ -202,7 +220,7 @@ public class Markers extends AbstractMarkers<Markers> {
 
         var newNativeMarkers = nativeMarkers.stream().map(marker -> {
             var locationCopy = marker.getLocation().clone().add(dx, dy, dz);
-            return new Marker(marker.getId(), marker.getName(), locationCopy);
+            return new Marker(marker.getId(), marker.getName(), locationCopy, marker.getMetadata());
         }).collect(Collectors.toSet());
 
         return createNew(baseCopy, null, newNativeMarkers);

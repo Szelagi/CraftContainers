@@ -10,6 +10,7 @@ package pl.szelagi.marker;
 import org.bukkit.Location;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class MarkerData implements Serializable {
     private final int id;
@@ -19,8 +20,9 @@ public class MarkerData implements Serializable {
     private final double zOffset;
     private final double yaw;
     private final double pitch;
+    private final Map<String, String> metadataMap;
 
-    protected MarkerData(int id, String name, double xOffset, double yOffset, double zOffset, double yaw, double pitch) {
+    public MarkerData(int id, String name, double xOffset, double yOffset, double zOffset, double yaw, double pitch, Map<String, String> metadataMap) {
         this.id = id;
         this.name = name;
         this.xOffset = xOffset;
@@ -28,6 +30,7 @@ public class MarkerData implements Serializable {
         this.zOffset = zOffset;
         this.yaw = yaw;
         this.pitch = pitch;
+        this.metadataMap = metadataMap;
     }
 
     protected Marker toMarker(Location base) {
@@ -35,7 +38,8 @@ public class MarkerData implements Serializable {
         var ay = yOffset + base.getY();
         var az = zOffset + base.getZ();
         var location = new Location(base.getWorld(), ax, ay, az);
-        return new Marker(id, name, location);
+        var metadata = new Metadata(metadataMap);
+        return new Marker(id, name, location, metadata);
     }
 
     public int getId() {
@@ -46,15 +50,15 @@ public class MarkerData implements Serializable {
         return name;
     }
 
-    public double getxOffset() {
+    public double getXOffset() {
         return xOffset;
     }
 
-    public double getyOffset() {
+    public double getYOffset() {
         return yOffset;
     }
 
-    public double getzOffset() {
+    public double getZOffset() {
         return zOffset;
     }
 
@@ -64,5 +68,9 @@ public class MarkerData implements Serializable {
 
     public double getPitch() {
         return pitch;
+    }
+
+    public Map<String, String> getMetadataMap() {
+        return metadataMap;
     }
 }

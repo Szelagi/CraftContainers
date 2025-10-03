@@ -22,6 +22,9 @@ public class MarkerCommand extends CommandRouter {
         register(new MarkerGiveClearBlock());
         register(new MarkerList());
         register(new MarkerTp());
+        register(new MarkerSetMetadata());
+        register(new MarkerRemoveMetadata());
+        register(new MarkerInfo());
     }
 
     @Override
