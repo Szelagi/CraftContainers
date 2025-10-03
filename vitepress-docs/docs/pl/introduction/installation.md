@@ -1,9 +1,9 @@
 # Instalacja
 ## Serwer Minecraft
 1. Pobierz pluginy:
-   - [CraftContainers](https://github.com/Szelagi/SessionAPI/releases)
+   - [CraftContainers](https://github.com/Szelagi/CraftContainers/releases)
    - [FastAsyncWorldEdit](https://intellectualsites.github.io/download/fawe.html)
-3. Umieść pliki `CraftContainers.jar` oraz `FastAsyncWorldEdit.jar` w katalogu `plugins`.
+2. Umieść pliki `CraftContainers.jar` oraz `FastAsyncWorldEdit.jar` w katalogu `plugins`.
 
 ## Zależność projektu
 1. Dodaj `CraftContainers` jako zależność w swoim projekcie.

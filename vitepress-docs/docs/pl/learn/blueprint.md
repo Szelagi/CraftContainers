@@ -19,6 +19,9 @@ Pozwala na tworzenie nowych szablonów budowli oraz edycję istniejących.
   - `list` - Displays all markers grouped by name.
   - `list <name>` - Display all markers in group.
   - `tp <id>` - Teleports the player to the specified marker.
+  - `setmetadata <id> <key> <value` - Sets metadata for an existing marker.
+  - `removemetadata <id> <key>` - Deletes a metadata key from an existing marker.
+  - `info <id>` - Displays detailed information about a marker.
 
 
 ## Zalecany format nazwy szablonu
@@ -76,6 +79,46 @@ Za pomocą komendy `/markers`.
 - `@NotNull List<Marker> getNearbyMarkers(Location location, double radius)`  
   Pobiera wszystkie markery w zadanym promieniu od lokalizacji.
 </details>
+
+### Metadane lokacji
+Każdy marker może przechowywać metadane w postaci par `klucz=wartość`.
+Dzięki temu można dodać do markera dowolne, dodatkowe informacje.
+
+Metadane są zapisywane jako `string:string`, ale wbudowane metody umożliwiają ich łatwe odczytywanie i parsowanie do innych typów.
+
+#### Przykładowe zastosowanie
+Marker ze spawnerem:
+
+![spawner marker](../../img/spawner.png)
+
+Metadane zapisane wewnątrz markera:
+![metadata](../../img/metadata.png)
+
+Odczytywanie informacji
+```java
+// ...
+@Override
+  public void onComponentInit(ComponentConstructor event) {
+    // Pobieramy unikalny marker dla generatora przedmiotów.
+    var spawnerMarkers = markers.getByName("spawner");
+    
+    for (var spawnerMarker : spawnerMarkers) {
+        var metadata = spawnerMarker.getMetadata();
+        
+        // required (@NotNull parsed value or exception)
+        var type = metadata.requireString("type"); // string or exception
+        var isActive = metadata.requireBoolean("active"); // boolean or exception
+      
+        // default
+        int max = Optional.ofNullable(metadata.getInteger("max")).orElse(30);
+
+        // optional (@Nullable)
+        int ticks = metadata.getInteger("min");
+        
+        // ...
+    }
+}
+```
 
 ## Przykłady
 Aby zobaczyć, jak wykorzystać przygotowane schematy i markery w praktyce, zajrzyj do sekcji [Generowanie mapy](/pl/learn/gamemap-generating.md), gdzie znajdziesz przykłady statycznego i dynamicznego wczytywania map oraz pobierania kluczowych lokacji.
