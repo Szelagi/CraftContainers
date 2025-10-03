@@ -21,7 +21,7 @@ and other instances that operate independently while remaining part of the same 
 
 ## Important Links
 
-* [Official Documentation](https://szelagi.github.io/SessionAPI/) – Comprehensive, up-to-date resource for using and
+* [Official Documentation](https://szelagi.github.io/CraftContainers/) – Comprehensive, up-to-date resource for using and
   understanding SessionAPI, covering all key functionalities and advanced features.
 
 * [Discord Server](https://discord.com/invite/za2pYfGWRN) – Community for support, questions, and sharing projects.
