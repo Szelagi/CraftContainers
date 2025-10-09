@@ -7,6 +7,7 @@
 
 package pl.szelagi.allocator;
 
+import net.kyori.adventure.util.TriState;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -75,11 +76,16 @@ public class TemporaryWorld {
         var worldCreator = new WorldCreator(name);
         worldCreator.generator(new EmptyChunkGenerator());
 
+        worldCreator.keepSpawnLoaded(TriState.FALSE);
+
         if (worldCreatorConsumer != null)
             worldCreatorConsumer.accept(worldCreator);
 
         var world = worldCreator.createWorld();
         assert world != null;
+
+        world.setAutoSave(false);
+
         TemporaryWorld.markTemporary(world);
 
         if (worldConsumer != null)

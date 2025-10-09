@@ -16,18 +16,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class EmptyChunkGenerator extends ChunkGenerator {
+    private static final BiomeProvider BIOME_PROVIDER = new BiomeProvider() {
+        private final List<Biome> biomeList = List.of(Biome.PLAINS);
+
+        @Override
+        public @NotNull Biome getBiome(@NotNull WorldInfo worldInfo, int i, int i1, int i2) {
+            return Biome.PLAINS;
+        }
+
+        @Override
+        public @NotNull List<Biome> getBiomes(@NotNull WorldInfo worldInfo) {
+            return biomeList;
+        }
+    };
+
     @Override
     public @Nullable BiomeProvider getDefaultBiomeProvider(@NotNull WorldInfo worldInfo) {
-        return new BiomeProvider() {
-            @Override
-            public @NotNull Biome getBiome(@NotNull WorldInfo worldInfo, int i, int i1, int i2) {
-                return Biome.PLAINS;
-            }
-
-            @Override
-            public @NotNull List<Biome> getBiomes(@NotNull WorldInfo worldInfo) {
-                return List.of(Biome.PLAINS);
-            }
-        };
+        return BIOME_PROVIDER;
     }
 }
