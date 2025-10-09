@@ -7,19 +7,34 @@
 
 package pl.szelagi.marker;
 
+import com.google.gson.annotations.SerializedName;
 import org.bukkit.Location;
 
 import java.io.Serializable;
 import java.util.Map;
 
 public class MarkerData implements Serializable {
+    @SerializedName("id")
     private final int id;
+    @SerializedName("name")
     private final String name;
+
+    @SerializedName("x_offset")
     private final double xOffset;
+
+    @SerializedName("y_offset")
     private final double yOffset;
+
+    @SerializedName("z_offset")
     private final double zOffset;
+
+    @SerializedName("yaw")
     private final double yaw;
+
+    @SerializedName("pitch")
     private final double pitch;
+
+    @SerializedName("metadata")
     private final Map<String, String> metadataMap;
 
     public MarkerData(int id, String name, double xOffset, double yOffset, double zOffset, double yaw, double pitch, Map<String, String> metadataMap) {

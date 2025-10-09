@@ -7,6 +7,8 @@
 
 package pl.szelagi.marker;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import org.bukkit.Location;
@@ -18,34 +20,32 @@ import pl.szelagi.transform.Rotation;
 import pl.szelagi.util.IncrementalGenerator;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class Markers extends AbstractMarkers<Markers> {
-    @SuppressWarnings("unchecked")
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static Markers read(@NotNull File file, @NotNull Location base) {
-        try {
-            byte[] data = Files.readAllBytes(file.toPath());
-
-            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
-                var idGenerator = (IncrementalGenerator) ois.readObject();
-                var markerDataSet = (Set<MarkerData>) ois.readObject();
-                var markerSet = markerDataSet.stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
-                return new Markers(idGenerator, base, Collections.emptyList(), markerSet);
+        try (FileReader reader = new FileReader(file)) {
+            var markersData = GSON.fromJson(reader, MarkersData.class);
+            if (markersData.getFileVersion() != 1) {
+                // migration
+                // there are no other versions of the files
             }
-        } catch (IOException | ClassNotFoundException e) {
+
+            var idGenerator = new IncrementalGenerator(markersData.getNextId());
+            var markerSet = markersData.getMarkerDataSet().stream().map(markerData -> markerData.toMarker(base)).collect(Collectors.toSet());
+            return new Markers(idGenerator, base, Collections.emptyList(), markerSet);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public void save(@NotNull File file, @NotNull Location base) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            var markerDataList = toMarkerDataSet(base);
-            oos.writeObject(getIdGenerator());
-            oos.writeObject(markerDataList);
+        try (FileWriter writer = new FileWriter(file)) {
+            GSON.toJson(toMarkersData(base), writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -202,6 +202,11 @@ public class Markers extends AbstractMarkers<Markers> {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
+    @Override
+    protected @NotNull MarkersData toMarkersData(Location base) {
+        var markerDataSet = toMarkerDataSet(base);
+        return new MarkersData((int) getIdGenerator().peekNext(), markerDataSet);
+    }
 
     private Markers createNew(@Nullable Location base, @Nullable AffineTransform transform, @Nullable Set<Marker> nativeMarkers) {
         if (base == null)

@@ -27,6 +27,8 @@ public abstract class AbstractMarkers<T extends IMarkers<T>> implements IMarkers
 
     protected abstract @NotNull Set<MarkerData> toMarkerDataSet(Location base);
 
+    protected abstract @NotNull MarkersData toMarkersData(Location base);
+
     protected @NotNull IncrementalGenerator getIdGenerator() {
         return idGenerator;
     }
